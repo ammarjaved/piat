@@ -1,3 +1,5 @@
+<?php
+      session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +27,7 @@
 <div class="container shadow p-5  my-5 bg-white">   
 
 <?php
-      session_start(); 
+   
 
       if (isset($_SESSION['message'])) {
           echo '<div class="alert ' . $_SESSION['alert'] . ' text-center" role="alert">';
@@ -41,8 +43,14 @@
     ?>
 
 <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
-<div class="text-end mb-3">
-    <a href="./foam-1.php" class="btn btn-success btn-sm">Add New</a>
+<div class="text-end mb-3 d-flex justify-content-end">
+ 
+   <div class="m-3">
+        <a href="./foam-1.php" class="btn btn-success btn-sm " >Add New</a> 
+        </div>
+        <div class="m-3">
+    <a href="./services/generateExcel.php" class="btn btn-success btn-sm">Download Excel</a>
+</div>
 </div>
 <div class="table-responsive table-bordered" style="overflow-y:auto ; ">  
     <table id="myTable" class="table table-striped table-responsive table-bordered " >
