@@ -46,6 +46,7 @@
     ?>
 <h3 class="text-center">AD Service QR 2023</h3> 
  <form action="./services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
+ <input type="hidden" name="id" value="<?php echo $record['id']?>" id="id">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
       <table class="table">  
             <thead>
@@ -57,10 +58,10 @@
               <td  colspan="2">
                 <select name="ba" class="form-select required" id="ba" style="border:1px solid black">
                     <option value="<?php echo !empty($record['ba']) ? $record['ba'] : ''; ?>" hidden> <?php echo !empty($record['ba']) ? $record['ba'] : ''; ?></option>
-                    <option value="KL Barat">KL Barat</option>
-                    <option value="KL Timur">KL Timur</option>
-                    <option value="KL Pusat">KL Pusat</option>
-                    <option value="KL Selatan">KL Selatan</option>
+                    <option value="KLB - 6121">KLB - 6121</option>
+                    <option value="KLT - 6122">KLT - 6122</option>
+                    <option value="KLP - 6123">KLP - 6123</option>
+                    <option value="KLS - 6124">KLS - 6124</option>
                 </select>
              </td>
             </tr>
@@ -71,14 +72,14 @@
             </tr>
             <tr>
                 <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
-                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH/Combine Service" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "OH/Combine Service" ? 'checked' : ''; ?><?php echo $record['jenis_sn'] == "LKKK" ? 'checked' : ''; ?>> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
-                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "UG" ? 'checked' : ''; ?>> <label for="jenis_sambungan_ug ">UG</label></td>
+                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "OH" ? 'checked' : ''; ?>> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
+                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "UG" ? 'checked' : ''; ?>> <label for="jenis_sambungan_ug">UG</label></td>
             </tr>
             <tr>
                 <th>No. SN *<br> <span class="text-danger"></span></th>
                 <td colspan="2">
                 <span class="text-danger" id="sn_exits"></span>
-                <input type="text" name="no_sn" id="no_sn" class="form-control required" onchange="handleKeyPress(event)" value="<?php echo !empty($record['no_sn']) ? $record['no_sn'] : ''; ?>"></td>
+                <input type="text" name="no_sn" id="no_sn" class="form-control required edit" onchange="handleKeyPress(event)" value="<?php echo !empty($record['no_sn']) ? $record['no_sn'] : ''; ?>"></td>
             </tr>
             <tr>
                 <th>Alamat *<br> <span class="text-danger"></span></th>
@@ -86,6 +87,7 @@
             </tr>
             <tr>
                 <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
+
                 <?php
 $dateString = "10/4/2023";
 $datePatterns = array("d/m/Y", "d-m-Y");
@@ -102,7 +104,6 @@ foreach ($datePatterns as $pattern) {
 
 ?>
 <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required" value="<?php echo !empty($formattedDate) ? $formattedDate : ''; ?>"></td>
-
             </tr>
             <tr>
                 <th>PIAT *<br> <span class="text-danger"></span></th>
@@ -341,6 +342,18 @@ foreach ($datePatterns as $pattern) {
 
 </div>
 <script src="../assets/js/foam-1.js"></script>
+<script>
+    $(document).ready(function(){
+        var piat_val = "<?php echo  $record['jenis_sambungan']; ?>";
+        if(piat_val == "OH"){
+            $('#piat_yes').prop('checked',true)
+            $('.btn-success').html("Next").val('next')
+        }else{
+            $('#piat_no').prop('checked',true)
+        }
+
+    })
+</script>
 
  
 </body>

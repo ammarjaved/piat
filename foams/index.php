@@ -1,3 +1,5 @@
+<?php
+      session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +27,7 @@
 <div class="container shadow p-5  my-5 bg-white">   
 
 <?php
-      session_start(); 
+   
 
       if (isset($_SESSION['message'])) {
           echo '<div class="alert ' . $_SESSION['alert'] . ' text-center" role="alert">';
@@ -41,8 +43,14 @@
     ?>
 
 <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
-<div class="text-end mb-3">
-    <a href="./foam-1.php" class="btn btn-success btn-sm">Add New</a>
+<div class="text-end mb-3 d-flex justify-content-end">
+ 
+   <div class="m-3">
+        <a href="./foam-1.php" class="btn btn-success btn-sm " >Add New</a> 
+        </div>
+        <div class="m-3">
+    <a href="./services/generateExcel.php" class="btn btn-success btn-sm">Download Excel</a>
+</div>
 </div>
 <div class="table-responsive table-bordered" style="overflow-y:auto ; ">  
     <table id="myTable" class="table table-striped table-responsive table-bordered " >
@@ -82,6 +90,9 @@
                   if($record['piat'] == 'yes'){
                 echo "  <li><a class='dropdown-item' href='./previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
                   }
+                  echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-id='{$record['id']}' data-bs-target='#exampleModal'> Remove </button'></li>";
+                  echo "  <li><a class='dropdown-item' href='./detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
+                  
                 echo "</ul>
               </div></td>";
                 echo "</tr>";
@@ -91,14 +102,45 @@
     </table>
     
 </div>
-</div>
 
+</div>
+ 
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class=" modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Remove Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="./services/removeSn.php" method="post" > 
+      <div class="modal-body">
+            Are You Sure ? 
+            <input type="hidden" name="id" id="modal-id">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger">Remove</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.js"></script>
 
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable();
+
+            $(document).ready(function() {
+            $('#exampleModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var id = button.data('id');
+            var modal = $(this);
+            $('#modal-id').val(id)
+        });
+    });
         });
     </script>
 </body>

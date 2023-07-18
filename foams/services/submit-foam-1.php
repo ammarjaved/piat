@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $bare_span_b = $_POST['bare_span_b'];
   $bare_span_c = $_POST['bare_span_c'];
 
-  if($jenis_sambungan == "OH/Combine Service"){
+  if($jenis_sambungan == "OH"){
     $piat = "yes";
   }else{
     $piat = "no";
@@ -160,16 +160,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->execute();
 
-    if($jenis_sambungan == "OH/Combine Service"){
+    if($jenis_sambungan == "OH"){
         $bal = "";
-        if($ba == "KL Barat"){
+        if($ba == "KLB - 6121"){
             $bal = "KLB";
-        }elseif ($ba == "KL Timur") {
+        }elseif ($ba == "KLT - 6122") {
             $bal = "KLT";
-        } elseif ($ba == "KL Pusat") {
+        } elseif ($ba == "KLP - 6123") {
             $bal = "KLP";
         }
-        elseif ($ba == "KL Selatan") {
+        elseif ($ba == "KLS - 6124") {
             $bal = "KLS";
         }
 
@@ -179,6 +179,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $stmt = $pdo->prepare("SELECT id FROM public.ad_service_qr WHERE no_sn = :no_sn");
+        $stmt->bindParam(':no_sn', $no_sn);
+        $stmt->execute();
+        $sn_id = $stmt->fetch(PDO::FETCH_ASSOC);
+ 
         
         $span_sum = 0;
         $cable_type = '';
@@ -228,6 +233,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         
         
+        
+        $stmt = $pdo->prepare("SELECT * FROM public.inspection_checklist WHERE ad_service_id = :snId");
+        $stmt->bindParam(':snId', $sn_id['id']);
+        $stmt->execute();
+        $foam = $stmt->fetch(PDO::FETCH_ASSOC);
+        $pdo = null;
+
         $_SESSION['nama_jalan'] = $nama_jalan;
         $_SESSION['cable_type'] = $cable_type;
         $_SESSION['span_sum'] = $span_sum;
@@ -235,18 +247,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['no_sn'] = $no_sn;
         $_SESSION['alamat'] = $alamat;
         $_SESSION['tarikh_siap'] = $tarikh_siap;
+        $_SESSION['sn_id'] = $sn_id['id'];
 
-        header("Location: ../foam.php");
+        if($foam){
+            $_SESSION['foam'] = $foam;
+            header("Location: ../editFoam.php");
+        }else{
+            header("Location: ../foam.php")     ;
+        }
+    
+
         exit();
     }
     
    
     $_SESSION['alert'] = 'alert-success';
-    $_SESSION['message'] = 'Update recored successfully'; 
+    $_SESSION['message'] = 'inserted successfully'; 
 
 } catch (PDOException $e) {
-    // echo  $e->getMessage();
-    // exit();
+    echo  $e->getMessage();
+    exit();
     session_start(); 
     $_SESSION['message'] = 'inserted failed'; 
     $_SESSION['alert'] = 'alert-danger';

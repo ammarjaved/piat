@@ -30,10 +30,10 @@
               <td  colspan="2">
                 <select name="ba" class="form-select required" id="ba" style="border:1px solid black">
                     <option value="" hidden> Select BA</option>
-                    <option value="KL Barat">KL Barat</option>
-                    <option value="KL Timur">KL Timur</option>
-                    <option value="KL Pusat">KL Pusat</option>
-                    <option value="KL Selatan">KL Selatan</option>
+                    <option value="KLB - 6121">KLB - 6121</option>
+                    <option value="KLT - 6122">KLT - 6122</option>
+                    <option value="KLP - 6123">KLP - 6123</option>
+                    <option value="KLS - 6124">KLS - 6124</option>
                 </select>
              </td>
             </tr>
@@ -44,8 +44,8 @@
             </tr>
             <tr>
                 <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
-                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH/Combine Service" onclick="checkPiat(this)"> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
-                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)"> <label for="jenis_sambungan_ug ">UG</label></td>
+                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH" onclick="checkPiat(this)"> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
+                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)"> <label for="jenis_sambungan_ug">UG</label></td>
             </tr>
             <tr>
                 <th>No. SN *<br> <span class="text-danger"></span></th>
