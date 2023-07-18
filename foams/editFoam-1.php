@@ -86,7 +86,23 @@
             </tr>
             <tr>
                 <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required" value="<?php echo !empty($record['tarikh_siap']) ? $record['tarikh_siap'] : ''; ?>"></td>
+                <?php
+$dateString = "10/4/2023";
+$datePatterns = array("d/m/Y", "d-m-Y");
+$format = "Y-m-d";
+$formattedDate = null;
+
+foreach ($datePatterns as $pattern) {
+    $date = DateTime::createFromFormat($pattern, $dateString);
+    if ($date !== false) {
+        $formattedDate = $date->format($format);
+        break;
+    }
+}
+
+?>
+<td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required" value="<?php echo !empty($formattedDate) ? $formattedDate : ''; ?>"></td>
+
             </tr>
             <tr>
                 <th>PIAT *<br> <span class="text-danger"></span></th>
