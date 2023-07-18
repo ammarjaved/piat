@@ -2,7 +2,7 @@
 
 
 <?php
-      session_start(); 
+  
  
       if (!isset($_SESSION['no_sn'])) {
         header("location: ./foam-1.php");

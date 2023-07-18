@@ -72,12 +72,13 @@
                 echo "<td>{$record['tarikh_siap']}</td>";
                 
 
-                echo "<td><div class='dropdown'>
+                echo "<td class='text-center'><div class='dropdown'>
                 <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
                 <img src='../images/three-dots-vertical.svg'  >
                 </button>
                 <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
                   <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
+                  echo "<li><a class='dropdown-item' href='./editFoam-1.php?no_sn={$record['no_sn']}'>Edit Foam</a></li>";
                   if($record['piat'] == 'yes'){
                 echo "  <li><a class='dropdown-item' href='./previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
                   }

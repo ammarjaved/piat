@@ -40,9 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $bare_span_a = $_POST['bare_span_a'];
   $bare_span_b = $_POST['bare_span_b'];
   $bare_span_c = $_POST['bare_span_c'];
+
+  if($jenis_sambungan == "OH/Combine Service"){
+    $piat = "yes";
+  }else{
+    $piat = "no";
+  }
  
 
-
+ if(!isset($_POST['id'])){
     $stmt = $pdo->prepare("SELECT count(*) FROM public.ad_service_qr WHERE no_sn = :sn");
     $stmt->bindParam(':sn', $no_sn);
     $stmt->execute();
@@ -70,6 +76,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         :bil_saiz_tiang_c, :bil_jenis_spun, :bil_jenis_konkrit, :bil_jenis_besi, :bil_jenis_kayu,
         :abc_span_a, :abc_span_b, :abc_span_c, :abc_span_d, :pvc_span_a, :pvc_span_b, :pvc_span_c,
         :bare_span_a, :bare_span_b, :bare_span_c)");
+
+    }else{
+       $id = $_POST['id']; 
+
+       $stmt = $pdo->prepare("UPDATE public.ad_service_qr SET
+        no_sn = :no_sn,
+        ba = :ba,
+        jenis_sn = :jenis_sn,
+        jenis_sambungan = :jenis_sambungan,
+        alamat = :alamat,
+        tarikh_siap = :tarikh_siap,
+        piat = :piat,
+        nama_feeder_pillar = :nama_feeder_pillar,
+        nama_jalan = :nama_jalan,
+        jumlah_span = :jumlah_span,
+        talian_utama = :talian_utama,
+        bil_umbang = :bil_umbang,
+        bil_black_box = :bil_black_box,
+        bil_lvpt = :bil_lvpt,
+        bilangan_serbis = :bilangan_serbis,
+        catatan = :catatan,
+        seksyen_dari = :seksyen_dari,
+        seksyen_ke = :seksyen_ke,
+        bil_saiz_tiang_a = :bil_saiz_tiang_a,
+        bil_saiz_tiang_b = :bil_saiz_tiang_b,
+        bil_saiz_tiang_c = :bil_saiz_tiang_c,
+        bil_jenis_spun = :bil_jenis_spun,
+        bil_jenis_konkrit = :bil_jenis_konkrit,
+        bil_jenis_besi = :bil_jenis_besi,
+        bil_jenis_kayu = :bil_jenis_kayu,
+        abc_span_a = :abc_span_a,
+        abc_span_b = :abc_span_b,
+        abc_span_c = :abc_span_c,
+        abc_span_d = :abc_span_d,
+        pvc_span_a = :pvc_span_a,
+        pvc_span_b = :pvc_span_b,
+        pvc_span_c = :pvc_span_c,
+        bare_span_a = :bare_span_a,
+        bare_span_b = :bare_span_b,
+        bare_span_c = :bare_span_c
+        WHERE id = :id");
+
+    $stmt->bindParam(':id', $id);
+
+    }
 
     $stmt->bindParam(':ba', $ba);
     $stmt->bindParam(':jenis_sn', $jenis_sn);
@@ -191,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
    
     $_SESSION['alert'] = 'alert-success';
-    $_SESSION['message'] = 'inserted successfully'; 
+    $_SESSION['message'] = 'Update recored successfully'; 
 
 } catch (PDOException $e) {
     // echo  $e->getMessage();
