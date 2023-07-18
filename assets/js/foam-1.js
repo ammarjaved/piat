@@ -51,11 +51,15 @@ function checkPiat(radio) {
 
   function handleKeyPress(event) {
     var val = event.target.value;
+    var url = '';
+
+
     if(val.length < 9){
         $('#sn_exits').html("Sn no must be atleast 10 characters")
             golbal_isVaild = false;
             return false
     }
+ 
     $.ajax({
       url: "./services/snNo.php",
       type: "GET",
