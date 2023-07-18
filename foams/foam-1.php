@@ -20,9 +20,10 @@
 <h3 class="text-center">AD Service QR 2023</h3> 
  <form action="./services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
-      <table class="table">  
+      <table class="table caption-top">  
+      <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A</caption>
             <thead>
-                <th colspan="3" class="text-center">SECTION A</th>
+                <th colspan="3" class="text-center">Bil Saiz Tiang</th>
             </thead>
             <tbody>
             <tr>
@@ -85,7 +86,7 @@
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
         <table class="table caption-top">
-            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Seksyen</caption>
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section B</caption>
             <thead>
                 <th colspan="3" class="text-center">Seksyen</th>
             </thead>
@@ -109,7 +110,7 @@
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
         <table class="table caption-top">
-            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Bil Saiz Tiang</caption>
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section C</caption>
             <thead>
                 <th colspan="3" class="text-center">Bil Saiz Tiang</th>
             </thead>
@@ -139,7 +140,7 @@
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
         <table class="table caption-top">
-            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Bil Jenis Tiang</caption>
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left"> Section D</caption>
             <thead>
                 <th colspan="3" class="text-center">Bil Jenis Tiang</th>
             </thead>
@@ -170,7 +171,7 @@
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
         <table class="table caption-top">
-            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">ABC (Span)</caption>
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section E</caption>
             <thead>
                 <th colspan="3" class="text-center">ABC (Span)</th>
             </thead>
@@ -203,7 +204,7 @@
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
         <table class="table caption-top">
-            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">PVC (Span)</caption>
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section F</caption>
             <thead>
                 <th colspan="3" class="text-center">PVC (Span)</th>
             </thead>
@@ -227,7 +228,7 @@
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
         <table class="table caption-top">
-            <caption class="text-sm font-medium text-gray-700 mb-2 text-left">BARE (Span)</caption>
+            <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Section G</caption>
             <thead>
                 <th colspan="3" class="text-center">BARE (Span)</th>
             </thead>
@@ -248,7 +249,7 @@
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
         <table class="table caption-top">
-            <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Bil Saiz Tiang</caption>
+            <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Section H</caption>
             <thead>
                 <th colspan="3" class="text-center">Bil Saiz Tiang</th>
             </thead>
