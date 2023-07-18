@@ -4,10 +4,11 @@
 <?php
   
  
-      if (!isset($_SESSION['no_sn'])) {
+      if (!isset($_SESSION['no_sn']) && isset($_SESSION['foam'])) {
         header("location: ./foam-1.php");
         exit();  
       }
+      $record = $_SESSION['foam'];
     ?>
 
 <div class="container shadow p-5  my-5 bg-white foam-1"> 
@@ -15,6 +16,7 @@
   
     <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
     <form action="./services/submitFoam.php" method="post">
+<input type="hidden" name="id" id="id" value="<?php echo $record['id'];?>">
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
       <table class="table">  
@@ -100,10 +102,31 @@
               <th>Remove</th>
             </tr>
           </thead>
+<?php
+          $company = json_decode($record['company']); 
+        $name = json_decode($record['company_name']);
+        $phone_no = json_decode($record['company_phone_no']); 
+        $sign = json_decode($record['company_sign']); 
+        $check_list= json_decode($record['inspection_checklist']);
+        ?>
           <tbody id="table-body">
-          
-            
-            <!-- Add more table rows as needed -->
+          <?php 
+                for($i = 0 ; $i < sizeof($company); $i++){
+                    echo "<tr>";
+                    echo "<td class=''><input type='text' name='company[]' value='{$company[$i]}' id='company'></td>";
+                    echo "<td><select class='form-select'  name='company_name[]' id='company_name' onchange='userChange(this)' style='min-width:150px !important'> ";
+                    echo "<option value='{$name[$i]}' hidden>{$name[$i]}</option>";
+                    foreach($_SESSION['user_data'] as $user){
+                        echo "<option value='{$user['name']}'>{$user['name']}</option>";
+                    }
+                    echo "</select>";
+                    echo "<td ><input type='text' name='company_phone_no[]' id='company_phone_no' value='{$phone_no[$i]}'></td>";
+                    echo "<td class='col-2' class='text-center'><strong>{$sign[$i]}</strong><input name='company_sign[]' value='{$sign[$i]}' type='hidden'></td> ";
+                    echo "<td class='text-center'><button class='btn btn-sm remove-row-btn' onclick='removeRow(this)'>
+                    <i class='fa fa-minus-circle remove-row-btn' style='font-size:28px;color:red'></i></button></td>";
+                    echo "</tr>";
+                }
+                ?>
           </tbody>
         </table>
       </div>
@@ -139,17 +162,35 @@
               <td class="" rowspan="4">Pole
                 Condition</td>
               <td class=""> a) Numbering as per manual.</td>
-              <td class="text-center"><input type="radio" name="check_list[0]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[0]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[0]" value="not_applicable" id=""></td>
-              <td>MN
+
+              <td class="text-center">
+                <input type="radio" name="check_list[0]" value="pass" <?php echo $check_list['0'] == "pass" ? 'checked' : '' ?>>
               </td>
+
+              <td class="text-center">
+              <input type="radio" name="check_list[0]" value="fail" <?php echo $check_list['0'] == "fail" ? 'checked' : '' ?>>
+              </td>
+
+              <td class="text-center">
+                <input type="radio" name="check_list[0]" value="not_applicable" <?php echo $check_list['0'] == "not_applicable" ? 'checked' : '' ?>>
+              </td>
+              <td>MN </td>
             </tr>
             <tr>
               <td class="">b) Sufficient depth.</td>
-              <td class="text-center"><input type="radio" name="check_list[1]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[1]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[1]" value="not_applicable" id=""></td>
+              
+              <td class="text-center">
+                <input type="radio" name="check_list[1]" value="pass" <?php echo $check_list['1'] =="pass" ? 'checked' : '' ?>>
+              </td>
+
+              <td class="text-center">
+              <input type="radio" name="check_list[1]" value="fail" <?php echo $check_list['1'] =="fail" ? 'checked' : '' ?>>
+              </td>
+
+              <td class="text-center">
+                <input type="radio" name="check_list[1]" value="not_applicable" <?php echo $check_list['1'] =="not_applicable" ? 'checked' : '' ?>>
+              </td>
+
               <td>MJ</td>
             </tr>
             <tr>
@@ -159,9 +200,19 @@
                   <li>Usage of stay insulator at stay wire.</li>
                 </ul>
                 </td>
-                <td class="text-center"><input type="radio" name="check_list[2]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[2]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[2]" value="not_applicable" id=""></td>
+              
+              <td class="text-center">
+                <input type="radio" name="check_list[2]" value="pass" <?php echo $check_list['2'] =="pass" ? 'checked' : '' ?>>
+              </td>
+
+              <td class="text-center">
+              <input type="radio" name="check_list[2]" value="fail" <?php echo $check_list['2'] =="fail" ? 'checked' : '' ?>>
+              </td>
+
+              <td class="text-center">
+                <input type="radio" name="check_list[2]" value="not_applicable" <?php echo $check_list['2'] =="not_applicable" ? 'checked' : '' ?>>
+              </td>
+              
               <td>MJ</td>
             </tr>
            
@@ -211,9 +262,19 @@
                   </table>
                 </div>
               </td>
-              <td class="text-center"><input type="radio" name="check_list[3]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[3]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[3]" value="not_applicable" id=""></td>
+                            
+              <td class="text-center">
+                <input type="radio" name="check_list[3]" value="pass" <?php echo $check_list['3'] =="pass" ? 'checked' : '' ?>>
+              </td>
+
+              <td class="text-center">
+              <input type="radio" name="check_list[3]" value="fail" <?php echo $check_list['3'] =="fail" ? 'checked' : '' ?>>
+              </td>
+
+              <td class="text-center">
+                <input type="radio" name="check_list[3]" value="not_applicable" <?php echo $check_list['3'] =="not_applicable" ? 'checked' : '' ?>>
+              </td>
+              
               <td>MJ</td>
             </tr>
 
@@ -229,24 +290,30 @@
                   <li>4.57m (Can't be access by vehicle)</li>
                 </ul>
               </td>
-              <td class="text-center"><input type="radio" name="check_list[4]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[4]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[4]" value="not_applicable" id=""></td>
+                            
+              <td class="text-center"><input type="radio" name="check_list[4]" value="pass" <?php echo $check_list['4'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[4]" value="fail" <?php echo $check_list['4'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[4]" value="not_applicable" <?php echo $check_list['4'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
               <td>b) SAVR free from encumbrances. (1m radius clearance)</td>
-              <td class="text-center"><input type="radio" name="check_list[5]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[5]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[5]" value="not_applicable" id=""></td>
+                            
+              <td class="text-center"><input type="radio" name="check_list[5]" value="pass" <?php echo $check_list['5'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[5]" value="fail" <?php echo $check_list['5'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[5]" value="not_applicable" <?php echo $check_list['5'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MN
               </td>
             </tr>
             <tr>
               <td>c) Underground cable raised at pole to be covered in uPVC Class B.</td>
-              <td class="text-center"><input type="radio" name="check_list[6]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[6]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[6]" value="not_applicable" id=""></td>
+                           
+              <td class="text-center"><input type="radio" name="check_list[6]" value="pass" <?php echo $check_list['6'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[6]" value="fail" <?php echo $check_list['6'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[6]" value="not_applicable" <?php echo $check_list['6'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
 
@@ -254,26 +321,32 @@
               <td rowspan="2">3.</td>
               <td rowspan="2">Earthing</td>
               <td>a) Connection between earth cable and neutral cable using IPC Bare ABC. </td>
-              <td class="text-center"><input type="radio" name="check_list[7]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[7]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[7]" value="not_applicable" id=""></td>
+                           
+              <td class="text-center"><input type="radio" name="check_list[7]" value="pass" <?php echo $check_list['7'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[7]" value="fail" <?php echo $check_list['7'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[7]" value="not_applicable" <?php echo $check_list['7'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
 
             <tr>
               
               <td>b) Proper install earthing wire at base  pole. </td>
-              <td class="text-center"><input type="radio" name="check_list[8]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[8]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[8]" value="not_applicable" id=""></td>
+                            
+              <td class="text-center"><input type="radio" name="check_list[8]" value="pass" <?php echo $check_list['8'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[8]" value="fail" <?php echo $check_list['8'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[8]" value="not_applicable" <?php echo $check_list['8'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
               <td>4.</td>
               <td colspan="2">Lightning Arrester with earthing system (javelin rod). (must install at 1  st pole, transition UG-ABC & end pole) </td>
-              <td class="text-center"><input type="radio" name="check_list[9]" value="pass" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[9]" value="fail" id=""></td>
-              <td class="text-center"><input type="radio" name="check_list[9]" value="not_applicable" id=""></td>
+                            
+              <td class="text-center"><input type="radio" name="check_list[9]" value="pass" <?php echo $check_list['9'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[9]" value="fail" <?php echo $check_list['9'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[9]" value="not_applicable" <?php echo $check_list['9'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
@@ -363,9 +436,11 @@
                 </table>
               </div></td>
                
-              <td class="text-center"><input type="radio" name="check_list[10]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[10]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[10]" value="not_applicable" id=""></td>
+                            
+              <td class="text-center"><input type="radio" name="check_list[10]" value="pass" <?php echo $check_list['10'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[10]" value="fail" <?php echo $check_list['10'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[10]" value="not_applicable" <?php echo $check_list['10'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
 
@@ -373,9 +448,11 @@
               <td >6.</td>
               <td colspan="2">Usage of Pre Insulated Connector (PIC) Mid Span for
                 connection of Main to Main Line at pole.</td>
-                <td class="text-center"><input type="radio" name="check_list[11]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[11]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[11]" value="not_applicable" id=""></td>
+                            
+              <td class="text-center"><input type="radio" name="check_list[11]" value="pass" <?php echo $check_list['11'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[11]" value="fail" <?php echo $check_list['11'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[11]" value="not_applicable" <?php echo $check_list['11'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
@@ -387,32 +464,40 @@
                 Connector
                 (IPC)</td>
               <td>a) Shear head break.</td>
-              <td class="text-center"><input type="radio" name="check_list[12]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[12]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[12]" value="not_applicable" id=""></td>
+                                         
+              <td class="text-center"><input type="radio" name="check_list[12]" value="pass" <?php echo $check_list['12'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[12]" value="fail" <?php echo $check_list['12'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[12]" value="not_applicable" <?php echo $check_list['12'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
               <td>b) Install end cap at the end cable.</td>
-              <td class="text-center"><input type="radio" name="check_list[13]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[13]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[13]" value="not_applicable" id=""></td>
+                                         
+              <td class="text-center"><input type="radio" name="check_list[13]" value="pass" <?php echo $check_list['13'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[13]" value="fail" <?php echo $check_list['13'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[13]" value="not_applicable" <?php echo $check_list['13'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MJ</td>
             </tr>
             <tr>
               <td>c) Sufficient numbers of IPC .
                 (Phase : 1, Neutral : 2)
                 </td>
-                <td class="text-center"><input type="radio" name="check_list[14]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[14]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[14]" value="not_applicable" id=""></td>
+                                     
+              <td class="text-center"><input type="radio" name="check_list[14]" value="pass" <?php echo $check_list['14'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[14]" value="fail" <?php echo $check_list['14'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[14]" value="not_applicable" <?php echo $check_list['14'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
               <td>d) Usage of cable tie.</td>
-              <td class="text-center"><input type="radio" name="check_list[15]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[15]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[15]" value="not_applicable" id=""></td>
+                                    
+              <td class="text-center"><input type="radio" name="check_list[15]" value="pass" <?php echo $check_list['15'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[15]" value="fail" <?php echo $check_list['15'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[15]" value="not_applicable" <?php echo $check_list['15'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
@@ -421,25 +506,31 @@
                 using Dead
                 End Clamp</td>
               <td>a) Terminal Pole.</td>
-              <td class="text-center"><input type="radio" name="check_list[16]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[16]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[16]" value="not_applicable" id=""></td>
+                                        
+              <td class="text-center"><input type="radio" name="check_list[16]" value="pass" <?php echo $check_list['16'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[16]" value="fail" <?php echo $check_list['16'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[16]" value="not_applicable" <?php echo $check_list['16'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
               <td>b) Tiang Sudut bagi sudut peralihan > 45
                 darjah (ke depan) atau > 30 darjah (ke
                 belakang)</td>
-                <td class="text-center"><input type="radio" name="check_list[17]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[17]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[17]" value="not_applicable" id=""></td>
+                                        
+                <td class="text-center"><input type="radio" name="check_list[17]" value="pass" <?php echo $check_list['17'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[17]" value="fail" <?php echo $check_list['17'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[17]" value="not_applicable" <?php echo $check_list['17'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
               <td>c) Tiang Pembahagian. </td>
-              <td class="text-center"><input type="radio" name="check_list[18]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[18]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[18]" value="not_applicable" id=""></td>
+                                   
+              <td class="text-center"><input type="radio" name="check_list[18]" value="pass" <?php echo $check_list['18'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[18]" value="fail" <?php echo $check_list['18'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[18]" value="not_applicable" <?php echo $check_list['18'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
@@ -447,9 +538,11 @@
               <td colspan="2">Connection between cable underground & overhead
                 using Pre Insulated Connector Transition Type.</td>
               
-                <td class="text-center"><input type="radio" name="check_list[19]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[19]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[19]" value="not_applicable" id=""></td>
+                                    
+              <td class="text-center"><input type="radio" name="check_list[19]" value="pass" <?php echo $check_list['19'] =="pass" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[19]" value="fail" <?php echo $check_list['19'] =="fail" ? 'checked' : '' ?>></td>
+              <td class="text-center"><input type="radio" name="check_list[19]" value="not_applicable" <?php echo $check_list['19'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
             <tr>
@@ -457,36 +550,44 @@
               <td colspan="2">Usage of 3 unit nylon tie for each suspension clamp. <br>
             <img src="../images/table-img-1.png" class="img-res" height="200" alt="">
             </td>
-               
-            <td class="text-center"><input type="radio" name="check_list[20]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[20]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[20]" value="not_applicable" id=""></td>
+              
+                                    
+            <td class="text-center"><input type="radio" name="check_list[20]" value="pass" <?php echo $check_list['20'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[20]" value="fail" <?php echo $check_list['20'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[20]" value="not_applicable" <?php echo $check_list['20'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td>
             </tr>
 
             <tr><td rowspan="3">11.</td>
             <td rowspan="3">Conductors at Five-FootWay Main </td>
             <td>Conductors at Five-FootWay Main </td>
-            <td class="text-center"><input type="radio" name="check_list[21]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[21]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[21]" value="not_applicable" id=""></td>
+                                    
+            <td class="text-center"><input type="radio" name="check_list[21]" value="pass" <?php echo $check_list['21'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[21]" value="fail" <?php echo $check_list['21'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[21]" value="not_applicable" <?php echo $check_list['21'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
             <td>MJ</td></tr>
               <tr>
                 <td>b) Usage of Cradle (two legged & three
                   legged) for dead-end clamp installation
                   for ABC.</td>
-                  <td class="text-center"><input type="radio" name="check_list[22]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[22]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[22]" value="not_applicable" id=""></td>
+                                    
+                  <td class="text-center"><input type="radio" name="check_list[22]" value="pass" <?php echo $check_list['22'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[22]" value="fail" <?php echo $check_list['22'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[22]" value="not_applicable" <?php echo $check_list['22'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MJ
                 </td>
               </tr>
               <tr>
                 <td>c) Usage of PVC casing & shackle for PVC
                   wire.</td>
-                  <td class="text-center"><input type="radio" name="check_list[23]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[23]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[23]" value="not_applicable" id=""></td>
+                                    
+                  <td class="text-center"><input type="radio" name="check_list[23]" value="pass" <?php echo $check_list['23'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[23]" value="fail" <?php echo $check_list['23'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[23]" value="not_applicable" <?php echo $check_list['23'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MJ
                 </td>
               </tr>
@@ -500,57 +601,70 @@
                 <br>
                 <img src="../images/table-img-2.png" class="img-res" height="200" alt="">
               </td>
-              <td class="text-center"><input type="radio" name="check_list[24]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[24]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[24]" value="not_applicable" id=""></td>
+                                    
+              <td class="text-center"><input type="radio" name="check_list[24]" value="pass" <?php echo $check_list['24'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[24]" value="fail" <?php echo $check_list['24'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[24]" value="not_applicable" <?php echo $check_list['24'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MJ</td>
               </tr>
               <tr>
                 <td>b) Usage of UV scotch tape at connector
                   block.</td>
-                  <td class="text-center"><input type="radio" name="check_list[25]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[25]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[25]" value="not_applicable" id=""></td>
+                                    
+                  <td class="text-center"><input type="radio" name="check_list[25]" value="pass" <?php echo $check_list['25'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[25]" value="fail" <?php echo $check_list['25'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[25]" value="not_applicable" <?php echo $check_list['25'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MJ</td>
                 
               </tr>
               <tr>
                 <td>c) Usage of correct IPC size. </td>
-                <td class="text-center"><input type="radio" name="check_list[26]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[26]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[26]" value="not_applicable" id=""></td>
+                                    
+                <td class="text-center"><input type="radio" name="check_list[26]" value="pass" <?php echo $check_list['26'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[26]" value="fail" <?php echo $check_list['26'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[26]" value="not_applicable" <?php echo $check_list['26'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MJ
                 </td>
               </tr>
               <tr>
                 <td>d) Proper earthing connection for LED
-                  lantern.</td>
-                  <td class="text-center"><input type="radio" name="check_list[27]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[27]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[27]" value="not_applicable" id=""></td>
+                                    
+                <td class="text-center"><input type="radio" name="check_list[27]" value="pass" <?php echo $check_list['27'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[27]" value="fail" <?php echo $check_list['27'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[27]" value="not_applicable" <?php echo $check_list['27'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MN
                 </td>
               </tr>
               <tr>
                 <td>e) Panel Meter securely locked.</td>
-                <td class="text-center"><input type="radio" name="check_list[28]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[28]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[28]" value="not_applicable" id=""></td>
+                                    
+                <td class="text-center"><input type="radio" name="check_list[28]" value="pass" <?php echo $check_list['28'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[28]" value="fail" <?php echo $check_list['28'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[28]" value="not_applicable" <?php echo $check_list['28'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MN
                 </td>
               </tr>
               <tr><td rowspan="2">13.</td>
               <td rowspan="2">Test Result</td>
               <td>b) Continuity Test.</td>
-              <td class="text-center"><input type="radio" name="check_list[29]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[29]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[29]" value="not_applicable" id=""></td>
+                                    
+              <td class="text-center"><input type="radio" name="check_list[29]" value="pass" <?php echo $check_list['29'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[29]" value="fail" <?php echo $check_list['29'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[29]" value="not_applicable" <?php echo $check_list['29'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
               <td>MJ</td></tr>
               <tr>
                 <td>a) Insulation Resistance Test.</td>
-                <td class="text-center"><input type="radio" name="check_list[30]" value="pass" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[30]" value="fail" id=""></td>
-                <td class="text-center"><input type="radio" name="check_list[30]" value="not_applicable" id=""></td>
+                                    
+                <td class="text-center"><input type="radio" name="check_list[30]" value="pass" <?php echo $check_list['30'] =="pass" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[30]" value="fail" <?php echo $check_list['30'] =="fail" ? 'checked' : '' ?>></td>
+            <td class="text-center"><input type="radio" name="check_list[30]" value="not_applicable" <?php echo $check_list['30'] =="not_applicable" ? 'checked' : '' ?>></td>
+              
                 <td>MJ</td>
               </tr>
           </tbody>
@@ -572,7 +686,7 @@
             </tr>
             <tr>
               <td colspan="4"> <label for="prepare_by">Prepare By : </label> <select name="prepare_by" id="prepare_by" onchange="prepareBy(this)" style="margin-bottom: 13px !important">
-                      <option value="" hidden>Select User</option>
+                      <option value="<?php echo  $record['prepare_by'] != '' ?$record['prepare_by'] : ''?>" hidden><?php echo  $record['prepare_by'] != '' ?$record['prepare_by'] : 'Select User'?></option>
                       <?php
                         if (isset($_SESSION['user_data'])) {
                           foreach ($_SESSION['user_data'] as $user) {
@@ -586,8 +700,8 @@
               </select>
               <div style="height: 70px;">
                         <span id="sign" style="font-family: Harlow Solid Italic !important; padding-left:20px"></span><br>
-                        <input type="hidden" id="prep_sign" name="prep_sign">
-                        <span id="prep_name" style=" padding-left:10px"></span>
+                        <input type="hidden" id="prep_sign" name="prep_sign" value="<?php echo  $record['prep_sign'] != '' ?$record['prep_sign'] : ''?>">
+                        <span id="prep_name" style=" padding-left:10px"><?php echo  $record['prepare_by'] != '' ?$record['prepare_by'] : ''?></span>
             </div>
             (Asset Development)
               <!-- <textarea name="prepare_by" id="prepare_by" cols="30" rows="6" class="form-control" style="border : 1px solid black !important"></textarea> -->
@@ -618,7 +732,7 @@
   var prepare = true;
   $('document').ready(function() {
 
-    addRow();
+    // addRow();
  
     $(".datepicker").val(new Date().toISOString().slice(0, 10));
 

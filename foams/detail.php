@@ -1,16 +1,317 @@
 <?php include("header.php") ?>
+ 
+<div class="container shadow p-5  my-5 bg-white foam-1"> 
+<?php
+       
 
 
-  
-  <div class="container     my-5 bg-white">   
-    <div id="success-message"></div>
-    <?php
+      if (isset($_SESSION['message'])) {
+          echo '<div class="alert ' . $_SESSION['alert'] . ' text-center" role="alert">';
+          echo $_SESSION['message'];
+          echo '<button type="button" class="close btn" onclick="this.parentNode.style.display = \'none\'">';
+          echo '<span aria-hidden="true">&times;</span>';
+          echo '</button>';
+          echo '</div>';
+
+          unset($_SESSION['message']);
+          unset($_SESSION['alert']); 
 
 
-    if(isset($_REQUEST['no_sn'])){
-     include('./services/connection.php');
 
-    $sn_no = $_REQUEST['no_sn'];
+      }
+
+      if(isset($_REQUEST['no_sn'])){
+        include('./services/connection.php');
+   
+       $sn_no = $_REQUEST['no_sn'];
+       
+       
+        $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE no_sn = :sn_no  ");
+        $stmt->bindParam(':sn_no',$sn_no);
+        $stmt->execute();
+        $record = $stmt->fetch(PDO::FETCH_ASSOC);
+        // print_r($record);
+        // exit;
+        
+    
+        if(!$record){
+            echo "dfsdfsdf";
+    
+            header("location: ./index.php");
+        exit;
+        }
+
+      }
+    ?>
+<h3 class="text-center">AD Service QR 2023</h3> 
+
+    <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
+      <table class="table">  
+            <thead>
+                <th colspan="3" class="text-center">SECTION A</th>
+            </thead>
+            <tbody>
+            <tr>
+              <th class="col-md-6">BA *<br> <span class="text-danger"></span></th>
+              <td  colspan="2">
+                <?php echo !empty($record['ba']) ? $record['ba'] : ''; ?>
+                    
+             </td>
+            </tr>
+            <tr>
+                <th>Jenis SN *<br> <span class="text-danger"></span></th>
+                <td > <?php echo $record['jenis_sn'] == "LKKK" ? '<span class="check">&#x2713; </span>' : ''; ?> <label for="jenis_sn_lkkk">LKKK</label></td>
+                <td >  <?php echo $record['jenis_sn'] == "Express" ? '<span class="check">&#x2713; </span>' : ''; ?><label for="jenis_sn_express">Express</label></td>
+            </tr>
+            <tr>
+                <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
+                <td ><?php echo $record['jenis_sambungan'] == "OH" ? '<span class="check">&#x2713; </span>' : ''; ?><label for="jenis_sambungan_oh">OH/Combine Service</label></td>
+                <td ><?php echo $record['jenis_sambungan'] == "UG" ? '<span class="check">&#x2713; </span>' : ''; ?> <label for="jenis_sambungan_ug">UG</label></td>
+            </tr>
+            <tr>
+                <th>No. SN *<br> <span class="text-danger"></span></th>
+                <td colspan="2">
+               <?php echo !empty($record['no_sn']) ? $record['no_sn'] : ''; ?></td>
+            </tr>
+            <tr>
+                <th>Alamat *<br> <span class="text-danger"></span></th>
+                <td colspan="2"><?php echo !empty($record['alamat']) ? $record['alamat'] : ''; ?></td>
+            </tr>
+            <tr>
+                <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
+                
+                <td colspan="2"><?php echo !empty($record['tarikh_siap']) ? DateTime::createFromFormat('m/d/Y', $record['tarikh_siap'])->format('Y-m-d') : ''; ?></td>
+            </tr>
+            <tr>
+                <th>PIAT *<br> <span class="text-danger"></span></th>
+                <td >   <?php echo $record['piat'] == "yes" ? "<span class='check'>&#x2713; </span>" : ''; ?> <label for="piat_yes">Yes</label></td>
+                <td > <?php echo $record['piat'] == "no" ? "<span class='check'>&#x2713; </span>" : ''; ?> <label for="piat_no">No</label></td>
+            </tr>
+            <tr>
+                <th>Nama Pencawang / Nama Feeder Pillar *<br> Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
+                    <td colspan="2"><?php echo $record['nama_feeder_pillar'] ?></td>
+            </tr>
+            <tr>
+                <th>Nama Feeder / Nama Jalan *<br>Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
+                <td colspan="2" class="align-middle"><?php echo $record['nama_jalan'] ?></td>
+            </tr>
+             
+            </tbody>
+
+        </table>
+    </div>            
+
+    
+                                                         <!-- TABLE # 2 -->
+
+    <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
+        <table class="table caption-top">
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Seksyen</caption>
+            <thead>
+                <th colspan="3" class="text-center">Seksyen</th>
+            </thead>
+            <tr>
+                <th class="col-md-6">Dari (No Tiang / Nama Feeder)</th>
+                <td colspan="2"><?php echo $record['seksyen_dari'] ?></td>
+            </tr>
+
+            <tr>
+                <th>Ke (No Tiang/ Nama Feeder/ No Rumah/ No Kedai)</th>
+                <td colspan="2"><?php echo $record['seksyen_ke'] ?></td>
+            </tr>
+        </table>
+    </div>
+
+
+
+
+                                                             <!-- TABLE # 3 -->
+
+
+    <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
+        <table class="table caption-top">
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Bil Saiz Tiang</caption>
+            <thead>
+                <th colspan="3" class="text-center">Bil Saiz Tiang</th>
+            </thead>
+
+            <tr>
+                <th class="col-md-6">Bil Saiz Tiang 7.5</th>
+                <td ><?php echo $record['bil_saiz_tiang_a'] ?></td>
+            </tr>
+
+
+            <tr>
+                <th>Bil Saiz Tiang 9</th>
+                <td ><?php echo $record['bil_saiz_tiang_b'] ?></td>
+            </tr>
+            <tr>
+                <th>Bil Saiz Tiang 10</th>
+                <td ><?php echo $record['bil_saiz_tiang_c'] ?></td>
+            </tr>
+        </table>
+    </div>
+
+
+
+
+                                                            <!-- TABLE # 4 -->
+
+
+    <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
+        <table class="table caption-top">
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Bil Jenis Tiang</caption>
+            <thead>
+                <th colspan="3" class="text-center">Bil Jenis Tiang</th>
+            </thead>
+
+            <tr>
+                <th class="col-6">Spun</th>
+                <td ><?php echo $record['bil_jenis_spun'] ?></td>
+            </tr>
+            <tr>
+                <th>Konkrit</th>
+                <td ><?php echo $record['bil_jenis_konkrit'] ?></td>
+            </tr>
+            <tr>
+                <th>Besi</th>
+                <td ><?php echo $record['bil_jenis_besi'] ?></td>
+            </tr>
+            <tr>
+                <th>Kayu</th>
+                <td ><?php echo $record['bil_jenis_kayu'] ?></td>
+            </tr>
+            
+
+        </table>
+    </div>
+
+                                                                <!-- TABLE # 5 -->
+
+
+    <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
+        <table class="table caption-top">
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">ABC (Span)</caption>
+            <thead>
+                <th colspan="3" class="text-center">ABC (Span)</th>
+            </thead>
+
+            <tr>
+                <th>3 X 185</th>
+                <td > <?php echo $record['abc_span_a'] ?></td>
+            </tr>
+
+            <tr>
+                <th>3 X 95</th>
+                <td ><?php echo $record['abc_span_b'] ?></td>
+            </tr>
+
+            <tr>
+                <th>3 X 16</th>
+                <td ><?php echo $record['abc_span_c'] ?></td>
+            </tr>
+
+            <tr>
+                <th class="col-6">1 X 16</th>
+                <td ><?php echo $record['abc_span_d'] ?></td>
+            </tr>
+
+        </table>
+    </div>
+
+                                                                <!-- TABLE # 6 -->
+
+
+    <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
+        <table class="table caption-top">
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">PVC (Span)</caption>
+            <thead>
+                <th colspan="3" class="text-center">PVC (Span)</th>
+            </thead>
+            <tr>
+                <th>19/064</th>
+                <td ><?php echo $record['pvc_span_a'] ?></td>
+            </tr>
+            <tr>
+                <th>7/083 </th>
+                <td ><?php echo $record['pvc_span_b'] ?></td>
+            </tr>
+            <tr>
+                <th class="col-6">7/044</th>
+                <td ><?php echo $record['pvc_span_c'] ?></td>
+            </tr>
+        </table>
+    </div>
+
+                                                                <!-- TABLE # 7 -->
+
+
+    <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
+        <table class="table caption-top">
+            <caption class="text-sm font-medium text-gray-700 mb-2 text-left">BARE (Span)</caption>
+            <thead>
+                <th colspan="3" class="text-center">BARE (Span)</th>
+            </thead>
+            <tr>
+                <th>7/173</th>
+                <td ><?php echo $record['bare_span_a'] ?></td>
+            </tr>
+            <tr>
+                <th>7/122</th>
+                <td ><?php echo $record['bare_span_b'] ?></td>
+            </tr>
+            <tr>
+                <th class="col-6">3/132</th>
+                <td ><?php echo $record['bare_span_c'] ?></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
+        <table class="table caption-top">
+            <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Bil Saiz Tiang</caption>
+            <thead>
+                <th colspan="3" class="text-center">Bil Saiz Tiang</th>
+            </thead>
+
+            <tr>
+                <th>Jumlah Span<br> <span class="text-danger"></span></th>
+                <td colspan="2"><?php echo $record['jumlah_span'] ?></td>
+            </tr>
+
+            <tr>
+                <th>Talian Utama (M) / Serbis (S)<br> <span class="text-danger"></span></th>
+                <td><?php echo $record['talian_utama'] == 'M' ? '<span class="check">&#x2713; </span>': '' ?> <label for="talian_utama_m"> M</label></td>
+                <td><?php echo $record['talian_utama'] == 'S' ? '<span class="check">&#x2713; </span>': ''?><label for="talian_utama_s"> S</label></td>
+            </tr>
+            <tr>
+                <th>Bil Umbang <br> <span class="text-danger"></span></th>
+                <td colspan="2"><?php echo $record['bil_umbang'] ?></td>
+            </tr>
+            <tr>
+                <th>Bil Black Box<br> <span class="text-danger"></span></th>
+                <td colspan="2"><?php echo $record['bil_black_box'] ?></td>
+            </tr>
+           <tr>
+                <th>Bil LVPT Cap Bank<br> <span class="text-danger"></span></th>
+                <td colspan="2"><?php echo $record['bil_lvpt'] ?></td>
+            </tr>
+            <tr>
+                <th>Bilangan Serbis Melibatkan 1 pengguna sahaja<br> <span class="text-danger"></span></th>
+                <td colspan="2"><?php echo $record['bilangan_serbis'] ?></td>
+            </tr>
+            <tr>
+                <th class="col-6">Catatan<br> <span class="text-danger"></span></th>
+                <td colspan="2"><?php echo $record['catatan'] ?></td>
+            </tr> 
+
+        </table>
+    </div>
+
+     <?php
+
+
+     $sn_no = $_REQUEST['no_sn'];
      $stmt = $pdo->prepare("SELECT * FROM public.inspection_checklist WHERE project_no = :sn_no  ");
      $stmt->bindParam(':sn_no',$sn_no);
      $stmt->execute();
@@ -19,22 +320,17 @@
      $pdo = null;
    
 
-        if(!$record){
-            header("location: ./index.php");
-        exit;
-        }
+        if($record){
+            
+            $company = json_decode($record['company']); 
+            $name = json_decode($record['company_name']);
+            $phone_no = json_decode($record['company_phone_no']); 
+            $sign = json_decode($record['company_sign']); 
+            $check_list= json_decode($record['inspection_checklist']);
 
-        $company = json_decode($record['company']); 
-        $name = json_decode($record['company_name']);
-        $phone_no = json_decode($record['company_phone_no']); 
-        $sign = json_decode($record['company_sign']); 
-        $check_list= json_decode($record['inspection_checklist']);
 
-    }else{
-        header("location : ./index.php");
-        exit;
-    }
-    ?>
+            ?>
+       
 
 
 
@@ -631,25 +927,17 @@
     </form>
     </div>
 
+    <?php }
+
       
-      
-      
+
+
+?>
+
 </div>
+ 
+ 
 
-<script>
-     $(document).ready(function() {
-
-      window.addEventListener('afterprint', function() {
-            window.close()
-          })
-     })
-  function exportToPDF(){
-
-    $("#for-remove-class").removeClass('table-responsive')
-    window.print()
-  }
-</script>
-
+ 
 </body>
-
 </html>

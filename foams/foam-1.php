@@ -45,7 +45,7 @@
             <tr>
                 <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
                 <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH" onclick="checkPiat(this)"> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
-                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)"> <label for="jenis_sambungan_ug ">UG</label></td>
+                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)"> <label for="jenis_sambungan_ug">UG</label></td>
             </tr>
             <tr>
                 <th>No. SN *<br> <span class="text-danger"></span></th>

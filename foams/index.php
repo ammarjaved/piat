@@ -90,6 +90,9 @@
                   if($record['piat'] == 'yes'){
                 echo "  <li><a class='dropdown-item' href='./previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
                   }
+                  echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-id='{$record['id']}' data-bs-target='#exampleModal'> Remove </button'></li>";
+                  echo "  <li><a class='dropdown-item' href='./detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
+                  
                 echo "</ul>
               </div></td>";
                 echo "</tr>";
@@ -99,14 +102,45 @@
     </table>
     
 </div>
-</div>
 
+</div>
+ 
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class=" modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Remove Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="./services/removeSn.php" method="post" > 
+      <div class="modal-body">
+            Are You Sure ? 
+            <input type="hidden" name="id" id="modal-id">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger">Remove</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.js"></script>
 
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable();
+
+            $(document).ready(function() {
+            $('#exampleModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var id = button.data('id');
+            var modal = $(this);
+            $('#modal-id').val(id)
+        });
+    });
         });
     </script>
 </body>

@@ -46,6 +46,7 @@
     ?>
 <h3 class="text-center">AD Service QR 2023</h3> 
  <form action="./services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
+ <input type="hidden" name="id" value="<?php echo $record['id']?>" id="id">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
       <table class="table">  
             <thead>
@@ -71,14 +72,14 @@
             </tr>
             <tr>
                 <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
-                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "OH" ? 'checked' : ''; ?><?php echo $record['jenis_sn'] == "LKKK" ? 'checked' : ''; ?>> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
-                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "UG" ? 'checked' : ''; ?>> <label for="jenis_sambungan_ug ">UG</label></td>
+                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "OH" ? 'checked' : ''; ?>> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
+                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "UG" ? 'checked' : ''; ?>> <label for="jenis_sambungan_ug">UG</label></td>
             </tr>
             <tr>
                 <th>No. SN *<br> <span class="text-danger"></span></th>
                 <td colspan="2">
                 <span class="text-danger" id="sn_exits"></span>
-                <input type="text" name="no_sn" id="no_sn" class="form-control required" onchange="handleKeyPress(event)" value="<?php echo !empty($record['no_sn']) ? $record['no_sn'] : ''; ?>"></td>
+                <input type="text" name="no_sn" id="no_sn" class="form-control required edit" onchange="handleKeyPress(event)" value="<?php echo !empty($record['no_sn']) ? $record['no_sn'] : ''; ?>"></td>
             </tr>
             <tr>
                 <th>Alamat *<br> <span class="text-danger"></span></th>
@@ -86,7 +87,8 @@
             </tr>
             <tr>
                 <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required" value="<?php echo !empty($record['tarikh_siap']) ? $record['tarikh_siap'] : ''; ?>"></td>
+                
+                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required" value="<?php echo !empty($record['tarikh_siap']) ? DateTime::createFromFormat('m/d/Y', $record['tarikh_siap'])->format('Y-m-d') : ''; ?>"></td>
             </tr>
             <tr>
                 <th>PIAT *<br> <span class="text-danger"></span></th>
@@ -330,6 +332,7 @@
         var piat_val = "<?php echo  $record['jenis_sambungan']; ?>";
         if(piat_val == "OH"){
             $('#piat_yes').prop('checked',true)
+            $('.btn-success').html("Next").val('next')
         }else{
             $('#piat_no').prop('checked',true)
         }
