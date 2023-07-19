@@ -1,11 +1,10 @@
-<?php include("header.php") ?>
-
-
 <?php
-  
+  include("header.php");
  
       if (!isset($_SESSION['no_sn'])) {
+
         header("location: ./foam-1.php");
+        
         exit();  
       }
     ?>
