@@ -32,12 +32,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $checklistItemsJson = $checklistItems ? json_encode($checklistItems) : null;
     $sn_id = $_SESSION['sn_id'];
    
-
+    if($checklistItems != ''){
+ 
         for ($i = 0; $i < 31; $i++) {
             $checklistArry[$i] = [];
             $checklistArry[$i] =  array_key_exists($i, $checklistItems) ? $checklistItems[$i] : '';
 
         }
+    }
+    else{
+
+        for ($i = 0; $i < 31; $i++) {
+            $checklistArry[$i] = [];
+            $checklistArry[$i] =  '' ;
+
+        }
+    }
+
         $checklistArryJson = json_encode($checklistArry);
 
 
@@ -100,6 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':prepareBy', $prepareBy);
         $stmt->bindParam(':prepSign',$prepSign);
 
+
         $stmt->execute();
 
 
@@ -111,10 +123,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset( $_SESSION['tarikh_siap']);
         unset( $_SESSION['cable_type']);
         if($id != ''){
+
             unset( $_SESSION['sn_id']);
             unset( $_SESSION['foam']);
+        }else{
+
+            $status = true;
+            $stmt = $pdo->prepare("UPDATE public.ad_service_qr SET status = :status WHERE id = :id");
+            $stmt->bindParam(':id', $sn_id);
+            $stmt->bindParam(':status',$status);
+            $stmt->execute();
+
+ 
         }
-     
+
+
         $_SESSION['alert'] = 'alert-success';
         $_SESSION['message'] = 'inserted successfully'; 
         // header("Location: foam.php");

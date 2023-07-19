@@ -1,5 +1,6 @@
 <?php
-      session_start(); ?>
+      session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,8 +28,6 @@
 <div class="container shadow p-5  my-5 bg-white">   
 
 <?php
-   
-
       if (isset($_SESSION['message'])) {
           echo '<div class="alert ' . $_SESSION['alert'] . ' text-center" role="alert">';
           echo $_SESSION['message'];
@@ -40,7 +39,7 @@
           unset($_SESSION['message']);
           unset($_SESSION['alert']); 
       }
-    ?>
+?>
 
 <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
 <div class="text-end mb-3 d-flex justify-content-end">
@@ -60,12 +59,14 @@
                 <th>BA</th>
                 <th>Jenis Sambungan</th>
                 <th>Tarikh Siap</th>
+                <th>Status</th>
                 <th >Action</th>
             </tr>
         </thead>
         <tbody>
             <?php 
             include('./services/connection.php');
+
             $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
             $stmt->execute();
             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -78,6 +79,16 @@
                 echo "<td>{$record['ba']}</td>";
                 echo "<td>{$record['jenis_sambungan']}</td>";
                 echo "<td>{$record['tarikh_siap']}</td>";
+                echo '<td class="algin-middle text-center">';
+                if($record['piat']== ""){
+                  echo '<span class="badge rounded-pill bg-secondary">inComplete</span>';
+                }elseif($record['status'] == true){
+                  echo '<span class="badge rounded-pill bg-success">completed</span>';
+                }else{
+                  echo '<span class="badge rounded-pill bg-warning text-dark">inComplete check list</span>';
+                }
+                echo '</td>';
+                
                 
 
                 echo "<td class='text-center'><div class='dropdown'>
@@ -87,8 +98,11 @@
                 <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
                   <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
                   echo "<li><a class='dropdown-item' href='./editFoam-1.php?no_sn={$record['no_sn']}'>Edit Foam</a></li>";
-                  if($record['piat'] == 'yes'){
-                echo "  <li><a class='dropdown-item' href='./previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
+
+                  if($record['piat'] == 'yes' && $record['status'] == true){
+                    echo "  <li><a class='dropdown-item' href='./previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
+                  }elseif($record['piat'] == 'yes' && $record['status'] == false){
+                    echo "  <li><a class='dropdown-item' href='./services/foamRedirect.php?sn={$record['no_sn']}'>Fill Checklist</a></li>";
                   }
                   
                   echo "  <li><a class='dropdown-item' href='./detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";

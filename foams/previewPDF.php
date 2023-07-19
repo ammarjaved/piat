@@ -2,7 +2,7 @@
 
 <?php
 
-include("header.php");
+    include("header.php");
     if(isset($_REQUEST['no_sn'])){
      include('./services/connection.php');
 
@@ -16,8 +16,10 @@ include("header.php");
    
 
         if(!$record){
-            header("location: ./index.php");
-        exit;
+
+            header("location:./index.php");
+        
+            exit;
         }
 
         $company = json_decode($record['company']); 
@@ -27,7 +29,7 @@ include("header.php");
         $check_list= json_decode($record['inspection_checklist']);
 
     }else{
-        header("location : ./index.php");
+        header("location: ./index.php");
         exit;
     }
     ?>

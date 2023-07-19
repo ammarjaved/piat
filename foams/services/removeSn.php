@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute();
         $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $stmt = $pdo->prepare("SELECT id  FROM public.ad_service_qr WHERE ad_service_id = :id ");
+        $stmt = $pdo->prepare("DELETE FROM public.inspection_checklist WHERE ad_service_id = :id ");
 
         $stmt->bindParam(':id', $id);
         $stmt->execute();

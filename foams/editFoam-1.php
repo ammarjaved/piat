@@ -329,7 +329,8 @@
 
 </div>
 <script src="../assets/js/foam-1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/dayjs.min.js"></script>
 <script>
     $(document).ready(function(){
         var piat_val = "<?php echo  $record['jenis_sambungan']; ?>";
@@ -350,9 +351,9 @@
     var formattedDate = null;
 
     for (var i = 0; i < dateFormats.length; i++) {
-        var momentDate = moment(dateString, dateFormats[i], true);
-        if (momentDate.isValid()) {
-            formattedDate = momentDate.format(format);
+        var dayjsDate = dayjs(dateString, dateFormats[i], true);
+        if (dayjsDate.isValid()) {
+            formattedDate = dayjsDate.format(format);
             break;
         }
     }
