@@ -56,8 +56,8 @@
     <table id="myTable" class="table table-striped table-responsive table-bordered " >
         <thead>
             <tr>
-                <th>Sn no</th>
-                <th>Ba</th>
+                <th>SN NO</th>
+                <th>BA</th>
                 <th>Jenis Sambungan</th>
                 <th>Tarikh Siap</th>
                 <th >Action</th>
