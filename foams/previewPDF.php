@@ -1,12 +1,8 @@
-<?php include("header.php") ?>
 
 
-  
-  <div class="container     my-5 bg-white">   
-    <div id="success-message"></div>
-    <?php
+<?php
 
-
+include("header.php");
     if(isset($_REQUEST['no_sn'])){
      include('./services/connection.php');
 
@@ -36,6 +32,10 @@
     }
     ?>
 
+  
+  <div class="container     my-5 bg-white">   
+    <div id="success-message"></div>
+    
 
 
     
