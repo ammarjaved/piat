@@ -48,10 +48,10 @@
  <form action="./services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
  <input type="hidden" name="id" value="<?php echo $record['id']?>" id="id">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
-      <table class="table">  
-      <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A</caption>
+    <table class="table caption-top">
+            <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A</caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang</th>
+                <th colspan="3" class="text-center  ">Bil Saiz Tiang</th>
             </thead>
             <tbody>
             <tr>
@@ -329,7 +329,7 @@
 
 </div>
 <script src="../assets/js/foam-1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
     $(document).ready(function(){
         var piat_val = "<?php echo  $record['jenis_sambungan']; ?>";
@@ -350,9 +350,9 @@
     var formattedDate = null;
 
     for (var i = 0; i < dateFormats.length; i++) {
-        var dayjsDate = dayjs(dateString, dateFormats[i], true);
-        if (dayjsDate.isValid()) {
-            formattedDate = dayjsDate.format(format);
+        var momentDate = moment(dateString, dateFormats[i], true);
+        if (momentDate.isValid()) {
+            formattedDate = momentDate.format(format);
             break;
         }
     }
