@@ -675,9 +675,9 @@
       <table class="table caption-top">  
         <caption class="text-dark ">D. RESULT</caption>
             <tr>
-              <td class="" rowspan="2"><input type="radio" name="result" id="result_pass" value="pass"> <label for="result_pass"><strong>PASS</strong></label><br>(All Comply)</td>
-              <td class="" rowspan="2"><input type="radio" name="result" id="result_conditional_pass" value="conditional_pass"> <label for="result_conditional_pass"><strong>CONDITIONAL PASS</strong></label><br>(If any minor non-compliance)</td>
-              <td class="" rowspan="2"><input type="radio" name="result" id="result_fail" value="false"> <label for="result_fail"><strong>FAIL</strong></label><br>(If any major non-compliance)              </td>
+              <td class="" rowspan="2"><input type="radio" name="result" id="result_pass" value="pass" <?php echo $record['result'] =="pass" ? 'checked' : '' ?>> <label for="result_pass" ><strong>PASS</strong></label><br>(All Comply)</td>
+              <td class="" rowspan="2"><input type="radio" name="result" id="result_conditional_pass" value="conditional_pass" <?php echo $record['result'] =="conditional_pass" ? 'checked' : '' ?>> <label for="result_conditional_pass"><strong>CONDITIONAL PASS</strong></label><br>(If any minor non-compliance)</td>
+              <td class="" rowspan="2"><input type="radio" name="result" id="result_fail" value="false" <?php echo $record['result'] =="false" ? 'checked' : '' ?>> <label for="result_fail"><strong>FAIL</strong></label><br>(If any major non-compliance)              </td>
               
               <td ><strong> Attempt No.</strong></td>
             </tr>
