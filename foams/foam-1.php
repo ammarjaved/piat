@@ -21,9 +21,9 @@
  <form action="./services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
       <table class="table caption-top">  
-      <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A</caption>
+      <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A </caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang</th>
+                <th colspan="3" class="text-center">Bil Saiz Tiang Section A</th>
             </thead>
             <tbody>
             <tr>
@@ -68,11 +68,11 @@
                 <td ><input type="radio" name="piat" id="piat_no" value="no"> <label for="piat_no">No</label></td>
             </tr>
             <tr>
-                <th>Nama Pencawang / Nama Feeder Pillar <br> Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
+                <th>Nama Pencawang / Nama Feeder Pillar <br> <span  style="font-family: Harlow Solid Italic !important; font-size:13px">Jika LKKK Sahaja </span> <span class="text-danger"></span> <br> <span class="text-danger"></span></th>
                     <td colspan="2"> <input type="text" name="nama_feeder_pillar" id="nama_feeder_pillar" class="form-control "></td>
             </tr>
             <tr>
-                <th>Nama Feeder / Nama Jalan <br>Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
+                <th>Nama Feeder / Nama Jalan <br> <span  style="font-family: Harlow Solid Italic !important; font-size:13px">Jika LKKK Sahaja <br></span> <span class="text-danger"></span></th>
                 <td colspan="2" class="align-middle"><input type="text" name="nama_jalan" id="nama_jalan" class="form-control "></td>
             </tr>
              
@@ -251,7 +251,7 @@
         <table class="table caption-top">
             <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Section H</caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang</th>
+                <th colspan="3" class="text-center">Bil Saiz Tiang Section H</th>
             </thead>
 
             <tr>
@@ -261,7 +261,7 @@
 
             <tr>
                 <th>Talian Utama (M) / Serbis (S)<br> <span class="text-danger"></span></th>
-                <td><input type="radio" name="talian_utama" id="talian_utama_m" value="M"> <label for="talian_utama_m"> M</label></td>
+                <td><input type="radio" name="talian_utama" id="talian_utama_m" value="M" checked> <label for="talian_utama_m"> M</label></td>
                 <td><input type="radio" name="talian_utama" id="talian_utama_s" value="S"> <label for="talian_utama_s"> S</label></td>
             </tr>
             <tr>

@@ -44,13 +44,24 @@
 <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
 <div class="text-end mb-3 d-flex justify-content-end">
  
-   <div class="m-3">
+   <div class="m-2">
         <a href="./foam-1.php" class="btn btn-success btn-sm " >Add New</a> 
         </div>
-        <div class="m-3">
+        <div class="m-2">
     <a href="./services/generateExcel.php" class="btn btn-success btn-sm">Download Excel</a>
 </div>
 </div>
+<!-- <div class="text-end mb-3 d-flex justify-content-start">
+ 
+   <div class="m-2 col-2">
+        <label for=""></label> Select BA :<br>
+          <input type="text" name="searchBA" id="searchBA" >
+        </div>
+        <div class="m-2">
+    <a href="./services/generateExcel.php" class="btn btn-success btn-sm">Download Excel</a>
+</div>
+
+</div> -->
 <div class="table-responsive table-bordered" style="overflow-y:auto ; ">  
     <table id="myTable" class="table table-striped table-responsive table-bordered " >
         <thead>
@@ -67,7 +78,12 @@
             <?php 
             include('./services/connection.php');
 
-            $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+              
+              $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
+            }else{
+              $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
+            }
             $stmt->execute();
             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

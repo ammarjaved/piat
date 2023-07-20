@@ -49,7 +49,7 @@
       <table class="table">  
       <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A</caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang</th>
+                <th colspan="3" class="text-center">Bil Saiz Tiang Section A</th>
                        
             </thead>
             <tbody>
@@ -90,11 +90,11 @@
                 <td > <?php echo $record['piat'] == "no" ? "<span class='check'>&#x2713; </span>" : ''; ?> <label for="piat_no">No</label></td>
             </tr>
             <tr>
-                <th>Nama Pencawang / Nama Feeder Pillar *<br> Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
+                <th>Nama Pencawang / Nama Feeder Pillar *<br> <span  style="font-family: Harlow Solid Italic !important; font-size:13px">Jika LKKK Sahaja </span>  <br> <span class="text-danger"></span></th>
                     <td colspan="2"><?php echo $record['nama_feeder_pillar'] ?></td>
             </tr>
             <tr>
-                <th>Nama Feeder / Nama Jalan *<br>Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
+                <th>Nama Feeder / Nama Jalan *<br><span  style="font-family: Harlow Solid Italic !important; font-size:13px">Jika LKKK Sahaja </span>  <br> <span class="text-danger"></span></th>
                 <td colspan="2" class="align-middle"><?php echo $record['nama_jalan'] ?></td>
             </tr>
              
@@ -273,7 +273,7 @@
         <table class="table caption-top">
             <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Section H</caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang</th>
+                <th colspan="3" class="text-center">Bil Saiz Tiang Section H</th>
             </thead>
 
             <tr>
