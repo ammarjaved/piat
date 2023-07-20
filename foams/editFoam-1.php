@@ -90,7 +90,7 @@
                 <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
 
  
-                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required" ></td>
+                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required" value="" ></td>
             </tr>
             <tr>
                 <th>PIAT *<br> <span class="text-danger"></span></th>
@@ -345,22 +345,24 @@
     })
 
     function dateFormat(){
+        
+        
         var dateString = "<?php echo $record['tarikh_siap']; ?>";
-    var dateFormats = ["D/M/YYYY", "D-M-YYYY"];
-    var format = "YYYY-MM-DD";
-    var formattedDate = null;
+        console.log(dateString);
+        var splitDate = dateString.split('/');
 
-    for (var i = 0; i < dateFormats.length; i++) {
-        var dayjsDate = dayjs(dateString, dateFormats[i], true);
-        if (dayjsDate.isValid()) {
-            formattedDate = dayjsDate.format(format);
-            break;
+
+        if(typeof splitDate[1] !== 'undefined'){
+
+            splitDate[1] = splitDate[1] < 10 ? '0'+splitDate[1] : splitDate[1];
+            splitDate[0] = splitDate[0] < 10 ? '0'+splitDate[0] : splitDate[0];
+            var date =  splitDate[2] + '-' + splitDate[1] +'-' + splitDate[0] ;
+            document.getElementById("tarikh_siap").value = date;
+        }else{
+            document.getElementById("tarikh_siap").value = dateString
         }
-    }
 
-    if (formattedDate) {
-        $("#tarikh_siap").val(formattedDate);
-    }
+        
 
     }
 </script>
