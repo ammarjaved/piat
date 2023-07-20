@@ -1,5 +1,5 @@
 <?php 
-
+ob_start();
     session_start();
 
     if(isset($_SESSION['sn']) || isset($_REQUEST['sn'])){

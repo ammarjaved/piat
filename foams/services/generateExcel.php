@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
 
 
 require '../../vendor/autoload.php';
@@ -84,7 +84,7 @@ if(isset($_REQUEST['id'])){
                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
                 $writer->save('../../assets/Excel/'.$name .'.xlsx');
 
-                // ob_end_clean();
+                 ob_end_clean();
 
                 // Send headers
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

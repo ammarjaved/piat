@@ -1,9 +1,11 @@
 <?php
+ob_start();
+ session_start();
 include("connection.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    session_start();
+   
 
 
     $piatDate = isset($_POST["piat_date"]) && $_POST["piat_date"] !== "" ? $_POST["piat_date"] : null;
