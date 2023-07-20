@@ -90,7 +90,7 @@
                 <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
 
  
-                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required" value="<?php echo $record['tarikh_siap']; ?>" ></td>
+                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required"   ></td>
             </tr>
             <tr>
                 <th>PIAT *<br> <span class="text-danger"></span></th>
@@ -340,7 +340,7 @@
         }else{
             $('#piat_no').prop('checked',true)
         }
-        // dateFormat()
+        dateFormat()
 
     })
 
@@ -349,18 +349,17 @@
         
         var dateString = "<?php echo $record['tarikh_siap']; ?>";
         console.log(dateString);
-        var splitDate = dateString.split('/');
+        var splitDate = dateString.split('-');
 
 
-        if(typeof splitDate[1] !== 'undefined'){
+       
 
             splitDate[1] = splitDate[1] < 10 ? '0'+splitDate[1] : splitDate[1];
             splitDate[0] = splitDate[0] < 10 ? '0'+splitDate[0] : splitDate[0];
-            var date =  splitDate[2] + '-' + splitDate[1] +'-' + splitDate[0] ;
+            var date =  splitDate[0] + '-' + splitDate[2] +'-' + splitDate[1] ;
+            console.log(date);
             document.getElementById("tarikh_siap").value = date;
-        }else{
-            document.getElementById("tarikh_siap").value = dateString
-        }
+       
 
         
 
