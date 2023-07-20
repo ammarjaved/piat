@@ -8,7 +8,9 @@
 
         $sn = isset($_REQUEST['sn'])? $_REQUEST['sn'] : $_SESSION['sn'];
 
-        isset($_SESSION['sn']) ?  session_unset() :'';
+        if( isset($_SESSION['sn'])){
+            unset($_SESSION['sn']);
+        } 
 
 
         $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE no_sn = :sn");
@@ -95,7 +97,7 @@
                     $_SESSION['span_sum'] = $span_sum;
                     $_SESSION['user_data'] = $rows;
                     $_SESSION['no_sn'] = $sn;
-                    $_SESSION['alamat'] = $alamat;
+                    $_SESSION['alamat'] = $record['alamat'];
                     $_SESSION['tarikh_siap'] = $record['tarikh_siap'];
                     $_SESSION['sn_id'] = $record['id'];
 

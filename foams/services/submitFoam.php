@@ -121,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         unset( $_SESSION['no_sn']);
         unset($_SESSION['alamat']);
         unset( $_SESSION['tarikh_siap']);
-        unset( $_SESSION['cable_type']);
+        unset($_SESSION['cable_type']);
         if($id != ''){
 
             unset( $_SESSION['sn_id']);

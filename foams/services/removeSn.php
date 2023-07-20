@@ -1,8 +1,9 @@
 <?php
+session_start();
 include("connection.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    session_start();
+    
 
     $id = $_REQUEST['id'];
  
@@ -34,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['alert'] = 'alert-success';
         $_SESSION['message'] = 'Remove successfully'; 
 
-    header("location: ../index.php");
+    header("location:../index.php");
 }
 
 
