@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nama_feeder_pillar = $_POST['nama_feeder_pillar'];
         $nama_jalan = $_POST['nama_jalan'];
         $jumlah_span = $_POST['jumlah_span'];
-        $talian_utama = $_POST['talian_utama'];
+        $talian_utama = isset($_POST['talian_utama'])? $_POST['talian_utama'] : '';
         $bil_umbang = $_POST['bil_umbang'];
         $bil_black_box = $_POST['bil_black_box'];
         $bil_lvpt = $_POST['bil_lvpt'];
