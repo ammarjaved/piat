@@ -98,12 +98,12 @@
                 <td ><input type="radio" name="piat" id="piat_no" value="no" <?php echo $record['piat'] == "no" ? "checked" : ''; ?>> <label for="piat_no">No</label></td>
             </tr>
             <tr>
-                <th>Nama Pencawang / Nama Feeder Pillar *<br> Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
-                    <td colspan="2"> <input type="text" name="nama_feeder_pillar" id="nama_feeder_pillar" class="form-control required" value="<?php echo $record['nama_feeder_pillar'] ?>"></td>
+                <th>Nama Pencawang / Nama Feeder Pillar <br> Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
+                    <td colspan="2"> <input type="text" name="nama_feeder_pillar" id="nama_feeder_pillar" class="form-control " value="<?php echo $record['nama_feeder_pillar'] ?>"></td>
             </tr>
             <tr>
-                <th>Nama Feeder / Nama Jalan *<br>Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
-                <td colspan="2" class="align-middle"><input type="text" name="nama_jalan" id="nama_jalan" class="form-control required"  value="<?php echo $record['nama_jalan'] ?>"></td>
+                <th>Nama Feeder / Nama Jalan <br>Jika LKKK Sahaja <br> <span class="text-danger"></span></th>
+                <td colspan="2" class="align-middle"><input type="text" name="nama_jalan" id="nama_jalan" class="form-control "  value="<?php echo $record['nama_jalan'] ?>"></td>
             </tr>
              
             </tbody>
