@@ -354,9 +354,9 @@
 
        
 
-            splitDate[1] = splitDate[1] < 10 ? '0'+splitDate[1] : splitDate[1];
-            splitDate[0] = splitDate[0] < 10 ? '0'+splitDate[0] : splitDate[0];
-            var date =  splitDate[0] + '-' + splitDate[2] +'-' + splitDate[1] ;
+            splitDate[1] = splitDate[1].length < 2 ? '0'+splitDate[1] : splitDate[1];
+            splitDate[2] = splitDate[2].length < 2 ? '0'+splitDate[2] : splitDate[2];
+            var date =  splitDate[0] + '-' + splitDate[1] +'-' + splitDate[2] ;
             console.log(date);
             document.getElementById("tarikh_siap").value = date;
        
