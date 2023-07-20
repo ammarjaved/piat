@@ -1,7 +1,5 @@
-
-
 <?php
-
+  ob_start();
     include("header.php");
     if(isset($_REQUEST['no_sn'])){
      include('./services/connection.php');
