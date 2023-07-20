@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt->execute();
         echo "DSfdsfsdf";
-        if($jenis_sambungan == "OH"){
+        if($jenis_sambungan == "OH" && $_POST['submit_button'] == "next"){
            
             $_SESSION['sn'] = $no_sn;
             

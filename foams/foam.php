@@ -4,7 +4,7 @@
       if (!isset($_SESSION['no_sn'])) {
 
         header("location: ./foam-1.php");
-        
+
         exit();  
       }
     ?>
@@ -598,7 +598,8 @@
     </div> 
 
      <div class="text-center mt-b">
-      <button type="submit" class="btn btn-sm btn-success">Submit</button>
+     <a href="./editFoam-1.php?no_sn=<?php echo $_SESSION['no_sn'] ?>"><button class="btn btn-success btn-sm m-3" type="button">Goto QR</button></a>
+      <button type="submit" class="btn btn-sm btn-success m-3">Submit</button>
      </div>
 
     </form>
@@ -681,7 +682,7 @@
 
     userName.parentNode.nextElementSibling.nextElementSibling.firstElementChild.innerHTML = "Attend"
     userName.parentNode.nextElementSibling.nextElementSibling.lastElementChild.value = "Attend"
-    userName.parentNode.parentNode.firstElementChild.firstElementChild.value = "SPUADKL"
+    userName.parentNode.parentNode.firstElementChild.firstElementChild.value = "SPU AD KL"
       if(prepare){
         $("#prep_name").html(userName.value)
         var option = $('#prepare_by option[value="' + userName.value + '"]');

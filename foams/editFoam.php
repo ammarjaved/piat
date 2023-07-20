@@ -713,7 +713,8 @@
     </div> 
 
      <div class="text-center mt-b">
-      <button type="submit" class="btn btn-sm btn-success">Submit</button>
+     <a href="./editFoam-1.php?no_sn=<?php echo $_SESSION['no_sn'] ?>"><button class="btn btn-success btn-sm m-3" type="button">Goto QR</button></a>
+      <button type="submit" class="btn btn-sm btn-success m-3">Submit</button>
      </div>
 
     </form>

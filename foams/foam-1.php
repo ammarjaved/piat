@@ -23,7 +23,7 @@
       <table class="table caption-top">  
       <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A </caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang Section A</th>
+                <th colspan="3" class="text-center">Section A</th>
             </thead>
             <tbody>
             <tr>
@@ -146,7 +146,7 @@
             </thead>
 
             <tr>
-                <th>Spun</th>
+                <th>Span</th>
                 <td ><input name="bil_jenis_spun" id="bil_jenis_spun" class="form-control" type="number"></td>
             </tr>
             <tr>
@@ -251,12 +251,12 @@
         <table class="table caption-top">
             <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Section H</caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang Section H</th>
+                <th colspan="3" class="text-center">Section H</th>
             </thead>
 
             <tr>
                 <th>Jumlah Span<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="jumlah_span" id="jumlah_span" class="form-control"></td>
+                <td colspan="2"><input type="number" name="jumlah_span" id="jumlah_span" class="form-control"></td>
             </tr>
 
             <tr>
@@ -266,19 +266,19 @@
             </tr>
             <tr>
                 <th>Bil Umbang <br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="bil_umbang" id="bil_umbang" class="form-control"></td>
+                <td colspan="2"><input type="number" name="bil_umbang" id="bil_umbang" class="form-control"></td>
             </tr>
             <tr>
                 <th>Bil Black Box<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="bil_black_box" id="bil_black_box" class="form-control"></td>
+                <td colspan="2"><input type="number" name="bil_black_box" id="bil_black_box" class="form-control"></td>
             </tr>
            <tr>
                 <th>Bil LVPT Cap Bank<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="bil_lvpt" id="bil_lvpt" class="form-control"></td>
+                <td colspan="2"><input type="number" name="bil_lvpt" id="bil_lvpt" class="form-control"></td>
             </tr>
             <tr>
                 <th>Bilangan Serbis Melibatkan 1 pengguna sahaja<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="bilangan_serbis" id="bilangan_serbis" class="form-control"></td>
+                <td colspan="2"><input type="number" name="bilangan_serbis" id="bilangan_serbis" class="form-control"></td>
             </tr>
             <tr>
                 <th>Catatan<br> <span class="text-danger"></span></th>
@@ -288,8 +288,9 @@
         </table>
     </div>
 
-    <div class="text-center">
-      <button type="submit" class="btn btn-sm btn-success" name="submit_button" value="submit">Submit</button>
+    <div class="text-center d-flex justify-content-center">
+      <button type="submit" class="btn btn-sm btn-success my-3 mx-3" name="submit_button" value="submit">Submit</button>
+      <button type="submit" class="btn btn-sm btn-success mx-3 my-3 " style="display: none;"  id="next_foam" name="submit_button" value="next">Next</button>
      </div>
     
 

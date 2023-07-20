@@ -28,20 +28,21 @@ $(document).ready(function(){
 function checkPiat(radio) {
     var piatYesRadio = document.getElementById("piat_yes");
     var piatNoRadio = document.getElementById("piat_no");
-    var submitButton = document.querySelector(".btn-success");
+    var submitButton = document.getElementById("next_foam");
+    console.log(submitButton);
 
     if (radio.value === "OH") {
         piatYesRadio.disabled = false;
         piatYesRadio.checked = true;
         piatNoRadio.disabled = true;
-        submitButton.innerText = "Next";
-        submitButton.value = "next";
+        submitButton.style.display = "block ";
+        // submitButton.value = "next";
     } else if (radio.value === "UG") {
         piatNoRadio.disabled = false;
         piatNoRadio.checked = true;
         piatYesRadio.disabled =true;
-        submitButton.innerText = "Submit";
-        submitButton.value = "submit";
+        submitButton.style.display = "none ";
+        // submitButton.value = "submit";
     }
   }
 

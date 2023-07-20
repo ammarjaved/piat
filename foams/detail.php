@@ -49,7 +49,7 @@
       <table class="table">  
       <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A</caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang Section A</th>
+                <th colspan="3" class="text-center">Section A</th>
                        
             </thead>
             <tbody>
@@ -168,7 +168,7 @@
             </thead>
 
             <tr>
-                <th class="col-6">Spun</th>
+                <th class="col-6">Span</th>
                 <td ><?php echo $record['bil_jenis_spun'] ?></td>
             </tr>
             <tr>
@@ -273,7 +273,7 @@
         <table class="table caption-top">
             <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Section H</caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang Section H</th>
+                <th colspan="3" class="text-center">Section H</th>
             </thead>
 
             <tr>

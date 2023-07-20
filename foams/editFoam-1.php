@@ -51,7 +51,7 @@
     <table class="table caption-top">
             <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A</caption>
             <thead>
-                <th colspan="3" class="text-center  ">Bil Saiz Tiang Section A</th>
+                <th colspan="3" class="text-center  ">Section A</th>
             </thead>
             <tbody>
             <tr>
@@ -176,7 +176,7 @@
             </thead>
 
             <tr>
-                <th>Spun</th>
+                <th>Span</th>
                 <td ><input name="bil_jenis_spun" id="bil_jenis_spun" class="form-control" type="number" value="<?php echo $record['bil_jenis_spun'] ?>"></td>
             </tr>
             <tr>
@@ -281,12 +281,12 @@
         <table class="table caption-top">
             <caption class="text-sm font-medium text-gray-700 mb-2 text-left">Section H</caption>
             <thead>
-                <th colspan="3" class="text-center">Bil Saiz Tiang Section H</th>
+                <th colspan="3" class="text-center">Section H</th>
             </thead>
 
             <tr>
                 <th>Jumlah Span<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="jumlah_span" id="jumlah_span" class="form-control" value="<?php echo $record['jumlah_span'] ?>"></td>
+                <td colspan="2"><input type="number" name="jumlah_span" id="jumlah_span" class="form-control" value="<?php echo $record['jumlah_span'] ?>"></td>
             </tr>
 
             <tr>
@@ -296,19 +296,19 @@
             </tr>
             <tr>
                 <th>Bil Umbang <br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="bil_umbang" id="bil_umbang" class="form-control" value="<?php echo $record['bil_umbang'] ?>"></td>
+                <td colspan="2"><input type="number" name="bil_umbang" id="bil_umbang" class="form-control" value="<?php echo $record['bil_umbang'] ?>"></td>
             </tr>
             <tr>
                 <th>Bil Black Box<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="bil_black_box" id="bil_black_box" class="form-control" value="<?php echo $record['bil_black_box'] ?>"></td>
+                <td colspan="2"><input type="number" name="bil_black_box" id="bil_black_box" class="form-control" value="<?php echo $record['bil_black_box'] ?>"></td>
             </tr>
            <tr>
                 <th>Bil LVPT Cap Bank<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="bil_lvpt" id="bil_lvpt" class="form-control" value="<?php echo $record['bil_lvpt'] ?>"></td>
+                <td colspan="2"><input type="number" name="bil_lvpt" id="bil_lvpt" class="form-control" value="<?php echo $record['bil_lvpt'] ?>"></td>
             </tr>
             <tr>
                 <th>Bilangan Serbis Melibatkan 1 pengguna sahaja<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="bilangan_serbis" id="bilangan_serbis" class="form-control" value="<?php echo $record['bilangan_serbis'] ?>"></td>
+                <td colspan="2"><input type="number" name="bilangan_serbis" id="bilangan_serbis" class="form-control" value="<?php echo $record['bilangan_serbis'] ?>"></td>
             </tr>
             <tr>
                 <th>Catatan<br> <span class="text-danger"></span></th>
@@ -318,8 +318,9 @@
         </table>
     </div>
 
-    <div class="text-center">
-      <button type="submit" class="btn btn-sm btn-success" name="submit_button" value="submit">Submit</button>
+    <div class="text-center d-flex justify-content-center">
+      <button type="submit" class="btn btn-sm btn-success my-3 mx-3" name="submit_button" value="submit">Submit</button>
+      <button type="submit" class="btn btn-sm btn-success mx-3 my-3 "   id="next_foam" name="submit_button" value="next">Next</button>
      </div>
     
 
@@ -330,14 +331,15 @@
 </div>
 <script src="../assets/js/foam-1.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/dayjs.min.js"></script>
 <script>
     $(document).ready(function(){
         var piat_val = "<?php echo  $record['jenis_sambungan']; ?>";
         if(piat_val == "OH"){
             $('#piat_yes').prop('checked',true)
-            $('.btn-success').html("Next").val('next')
+            $('#next_foam').css("display","block")
+            console.log($('#next_foam'));
         }else{
+            $('#next_foam').css("display","none")
             $('#piat_no').prop('checked',true)
         }
         dateFormat()
@@ -350,9 +352,6 @@
         var dateString = "<?php echo $record['tarikh_siap']; ?>";
         console.log(dateString);
         var splitDate = dateString.split('-');
-
-
-       
 
             splitDate[1] = splitDate[1].length < 2 ? '0'+splitDate[1] : splitDate[1];
             splitDate[2] = splitDate[2].length < 2 ? '0'+splitDate[2] : splitDate[2];
