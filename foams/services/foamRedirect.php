@@ -7,9 +7,9 @@
         include("connection.php");
 
         $sn = isset($_REQUEST['sn'])? $_REQUEST['sn'] : $_SESSION['sn'];
-        echo $sn;
+
         isset($_SESSION['sn']) ?  session_unset() :'';
-        echo $sn;
+
 
         $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE no_sn = :sn");
         $stmt->bindParam(':sn', $sn);
@@ -26,7 +26,7 @@
                         $bal = "KLB";
                     }elseif ($record['ba'] == "KLT - 6122") {
                         $bal = "KLT";
-                    } elseif ($ba == "KLP - 6123") {
+                    } elseif ($record['ba'] == "KLP - 6123") {
                         $bal = "KLP";
                     }
                     elseif ($record['ba'] == "KLS - 6124") {
