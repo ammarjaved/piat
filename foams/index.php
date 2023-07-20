@@ -21,6 +21,22 @@
         .container.shadow.p-5.my-5.bg-white {
     padding: 20px !important;
 }
+
+@media only screen and (max-width: 445px) {
+
+  .dataTables_filter input{
+    font-size: 0.6rem !important;
+  }
+  .dataTables_filter label ,
+  #myTable_length label,
+  th{
+    font-size: 13px !important;
+  }
+  td{
+    font-size: 12px !important;
+  }
+  h3{ font-size: 19px !important;}
+}
     </style>
 </head>
 <body>
@@ -51,17 +67,35 @@
     <a href="./services/generateExcel.php" class="btn btn-success btn-sm">Download Excel</a>
 </div>
 </div>
-<!-- <div class="text-end mb-3 d-flex justify-content-start">
- 
-   <div class="m-2 col-2">
-        <label for=""></label> Select BA :<br>
-          <input type="text" name="searchBA" id="searchBA" >
-        </div>
-        <div class="m-2">
-    <a href="./services/generateExcel.php" class="btn btn-success btn-sm">Download Excel</a>
-</div>
+<form action="" method="post">
+ <div class="text-end mb-3 row">
+  
+   <div class="m-2 col-md-2">
+        <label for="">Select BA :</label> <br>
+        <select  name="searchBA" id="searchBA"  class="form-select">
+          <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''?>" hidden><?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : 'Select BA'?></option>
+          <option value="KLB - 6121">KLB - 6121</option>
+          <option value="KLT - 6122">KLT - 6122</option>
+          <option value="KLP - 6123">KLP - 6123</option>
+          <option value="KLS - 6124">KLS - 6124</option>
+        </select>
+    </div>
+    <div class="m-2 col-md-2">
+        <label for="">From Date :</label> <br>
+        <input type="date" name="from_date" id="from_date"  class="form-control" value="<?php echo isset($_POST['from_date']) ? $_POST['from_date'] : ''?>">
+    </div>
+    <div class="m-2 col-md-2">
+        <label for="">To Date :</label> <br>
+        <input type="date" name="to_date" id="to_date"  class="form-control" value="<?php echo isset($_POST['to_date']) ? $_POST['to_date'] : ''?>">
+    </div>
+    <div class="col-md-2 pt-2 text-start" style="display: inline">
+          
+          <button class="btn btn-secondary mt-4 btn-sm" type="submit" name='submitButton' value="filter">Filter</button>
+          <button class="btn btn-secondary btn-sm mt-4" type="submit" name='submitButton' onclick="reset()" value="reset">Reset</button>  
+    </div>
 
-</div> -->
+</div> 
+</form>
 <div class="table-responsive table-bordered" style="overflow-y:auto ; ">  
     <table id="myTable" class="table table-striped table-responsive table-bordered " >
         <thead>
@@ -79,12 +113,32 @@
             include('./services/connection.php');
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+              if($_POST['submitButton'] == 'filter'){
+                $ba = isset($_POST['searchBA']) ? $_POST['searchBA'] : '';               
+                $from = isset($_POST['from_date']) ? $_POST['from_date'] : '';
+                $to = isset($_POST['to_date']) ? $_POST['to_date'] : '';
+                $record ='';
+                if( $from == '' || $to == ''){
+                  $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr ");
+                  $stmt->execute();
+                  $record = $stmt->fetch(PDO::FETCH_ASSOC);
+                }
+                $from = $from == '' ? $record['min'] : $from;
+                $to = $to == '' ? $record['max'] : $to;
+
+                $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba 
+                          AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to");
+                $stmt->execute([':ba' => "%$ba%",':from' => $from,':to' => $to,]);
+              }else{
+                $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
+                $stmt->execute();
+              }
               
-              $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
             }else{
               $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
+              $stmt->execute();
             }
-            $stmt->execute();
+            
             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $pdo = null;
@@ -172,7 +226,21 @@
             $('#modal-id').val(id)
         });
     });
-        });
+
+    // reset();
+  });
+    function reset(){
+      var sub = "<? echo isset($_POST['submitButton']) ?$_POST['submitButton'] : ''  ?>";
+      if(sub == 'reset'){
+        ba = isset($_POST['searchBA']) ?$_POST['searchBA'] : ''
+        from = isset($_POST['from_date']) ? $_POST['from_date'] : ''
+        to = isset($_POST['to_date']) ? $_POST['to_date'] : ''
+        $('#searchBA').val(ba)
+        $('#to_date').val(from)
+        $('#from_date').val(to)
+      }
+    }
+        
     </script>
 </body>
 </html>
