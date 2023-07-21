@@ -109,7 +109,8 @@
                 <th>BA</th>
                 <th>Jenis Sambungan</th>
                 <th>Tarikh Siap</th>
-                <th>Status</th>
+                <th>QR</th>
+                <th>Piat</th>
                 <th >Action</th>
             </tr>
         </thead>
@@ -155,13 +156,13 @@
                 echo "<td>{$record['ba']}</td>";
                 echo "<td>{$record['jenis_sambungan']}</td>";
                 echo "<td>{$record['tarikh_siap']}</td>";
+                echo '<td class="algin-middle text-center"> <span class="check">&#x2713;</span></td>';
                 echo '<td class="algin-middle text-center">';
-                if($record['piat']== ""){
-                  echo '<span class="badge rounded-pill bg-secondary">inComplete</span>';
-                }elseif($record['status'] == true){
-                  echo '<span class="badge rounded-pill bg-success">completed</span>';
+                
+                if($record['status'] == true && $record['piat']== "yes"){
+                  echo '<span class="check">&#x2713;</span>';
                 }else{
-                  echo '<span class="badge rounded-pill bg-warning text-dark">inComplete check list</span>';
+                  echo '<span class="check">&#x2715;</span>';
                 }
                 echo '</td>';
                 
@@ -174,7 +175,7 @@
                 <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
                   <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
                   echo "<li><a class='dropdown-item' href='./editFoam-1.php?no_sn={$record['no_sn']}'>Edit Foam</a></li>";
-
+                  
                   if($record['piat'] == 'yes' && $record['status'] == true){
                     echo "  <li><a class='dropdown-item' href='./previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
                   }elseif($record['piat'] == 'yes' && $record['status'] == false){
