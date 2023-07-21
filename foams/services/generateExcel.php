@@ -10,24 +10,44 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
  include('./connection.php');
 
-if(isset($_REQUEST['id'])){
 
-    $id = $_REQUEST['id'];
-    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE id = :id");
-    $stmt->bindParam(':id', $id);
-    
-    
- } else{
+ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
+      
+          $ba = isset($_POST['exc_ba']) ? $_POST['exc_ba'] : '';               
+          $from = isset($_POST['exc_from']) ? $_POST['exc_from'] : '';
+          $to = isset($_POST['exc_to']) ? $_POST['exc_to'] : '';
+          $record ='';
+          if( $from == '' || $to == ''){
+            $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr ");
+            $stmt->execute();
+            $record = $stmt->fetch(PDO::FETCH_ASSOC);
+          }
+          $from = $from == '' ? $record['min'] : $from;
+          $to = $to == '' ? $record['max'] : $to;
+          $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba 
+                    AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to");                    
+          $stmt->execute([':ba' => "%$ba%",':from' => $from,':to' => $to,]); 
+        
+ }elseif(isset($_REQUEST['id'])){
+ 
+     $id = $_REQUEST['id'];
+     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE id = :id");
+     $stmt->bindParam(':id', $id);
+     $stmt->execute();
      
- }
+  } else{
+ 
+     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
+     $stmt->execute();
+  }
+ 
    
 
   
 
        
-        $stmt->execute();
+        
         $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
  
         $pdo = null;

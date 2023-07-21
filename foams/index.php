@@ -64,7 +64,12 @@
         <a href="./foam-1.php" class="btn btn-success btn-sm " >Add New</a> 
         </div>
         <div class="m-2">
-    <a href="./services/generateExcel.php" class="btn btn-success btn-sm">Download Excel</a>
+          <form action="./services/generateExcel.php"  method="POST">
+            <input type="hidden" name="exc_ba" id="exc_ba" value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''?>">
+            <input type="hidden" name="exc_from" id="exc_from" value="<?php echo isset($_POST['from_date']) ? $_POST['from_date'] : ''?>">
+            <input type="hidden" name="exc_to" id="exc_to" value="<?php echo isset($_POST['to_date']) ? $_POST['to_date'] : ''?>">
+            <button href="./services/generateExcel.php" class="btn btn-success btn-sm" type="submit">Download Excel</button>
+        </form>
 </div>
 </div>
 <form action="" method="post">
@@ -130,6 +135,7 @@
                           AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to");
                 $stmt->execute([':ba' => "%$ba%",':from' => $from,':to' => $to,]);
               }else{
+                
                 $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
                 $stmt->execute();
               }
@@ -227,19 +233,33 @@
         });
     });
 
-    // reset();
+    reset();
   });
     function reset(){
-      var sub = "<? echo isset($_POST['submitButton']) ?$_POST['submitButton'] : ''  ?>";
+      var sub = "<?php echo isset($_POST['submitButton']) ?$_POST['submitButton'] : ''  ?>";
       if(sub == 'reset'){
-        ba = isset($_POST['searchBA']) ?$_POST['searchBA'] : ''
-        from = isset($_POST['from_date']) ? $_POST['from_date'] : ''
-        to = isset($_POST['to_date']) ? $_POST['to_date'] : ''
-        $('#searchBA').val(ba)
-        $('#to_date').val(from)
-        $('#from_date').val(to)
+        $('#searchBA').find('option').first().remove();
+        $('#searchBA').prepend('<option value="" selected hidden>Select ba</option')
+        $('#to_date').val('')
+        $('#from_date').val('')
+        $("#exc_ba").val('')
+        $('#exc_from').val('')
+        $("#exc_to").val('')
       }
     }
+
+    
+  function genrateExcel() {
+    var ba = $("#searchBA").val()
+    var from = $("#from_date").val()
+    var  to = $("#to_date").val()
+
+    $("#exc_ba").val(ba)
+    $('#exc_from').val(from)
+    $("#exc_to").val(to)
+
+    return true
+  }
         
     </script>
 </body>
