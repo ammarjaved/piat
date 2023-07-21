@@ -682,7 +682,7 @@
 
     userName.parentNode.nextElementSibling.nextElementSibling.firstElementChild.innerHTML = "Attend"
     userName.parentNode.nextElementSibling.nextElementSibling.lastElementChild.value = "Attend"
-    userName.parentNode.parentNode.firstElementChild.firstElementChild.value = "SPU AD KL"
+    userName.parentNode.parentNode.firstElementChild.firstElementChild.value = "SBU AD KL"
       if(prepare){
         $("#prep_name").html(userName.value)
         var option = $('#prepare_by option[value="' + userName.value + '"]');
