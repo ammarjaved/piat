@@ -156,13 +156,13 @@
                 echo "<td>{$record['ba']}</td>";
                 echo "<td>{$record['jenis_sambungan']}</td>";
                 echo "<td>{$record['tarikh_siap']}</td>";
-                echo '<td class="algin-middle text-center"> <span class="check">&#x2713;</span></td>';
+                echo '<td class="algin-middle text-center"> <span class="check" style="font-weight: 600; color: green;">&#x2713;</span></td>';
                 echo '<td class="algin-middle text-center">';
                 
                 if($record['status'] == true && $record['piat']== "yes"){
-                  echo '<span class="check">&#x2713;</span>';
+                  echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
                 }else{
-                  echo '<span class="check">&#x2715;</span>';
+                  echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                 }
                 echo '</td>';
                 
