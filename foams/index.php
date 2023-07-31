@@ -125,7 +125,7 @@
                 $to = isset($_POST['to_date']) ? $_POST['to_date'] : '';
                 $record ='';
                 if( $from == '' || $to == ''){
-                  $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr ");
+                  $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr ORDER BY id DESC");
                   $stmt->execute();
                   $record = $stmt->fetch(PDO::FETCH_ASSOC);
                 }
@@ -133,11 +133,11 @@
                 $to = $to == '' ? $record['max'] : $to;
 
                 $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba 
-                          AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to");
+                          AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to ORDER BY id DESC");
                 $stmt->execute([':ba' => "%$ba%",':from' => $from,':to' => $to,]);
               }else{
                 
-                $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ");
+                $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr ORDER BY id DESC");
                 $stmt->execute();
               }
               
