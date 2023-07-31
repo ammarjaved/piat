@@ -40,6 +40,10 @@
   header, footer {
                 display: none;
             }
+             * {
+        -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
+        color-adjust: exact !important;  /*Firefox*/
+    }
 }
   </style>
   <div class="container     my-5 bg-white">   
