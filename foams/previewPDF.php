@@ -646,6 +646,7 @@
   function exportToPDF(){
 
     $("#for-remove-class").removeClass('table-responsive')
+    document.title = "<?php echo !empty($record['project_no']) ? $record['project_no'] : ''; ?>";
     window.print()
   }
 </script>
