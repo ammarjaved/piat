@@ -32,7 +32,16 @@
     }
     ?>
 
-  
+  <style >
+    @media print {
+  #print-button {
+    display: none;
+  }
+  header, footer {
+                display: none;
+            }
+}
+  </style>
   <div class="container     my-5 bg-white">   
     <div id="success-message"></div>
     
