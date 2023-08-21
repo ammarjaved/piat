@@ -1,5 +1,29 @@
-<?php include("header.php") ?>
+<?php 
+include("header.php"); 
+
+include 'services/connection.php';
+
+$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where status = :stat ");
+$stat = 'new';  // Set the value you want to bind
+
+$stmt->bindParam(':stat', $stat);
+
+$stmt->execute();
+$records = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+
+?>
  
+
+<div class="d-flex justify-content-end">
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/piat/foams/">index</a></li>
+    <li class="breadcrumb-item active" aria-current="page">add qr</li>
+  </ol>
+</nav>
+</div>
 <div class="container shadow p-5  my-5 bg-white foam-1"> 
 <?php
        
@@ -29,6 +53,7 @@
             <tr>
               <th class="col-md-6">BA *<br> <span class="text-danger"></span></th>
               <td  colspan="2">
+                
                 <select name="ba" class="form-select required" id="ba" style="border:1px solid black">
                     <option value="" hidden> Select BA</option>
                     <option value="KLB - 6121">KLB - 6121</option>
@@ -51,8 +76,19 @@
             <tr>
                 <th>No. SN *<br> <span class="text-danger"></span></th>
                 <td colspan="2">
+                    <input type="hidden" id="id" name="id">
+                    <input type="hidden" name="status" id="status" value="false">
                 <span class="text-danger" id="sn_exits"></span>
-                <input type="text" name="no_sn" id="no_sn" class="form-control required" onchange="handleKeyPress(event)"></td>
+                <select name="no_sn" id="no_sn" class="form-select" onchange="getSnDetail(this)">
+    <option value="" hidden>Select SN</option>
+    <?php 
+    foreach ($records as $record) {
+        echo "<option value='{$record}'>{$record}</option>";
+    }
+    ?>
+</select>
+
+               
             </tr>
             <tr>
                 <th>Alamat *<br> <span class="text-danger"></span></th>

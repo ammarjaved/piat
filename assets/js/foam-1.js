@@ -136,3 +136,30 @@ function checkPiat(radio) {
     }
     return false;
   }
+
+
+  function getSnDetail(event){
+    $.ajax({
+        url: "./services/getSNDetail.php?sn="+event.value,
+        type: "GET",
+        dataType: "json",
+        success: function(response) {
+            if(response.data.jenis_sambungan == "OH"){
+                document.getElementById("jenis_sambungan_oh").checked = true
+                document.getElementById("piat_yes").checked = true
+              
+            }else{
+                document.getElementById("jenis_sambungan_ug").checked = true
+                document.getElementById("piat_no").checked = true
+            }
+            let ba =   $("#ba option:first");
+            ba.val(response.data.ba);
+            ba.text(response.data.ba);
+            $("#id").val(response.data.id)
+           
+        },
+        error: function(xhr, status, error) {
+            console.log("Error: " + error);
+        }
+    });
+}

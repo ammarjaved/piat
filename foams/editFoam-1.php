@@ -55,6 +55,7 @@
 <h3 class="text-center">AD Service QR 2023</h3> 
  <form action="./services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
  <input type="hidden" name="id" value="<?php echo $record['id']?>" id="id">
+ <input type="hidden" name="status" id="status" value="<?php echo $record['status']?>">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
     <table class="table caption-top">
             <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A</caption>
