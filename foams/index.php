@@ -37,11 +37,20 @@
   }
   h3{ font-size: 19px !important;}
 }
+body{
+  background: #e9e9e9;
+}
     </style>
 </head>
 <body>
 
-<div class="container shadow p-5  my-5 bg-white">   
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/piat/foams/">Piat Check List</a>
+   
+  </div>
+</nav>
+<div class="container shadow p-5 my-5 bg-white ">   
 
 <?php
       if (isset($_SESSION['message'])) {
@@ -61,7 +70,8 @@
 <div class="text-end mb-3 d-flex justify-content-end">
  
    <div class="m-2">
-        <a href="./foam-1.php" class="btn btn-success btn-sm " >Add New</a> 
+   
+        <a href="./sn_monitoring-1.php" class="btn btn-success btn-sm " >Add New</a> 
         </div>
         <div class="m-2">
           <form action="./services/generateExcel.php"  method="POST">
@@ -155,9 +165,16 @@
                 echo "<td>{$record['no_sn']}</td>";
                 echo "<td>{$record['ba']}</td>";
                 echo "<td>{$record['jenis_sambungan']}</td>";
-                echo "<td>{$record['tarikh_siap']}</td>";
-                echo '<td class="algin-middle text-center"> <span class="check" style="font-weight: 600; color: green;">&#x2713;</span></td>';
-                echo '<td class="algin-middle text-center">';
+                echo "<td>{$record['tarikh_siap']}</td>
+                      <td class='algin-middle text-center'>";
+                if ($record['status'] != '' || $record['tarikh_siap'] != "") {
+                  echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
+                 
+                }else{
+                  echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
+                }
+                
+                echo '</td><td class="algin-middle text-center">';
                 
                 if($record['status'] == true && $record['piat']== "yes"){
                   echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
@@ -174,7 +191,10 @@
                 </button>
                 <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
                   <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
-                  echo "<li><a class='dropdown-item' href='./editFoam-1.php?no_sn={$record['no_sn']}'>Edit Foam</a></li>";
+                  echo "<li><a class='dropdown-item' href='./editFoam-1.php?no_sn={$record['no_sn']}'>";
+                  echo $record['status']  != '' || $record['tarikh_siap'] != ""? "Edit Foam"  :  "Add Qr";
+                 
+                  echo "</a></li>";
                   
                   if($record['piat'] == 'yes' && $record['status'] == true){
                     echo "  <li><a class='dropdown-item' href='./previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
@@ -199,6 +219,29 @@
  
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class=" modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Remove Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="./services/removeSn.php" method="post" > 
+      <div class="modal-body">
+            Are You Sure ? 
+            <input type="hidden" name="id" id="modal-id">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger">Remove</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="addSN" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class=" modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">

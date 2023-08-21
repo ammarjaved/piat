@@ -1,6 +1,14 @@
 <?php include("header.php") ?>
  
-<div class="container shadow p-5  my-5 bg-white foam-1"> 
+<div class="d-flex justify-content-end">
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/piat/foams/">index</a></li>
+    <li class="breadcrumb-item active" aria-current="page">edit qr</li>
+  </ol>
+</nav>
+</div>
+<div class="container shadow p-5  my-5 bg-white foam-1 mt-3"> 
 <?php
        
 
