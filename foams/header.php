@@ -23,7 +23,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/piat/foams/">Piat Check List</a>
+    <a class="navbar-brand" href="/foams/index.php">Piat Check List</a>
    
   </div>
 </nav>
