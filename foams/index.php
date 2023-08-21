@@ -68,7 +68,7 @@ body{
 
 <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
 <div class="text-end mb-3 d-flex justify-content-end">
- 
+ <div class="m-2"><a href="./foam-1.php" class="btn btn-success btn-sm " >Add qr</a></div>
    <div class="m-2">
    
         <a href="./sn_monitoring-1.php" class="btn btn-success btn-sm " >Add Monitoring</a> 
