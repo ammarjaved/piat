@@ -71,7 +71,7 @@ body{
  
    <div class="m-2">
    
-        <a href="./sn_monitoring-1.php" class="btn btn-success btn-sm " >Add New</a> 
+        <a href="./sn_monitoring-1.php" class="btn btn-success btn-sm " >Add Monitoring</a> 
         </div>
         <div class="m-2">
           <form action="./services/generateExcel.php"  method="POST">
