@@ -61,7 +61,7 @@
 <body>
     <div class="container">
         <img src="./images/bbgg.png" alt="" height="265">
-        <a href="./foams/index.php">
+        <a href="./src/index.php">
             <button class="btn btn-lg btn-success mt-4">Fill Foam</button>
         </a>
     </div>

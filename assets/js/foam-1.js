@@ -1,6 +1,13 @@
 var golbal_isVaild = true;
 $(document).ready(function(){
-      
+
+ 
+    
+        $("input,select").on("change",function(){
+            this.parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = this.value === ""?  "This feild is required" : "";
+        })
+
+        
   
     $("input[type='number']").on("blur", function() {
         var inputValue = $(this).val();
@@ -73,7 +80,7 @@ function checkPiat(radio) {
     }
 
     $.ajax({
-        url: "./services/snNo.php",
+        url: "../services/snNo.php",
         type: "GET",
         data: dat,
         dataType: "json",
@@ -140,7 +147,7 @@ function checkPiat(radio) {
 
   function getSnDetail(event){
     $.ajax({
-        url: "./services/getSNDetail.php?sn="+event.value,
+        url: "../services/getSNDetail.php?sn="+event.value,
         type: "GET",
         dataType: "json",
         success: function(response) {
@@ -156,6 +163,14 @@ function checkPiat(radio) {
             ba.val(response.data.ba);
             ba.text(response.data.ba);
             $("#id").val(response.data.id)
+            if(response.data.jenis_sn == "LKKK"){
+                document.getElementById("jenis_sn_lkkk").checked = true
+                document.getElementById("jenis_sn_express").checked = false
+            }else{
+                document.getElementById("jenis_sn_lkkk").checked = false
+                document.getElementById("jenis_sn_express").checked = true
+            }
+            $("#alamat").val(response.data.alamat)
            
         },
         error: function(xhr, status, error) {

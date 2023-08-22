@@ -15,7 +15,7 @@
 <div class="d-flex justify-content-end">
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/piat/foams/">index</a></li>
+    <li class="breadcrumb-item"><a href="../index.php">index</a></li>
     <li class="breadcrumb-item active" aria-current="page">edit piat</li>
   </ol>
 </nav>

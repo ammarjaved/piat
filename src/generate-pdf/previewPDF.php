@@ -1,8 +1,8 @@
 <?php
 ob_start();
-include 'header.php';
+include '../partials/header.php';
 if (isset($_REQUEST['no_sn'])) {
-    include './services/connection.php';
+    include '../services/connection.php';
 
     $sn_no = $_REQUEST['no_sn'];
     $stmt = $pdo->prepare('SELECT * FROM public.inspection_checklist WHERE project_no = :sn_no  ');
@@ -13,7 +13,7 @@ if (isset($_REQUEST['no_sn'])) {
     $pdo = null;
 
     if (!$record) {
-        header('location:./index.php');
+        header('location:../index.php');
 
         exit();
     }
@@ -24,7 +24,7 @@ if (isset($_REQUEST['no_sn'])) {
     $sign = json_decode($record['company_sign']);
     $check_list = json_decode($record['inspection_checklist']);
 } else {
-    header('location: ./index.php');
+    header('location: ../index.php');
     exit();
 }
 ?>

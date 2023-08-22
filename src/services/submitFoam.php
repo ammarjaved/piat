@@ -130,9 +130,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             unset( $_SESSION['foam']);
         }else{
 
-            $status = true;
-            $stmt = $pdo->prepare("UPDATE public.ad_service_qr SET status = :status WHERE id = :id");
+            $status = "Complete";
+            $stmt = $pdo->prepare("UPDATE public.ad_service_qr SET status = :status , complete_date = :complete_date WHERE id = :id");
             $stmt->bindParam(':id', $sn_id);
+            $stmt->bindParam(':complete_date',date('Y-m-d'));
             $stmt->bindParam(':status',$status);
             $stmt->execute();
 
@@ -152,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $_SESSION['message'] = 'inserted failed'; 
         $_SESSION['alert'] = 'alert-danger';
-        header("Location: ../foam.php");
+        header("Location: ../index.php");
         exit;
         
     }

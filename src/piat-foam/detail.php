@@ -1,9 +1,9 @@
-<?php include("header.php") ?>
+<?php include '../partials/header.php'; ?>
 
 <div class="d-flex justify-content-end ">
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/piat/foams/">index</a></li>
+    <li class="breadcrumb-item"><a href="../index.php">index</a></li>
     <li class="breadcrumb-item active" aria-current="page">detail</li>
   </ol>
 </nav>
@@ -30,7 +30,7 @@
       }
 
       if(isset($_REQUEST['no_sn'])){
-        include('./services/connection.php');
+        include('../services/connection.php');
    
        $sn_no = $_REQUEST['no_sn'];
        

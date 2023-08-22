@@ -1,9 +1,9 @@
-<?php include("header.php") ?>
+<?php include '../partials/header.php'; ?>
  
 <div class="d-flex justify-content-end">
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/piat/foams/">index</a></li>
+    <li class="breadcrumb-item"><a href="../index.php">index</a></li>
     <li class="breadcrumb-item active" aria-current="page">edit qr</li>
   </ol>
 </nav>
@@ -29,7 +29,7 @@
       }
 
       if(isset($_REQUEST['no_sn'])){
-        include('./services/connection.php');
+        include('../services/connection.php');
    
        $sn_no = $_REQUEST['no_sn'];
        
@@ -53,7 +53,7 @@
       }
     ?>
 <h3 class="text-center">AD Service QR 2023</h3> 
- <form action="./services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
+ <form action="../services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
  <input type="hidden" name="id" value="<?php echo $record['id']?>" id="id">
  <input type="hidden" name="status" id="status" value="<?php echo $record['status']?>">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
@@ -338,7 +338,7 @@
 
 
 </div>
-<script src="../assets/js/foam-1.js"></script>
+<script src="../../assets/js/foam-1.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     $(document).ready(function(){

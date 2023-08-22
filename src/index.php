@@ -78,11 +78,12 @@ session_start();
 
         <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
         <div class="text-end mb-3 d-flex justify-content-end">
-            <div class="m-2"><a href="./foam-1.php" class="btn btn-success btn-sm ">Add qr</a></div>
-            <div class="m-2">
+        <div class="m-2">
 
-                <a href="./sn_monitoring.php" class="btn btn-success btn-sm ">Add Monitoring</a>
-            </div>
+<a href="./sn-monitoring/create.php" class="btn btn-success btn-sm ">ADD SN</a>
+</div>
+            <div class="m-2"><a href="./qr-foams/create.php" class="btn btn-success btn-sm ">ADD QR AND PIAT</a></div>
+           
             <div class="m-2">
                 <form action="./services/generateExcel.php" method="POST">
                     <input type="hidden" name="exc_ba" id="exc_ba" value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>">
@@ -147,10 +148,11 @@ session_start();
                     <table id="myTable" class="table table-striped table-responsive table-bordered">
                         <thead>
                             <tr>
+                            <th>BA</th>
                                 <th>SN NO</th>
-                                <th>BA</th>
-                                <th>Jenis Sambungan</th>
-                                <th>Tarikh Siap</th>
+                                <th>JENIS SN</th>
+                                <th>Aging (days)</th>
+                                <th>STATUS</th>
                                 <th>QR</th>
                                 <th>Piat</th>
                                 <th>Action</th>
@@ -161,27 +163,36 @@ session_start();
                             include './services/connection.php';
                             
                             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                                if ($_POST['submitButton'] == 'filter') {
+
+                                if ($_POST['submitButton'] == 'filter') {  // for filter
+
                                     $ba = isset($_POST['searchBA']) ? $_POST['searchBA'] : '';
                                     $from = isset($_POST['from_date']) ? $_POST['from_date'] : '';
                                     $to = isset($_POST['to_date']) ? $_POST['to_date'] : '';
                                     $record = '';
-                                    if ($from == '' || $to == '') {
+
+                                    if ($from == '' || $to == '') {       // if dates are null and only ba is selected then first get min and max date
                                         $stmt = $pdo->prepare('SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr ');
                                         $stmt->execute();
                                         $record = $stmt->fetch(PDO::FETCH_ASSOC);
                                     }
+
                                     $from = $from == '' ? $record['min'] : $from;
                                     $to = $to == '' ? $record['max'] : $to;
                             
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba 
-                                                                                                                                                      AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to  ");
+                                                                        // filter query
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to  ");
                                     $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
+
                                 } else {
+                                    // without filter
                                     $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr ORDER BY id DESC');
                                     $stmt->execute();
                                 }
+
+                                                                            //end filter
                             } else {
+                                //when page reload
                                 $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr ');
                                 $stmt->execute();
                             }
@@ -190,12 +201,12 @@ session_start();
                             
                             foreach ($records as $record) {
                                 echo '<tr>';
-                                echo "<td>{$record['no_sn']}</td>";
                                 echo "<td>{$record['ba']}</td>";
-                                echo "<td>{$record['jenis_sambungan']}</td>";
-                                echo "<td>{$record['tarikh_siap']}</td>
-                                                                                                                                                  <td class='algin-middle text-center'>";
-                                if ($record['status'] != 'new' || $record['tarikh_siap'] != '') {
+                                echo "<td>{$record['no_sn']}</td>";
+                                
+                                echo "<td>{$record['jenis_sn']}</td>";
+                                echo "<td>{$record['aging_days']}</td> <td>{$record['status']}</td><td class='algin-middle text-center'>";
+                                if ( $record['tarikh_siap'] != '') {
                                     echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
                                 } else {
                                     echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
@@ -203,7 +214,7 @@ session_start();
                             
                                 echo '</td><td class="algin-middle text-center">';
                             
-                                if ($record['status'] == true && $record['piat'] == 'yes') {
+                                if ($record['status'] == "Complete" && $record['piat'] == 'yes' ) {
                                     echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
                                 } else {
                                     echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
@@ -216,22 +227,22 @@ session_start();
                                 </button>
                                 <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
                                   <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
-                                echo "<li><a class='dropdown-item' href='./editFoam-1.php?no_sn={$record['no_sn']}'>";
-                                echo $record['status'] != 'new' || $record['tarikh_siap'] != '' ? 'Edit Foam' : 'Add Qr';
+                                  if($record['piat'] == 'yes'){
+                                        echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
+                                        echo  $record['tarikh_siap'] != '' ? 'Edit Foam' : 'Add Qr';                                   
+                                        echo '</a></li>';
+                                        if ( $record['status'] == "Complete") {
+                                            echo "  <li><a class='dropdown-item' href='./generate-pdf/previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
+                                        } elseif ( $record['status'] == "Inprocess" && $record['tarikh_siap'] != '') {
+                                            echo "  <li><a class='dropdown-item' href='./services/foamRedirect.php?sn={$record['no_sn']}'>Fill Checklist</a></li>";
+                                        }
+                                  echo "  <li><a class='dropdown-item' href='./piat-foam/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
+                                  
+                                    }
                             
-                                echo '</a></li>';
-                            
-                                if ($record['piat'] == 'yes' && $record['status'] == true) {
-                                    echo "  <li><a class='dropdown-item' href='./previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
-                                } elseif ($record['piat'] == 'yes' && $record['status'] == false) {
-                                    echo "  <li><a class='dropdown-item' href='./services/foamRedirect.php?sn={$record['no_sn']}'>Fill Checklist</a></li>";
-                                }
-                            
-                                echo "  <li><a class='dropdown-item' href='./detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
+                                echo "  <li><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}' >Sn Detail</a></li>";
                                 echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Remove </button'></li>";
-                            
-                                echo "</ul>
-                                                                                                                                          </div></td>";
+                                echo "</ul></div></td>";
                                 echo '</tr>';
                             }
                             ?>
@@ -247,9 +258,11 @@ session_start();
                     <table id="snTable" class="table table-striped table-responsive table-bordered ">
                         <thead>
                             <tr>
-                                <th>SN NO</th>
                                 <th>BA</th>
-                                <th>Jenis Sambungan</th>
+                                <th>SN NO</th>
+                                <th>JENIS SN</th>
+                                <th>Aging (days)</th>
+                                <th>STATUS</th>
                                 <th>QR</th>
                                 <th>Piat</th>
                                 <th>Action</th>
@@ -259,22 +272,27 @@ session_start();
 
                             <?php
                             
-                            $stmt = $pdo->prepare('SELECT sm.*, asq.status , asq.tarikh_siap
-                            FROM public.sn_monitoring sm
-                            LEFT JOIN public.ad_service_qr asq ON sm.id = asq.sn_monitoring_id;
-                            ');
-                            $stmt->execute();
+                            // $stmt = $pdo->prepare('SELECT sm.*, asq.status , asq.tarikh_siap
+                            // FROM public.sn_monitoring sm
+                            // LEFT JOIN public.ad_service_qr asq ON sm.id = asq.sn_monitoring_id;
+                            // ');
+                            // $stmt->execute();
                             
-                            $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            // $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             
                             $pdo = null;
                             
                             foreach ($records as $record) {
+                                if($record['status'] == "Inprocess" && $record['tarikh_siap'] == ""){
                                 echo '<tr>';
-                                echo "<td>{$record['sn_number']}</td>";
                                 echo "<td>{$record['ba']}</td>";
-                                echo "<td>{$record['type']}</td><td class='algin-middle text-center'>";
-                                if ($record['status'] != '' || $record['tarikh_siap'] != '') {
+                                echo "<td>{$record['no_sn']}</td>";
+                                echo "<td>{$record['jenis_sn']}</td>";
+                                echo "<td>{$record['aging_days']}</td>";
+                                echo "<td>{$record['status']}</td>";
+                                
+                                echo "<td class='algin-middle text-center'>";
+                                if ( $record['tarikh_siap'] != '') {
                                   echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
                               } else {
                                   echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
@@ -282,25 +300,25 @@ session_start();
                           
                               echo '</td><td class="algin-middle text-center">';
                           
-                              if ($record['status'] == true && $record['piat'] == 'yes') {
-                                  echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
-                              } else {
+                       
                                   echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
-                              }
+                              
                               echo '</td>';
                                 echo "<td class='text-center'><div class='dropdown'>
                               <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
                               <img src='../images/three-dots-vertical.svg'  >
                               </button>
                               <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>";
-                                echo "<li><a class='dropdown-item' href='./editSn_monitoring.php?no_sn={$record['sn_number']}'>Edit Foam</a></li>";
+                              echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>Add Qr</a></li>";
+                                echo "<li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}'>Edit Foam</a></li>";
                             
-                                echo "  <li><a class='dropdown-item' href='./detailSn_monitoring.php?no_sn={$record['sn_number']}'  >Detail</a></li>";
+                                echo "  <li><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
                                
                             
                                 echo "</ul>
                                                                       </div></td>";
                                 echo '</tr>';
+                            }
                             }
                             ?>
 

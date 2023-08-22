@@ -1,5 +1,14 @@
 var golbal_isVaild = true;
 
+
+$(document).ready(function(){
+    $("input,select").on("change",function(){
+        this.parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = this.value === ""?  "This feild is required" : "";
+    })
+})
+
+
+
 function handleKeyPress(event) {
     var val = event.target.value;
 
@@ -23,7 +32,7 @@ function handleKeyPress(event) {
     }
 
     $.ajax({
-        url: "./services/snNo.php",
+        url: "../services/snNo.php",
         type: "GET",
         data: dat,
         dataType: "json",
@@ -49,7 +58,7 @@ function submitFoam(){
     var isValid = true;
     for(var i = 0 ; i < class_error.length ; i++){    
         
-        class_error[i].parentNode.parentNode.firstElementChild.lastElementChild.lastElementChild.innerHTML = class_error[i].value === ""?  "This feild is required" : "";
+        class_error[i].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = class_error[i].value === ""?  "This feild is required" : "";
         if(isValid){
         isValid =  class_error[i].value === ""? false : true
         }

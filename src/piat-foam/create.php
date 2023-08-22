@@ -1,8 +1,8 @@
 <?php
-include 'header.php';
+include '../partials/header.php';
 
 if (!isset($_SESSION['no_sn'])) {
-    header('location: ./foam-1.php');
+    header('location: ../qr-foams/create.php');
 
     exit();
 }
@@ -11,7 +11,7 @@ if (!isset($_SESSION['no_sn'])) {
 <div class="d-flex justify-content-end">
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/piat/foams/">index</a></li>
+    <li class="breadcrumb-item"><a href="../index.php">index</a></li>
     <li class="breadcrumb-item active" aria-current="page">add piat</li>
   </ol>
 </nav>
@@ -20,7 +20,7 @@ if (!isset($_SESSION['no_sn'])) {
 
 
     <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
-    <form action="./services/submitFoam.php" method="post">
+    <form action="../services/submitFoam.php" method="post">
 
         <div class="table-responsive table-bordered" style="overflow-y:auto ; "> <!-- TABLE # 1 -->
             <table class="table">
@@ -734,7 +734,7 @@ if (!isset($_SESSION['no_sn'])) {
         </div>
 
         <div class="text-center mt-b">
-            <a href="./editFoam-1.php?no_sn=<?php echo $_SESSION['no_sn']; ?>"><button class="btn btn-success btn-sm m-3"
+            <a href="../qr-foams/edit.php?no_sn=<?php echo $_SESSION['no_sn']; ?>"><button class="btn btn-success btn-sm m-3"
                     type="button">Goto QR</button></a>
             <button type="submit" class="btn btn-sm btn-success m-3">Submit</button>
         </div>

@@ -1,15 +1,16 @@
 <?php 
-include("header.php"); 
+include '../partials/header.php';
 
-include 'services/connection.php';
+include '../services/connection.php';
 
-$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where status = :stat ");
-$stat = 'new';  // Set the value you want to bind
-
+$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where status = :stat and tarikh_siap is null");
+$stat = 'Inprocess';  // Set the value you want to bind
+$piat = "";
 $stmt->bindParam(':stat', $stat);
+// $stmt->bindParam(':piat', $piat);
 
 $stmt->execute();
-$records = $stmt->fetch(PDO::FETCH_ASSOC);
+$records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
@@ -19,7 +20,7 @@ $records = $stmt->fetch(PDO::FETCH_ASSOC);
 <div class="d-flex justify-content-end">
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/piat/foams/">index</a></li>
+    <li class="breadcrumb-item"><a href="../index.php">index</a></li>
     <li class="breadcrumb-item active" aria-current="page">add qr</li>
   </ol>
 </nav>
@@ -42,7 +43,7 @@ $records = $stmt->fetch(PDO::FETCH_ASSOC);
       }
     ?>
 <h3 class="text-center">AD Service QR 2023</h3> 
- <form action="./services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
+ <form action="../services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
       <table class="table caption-top">  
       <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A </caption>
@@ -77,13 +78,13 @@ $records = $stmt->fetch(PDO::FETCH_ASSOC);
                 <th>No. SN *<br> <span class="text-danger"></span></th>
                 <td colspan="2">
                     <input type="hidden" id="id" name="id">
-                    <input type="hidden" name="status" id="status" value="false">
+
                 <span class="text-danger" id="sn_exits"></span>
                 <select name="no_sn" id="no_sn" class="form-select" onchange="getSnDetail(this)">
     <option value="" hidden>Select SN</option>
     <?php 
     foreach ($records as $record) {
-        echo "<option value='{$record}'>{$record}</option>";
+        echo "<option value='{$record['no_sn']}'>{$record['no_sn']}</option>";
     }
     ?>
 </select>
@@ -335,7 +336,7 @@ $records = $stmt->fetch(PDO::FETCH_ASSOC);
 
 
 </div>
-<script src="../assets/js/foam-1.js"></script>
+<script src="../../assets/js/foam-1.js"></script>
 
  
 </body>

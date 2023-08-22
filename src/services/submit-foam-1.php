@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bare_span_a = $_POST['bare_span_a'];
         $bare_span_b = $_POST['bare_span_b'];
         $bare_span_c = $_POST['bare_span_c'];
-        $stat = $_POST['status'];
+        $stat = "Inprocess";
 
       
 
@@ -114,14 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 pvc_span_c = :pvc_span_c,
                 bare_span_a = :bare_span_a,
                 bare_span_b = :bare_span_b,
-                bare_span_c = :bare_span_c,
-                status = :status
+                bare_span_c = :bare_span_c
                 WHERE id = :id");
 
             $stmt->bindParam(':id', $id);
         }
 
-        $stmt->bindParam(':status', $status);
+        // $stmt->bindParam(':status', $status);
 
         $stmt->bindParam(':jenis_sn', $jenis_sn);
         $stmt->bindParam(':jenis_sambungan', $jenis_sambungan);

@@ -1,9 +1,11 @@
 <?php 
 ob_start();
     session_start();
-
+    // echo "Sdfdsf";
+    //                 exit;
     if(isset($_SESSION['sn']) || isset($_REQUEST['sn'])){
 
+      
         include("connection.php");
 
         $sn = isset($_REQUEST['sn'])? $_REQUEST['sn'] : $_SESSION['sn'];
@@ -90,7 +92,7 @@ ob_start();
                         $cable_type .= ', BARE-3/132-'.$record['bare_span_c'];
                     }
         
-                
+                   
         
                     $_SESSION['nama_jalan'] = $record['nama_jalan'];
                     $_SESSION['cable_type'] = $cable_type;
@@ -106,12 +108,12 @@ ob_start();
                     $stmt->execute();
                     $foam = $stmt->fetch(PDO::FETCH_ASSOC);
                     $pdo = null;
-        
+                    
                     if($foam){
                         $_SESSION['foam'] = $foam;
-                        header("Location: ../editFoam.php");
+                        header("Location: ../piat-foam/edit.php");
                     }else{
-                        header("Location: ../foam.php")     ;
+                        header("Location: ../piat-foam/create.php")     ;
                     }
         
                     exit();
