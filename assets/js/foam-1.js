@@ -178,3 +178,18 @@ function checkPiat(radio) {
         }
     });
 }
+
+
+function getAging(event){
+    let inDate = new Date( event.value) ;
+
+    let currentDate = new Date();
+
+    // Calculate the time difference in milliseconds
+    let timeDiff = currentDate - inDate;
+
+    // Convert milliseconds to days
+    let daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+    $("#aging_days").val(daysDiff)
+}

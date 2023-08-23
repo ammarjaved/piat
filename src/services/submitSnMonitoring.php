@@ -28,10 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $piat = "no";
             }
        
-            $sql = "INSERT INTO ad_service_qr (ba, alamat, user_status,piat , no_sn, jenis_sn, csp_paid_date, aging_days, jenis_sambungan, pic_vendor,  remark, status )
-            VALUES (:ba, :alamat, :user_status ,:piat,  :sn_number, :jenis_sn, :csp_paid_date, :aging_days, :jenis_sambungan, :pic_vendor,  :remark , :status)";
+            $sql = "INSERT INTO ad_service_qr (ba, alamat, user_status,piat , no_sn, jenis_sn, csp_paid_date, aging_days, jenis_sambungan, pic_vendor,  remark, status, created_by )
+            VALUES (:ba, :alamat, :user_status ,:piat,  :sn_number, :jenis_sn, :csp_paid_date, :aging_days, :jenis_sambungan, :pic_vendor,  :remark , :status, :created)";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':status',$stat);
+            $stmt->bindParam(':created',$_SESSION['user_id']);
         } else {
             $sql = "UPDATE ad_service_qr SET
             ba = :ba,
@@ -65,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':pic_vendor', $_POST['pic_vendor']);
         $stmt->bindParam(':remark', $_POST['remark']);
         $stmt->bindParam(':piat',$piat);
+        
         
 
         $stmt->execute();

@@ -4,7 +4,14 @@ include '../partials/header.php';
 ?>
 
 
-
+<div class="d-flex justify-content-end">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="../index.php">index</a></li>
+            <li class="breadcrumb-item active" aria-current="page">add sn</li>
+        </ol>
+    </nav>
+</div>
 <div class="container shadow p-5  my-5 bg-white foam-1">
 
 
@@ -52,7 +59,7 @@ include '../partials/header.php';
             </tr>
                     <tr>
                         <th>CSP Paid Date *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date" class="form-control required"></td>
+                        <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date" class="form-control required" onchange="getAging(this)"></td>
                     </tr>
                     <tr>
                         <th>Aging (days) *<br> <span class="text-danger"></span></th>

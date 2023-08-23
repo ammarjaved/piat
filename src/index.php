@@ -1,5 +1,9 @@
 <?php
 session_start();
+if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
+    header("location:./auth/login.php");
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,7 +61,7 @@ session_start();
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand" href="/foams/index.php">Piat Check List</a>
-
+            <a href="./auth/logout.php" class="btn btn-sm btn-secondary">logout</a>
         </div>
     </nav>
     <div class="container shadow p-5 my-5 bg-white ">
@@ -162,10 +166,9 @@ session_start();
                             <?php
                             include './services/connection.php';
                             
-                            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter') {
 
-                                if ($_POST['submitButton'] == 'filter') {  // for filter
-
+                             
                                     $ba = isset($_POST['searchBA']) ? $_POST['searchBA'] : '';
                                     $from = isset($_POST['from_date']) ? $_POST['from_date'] : '';
                                     $to = isset($_POST['to_date']) ? $_POST['to_date'] : '';
@@ -184,18 +187,25 @@ session_start();
                                     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to  ");
                                     $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
 
-                                } else {
+                              }else{
                                     // without filter
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr ORDER BY id DESC');
+                                    if($_SESSION['user_name'] == "admin"){
+                                        $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr    ORDER BY id DESC');
+                                  
+                                
+                                    }else{
+                                         $stmt = $pdo->prepare('SELECT * FROM (SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba OR created_by LIKE :created) AS subquery WHERE created_by LIKE :created OR (created_by IS NULL) ORDER BY id DESC');
+                                    $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
+                                    $stmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
+                                    } 
                                     $stmt->execute();
-                                }
-
-                                                                            //end filter
-                            } else {
-                                //when page reload
-                                $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr ');
-                                $stmt->execute();
-                            }
+                              }
+       
+                            
+                                
+                                
+                                
+                        
                             
                             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             

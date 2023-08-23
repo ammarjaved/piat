@@ -63,12 +63,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $pdo->prepare("INSERT INTO public.inspection_checklist
             (piat_date, project_no, project_name, feeder_circuit, feeder_circuit_from, feeder_circuit_to,
             feeder_circuit_length, voltage_level, cable_type, company, company_name, company_phone_no,
-            company_sign, inspection_checklist, result, attempt_no, prepare_by, prep_sign, ad_service_id)
+            company_sign, inspection_checklist, result, attempt_no, prepare_by, prep_sign, ad_service_id, created_by)
             VALUES
             (:piatDate, :projectNo, :projectName, :feederCircuit, :feederCircuitFrom, :feederCircuitTo,
             :feederCircuitLength, :voltageLevel, :cableType, :company, :companyName, :companyPhoneNo,
-            :companySign, :inspectionChecklist, :result, :attemptNo, :prepareBy, :prepSign , :serviceId)");
+            :companySign, :inspectionChecklist, :result, :attemptNo, :prepareBy, :prepSign , :serviceId, :created)");
             $stmt->bindParam('serviceId',$sn_id);
+            $stmt->bindParam(':created',$_SESSION['user_id']);
         }
         else{
     

@@ -1,4 +1,11 @@
-<?php session_start(); ?>
+<?php session_start(); 
+
+
+if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
+    header("location:../auth/login.php");
+}
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
