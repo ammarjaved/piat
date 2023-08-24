@@ -3,7 +3,7 @@ session_start();
 if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
     header("location:./auth/login.php");
 }
-
+include './services/connection.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -104,12 +104,17 @@ if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
                 <div class="m-2 col-md-2">
                     <label for="">Select BA :</label> <br>
                     <select name="searchBA" id="searchBA" class="form-select">
-                        <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>" hidden><?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : 'Select BA'; ?></option>
-                        <option value="KLB - 6121">KLB - 6121</option>
-                        <option value="KLT - 6122">KLT - 6122</option>
-                        <option value="KLP - 6123">KLP - 6123</option>
-                        <option value="KLS - 6124">KLS - 6124</option>
-                    </select>
+    <?php if($_SESSION['user_name'] == "admin"){ ?>
+        <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>" hidden><?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : 'Select BA'; ?></option>
+        <option value="KLB - 6121">KLB - 6121</option>
+        <option value="KLT - 6122">KLT - 6122</option>
+        <option value="KLP - 6123">KLP - 6123</option>
+        <option value="KLS - 6124">KLS - 6124</option>
+    <?php } else {
+        echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
+    }?>
+</select>
+
                 </div>
                 <div class="m-2 col-md-2">
                     <label for="">From Date :</label> <br>
@@ -131,6 +136,10 @@ if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
 
             </div>
         </form>
+
+
+<?php if($_SESSION['user_name'] == 'admin'){ include "./admin/dashboard-count.php";} ?>
+        
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
@@ -143,6 +152,8 @@ if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
             </li>
 
         </ul>
+
+
         <div class="tab-content" id="myTabContent">
 
 
@@ -164,7 +175,7 @@ if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
                         </thead>
                         <tbody>
                             <?php
-                            include './services/connection.php';
+                           
                             
                             if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter') {
 
@@ -194,8 +205,8 @@ if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
                                   
                                 
                                     }else{
-                                         $stmt = $pdo->prepare('SELECT * FROM (SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba OR created_by LIKE :created) AS subquery WHERE created_by LIKE :created OR (created_by IS NULL) ORDER BY id DESC');
-                                    $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
+                                         $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba ORDER BY id DESC');
+                                    // $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
                                     $stmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
                                     } 
                                     $stmt->execute();

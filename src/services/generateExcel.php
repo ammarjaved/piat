@@ -1,20 +1,29 @@
 <?php
 ob_start();
-
-
+session_start();
 require '../../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+
+
+if(!isset($_SESSION['user_name'])){
+    header("location:../index.php");
+}
  include('./connection.php');
 
 
  if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+    if($_SESSION['user_name']== 'admin'){
+$ba = isset($_POST['exc_ba']) ? $_POST['exc_ba'] : ''; 
+    }else{
+        $ba = $_SESSION['user_ba'];
+    }
       
-          $ba = isset($_POST['exc_ba']) ? $_POST['exc_ba'] : '';               
+                        
           $from = isset($_POST['exc_from']) ? $_POST['exc_from'] : '';
           $to = isset($_POST['exc_to']) ? $_POST['exc_to'] : '';
           $record ='';
@@ -25,8 +34,11 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
           }
           $from = $from == '' ? $record['min'] : $from;
           $to = $to == '' ? $record['max'] : $to;
+          
           $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba 
-                    AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to");                    
+                    AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to"); 
+                    
+                    
           $stmt->execute([':ba' => "%$ba%",':from' => $from,':to' => $to,]); 
         
  }elseif(isset($_REQUEST['id'])){

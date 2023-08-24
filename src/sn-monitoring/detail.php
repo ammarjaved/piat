@@ -91,6 +91,7 @@ if (!$record) {
             </table>
 
             <div class="text-center m-3">
+            <a href="../index.php" ><button type="button" class="btn btn-sm btn-primary"> GO BACK</button></a>
                 <a href="./edit.php?no_sn=<?php echo $record['no_sn'] ?>"> <button class="btn btn-sm btn-success">Update SN</button> </a>
             </div>
         </div>

@@ -932,7 +932,7 @@
     </div> 
 
      <div class="text-center mt-b">
-      
+     <a href="../index.php" class="btn btn-sm btn-primary">GO BACK</a>
      </div>
 
     </form>
