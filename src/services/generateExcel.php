@@ -30,7 +30,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
           $stmt->execute([':ba' => "%$ba%",':from' => $from,':to' => $to,]); 
         
  }elseif(isset($_REQUEST['id'])){
- 
+
      $id = $_REQUEST['id'];
      $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE id = :id");
      $stmt->bindParam(':id', $id);
@@ -49,17 +49,21 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
        
         
         $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
- 
+	
         $pdo = null;
  
         if($records){
-            $name = isset($_REQUEST['id']) ? $records[0]['no_sn'] : "All Sn"; 
+            $name = isset($_REQUEST['id']) ? $records[0]['no_sn'] : "All Sn";
+			
             try{
+			
                 $spreadsheet = IOFactory::load('../../assets/Excel- template.xlsx');
+  
 
 
                 $sheet = $spreadsheet->getActiveSheet();
                 $i = 8 ;
+				
                 foreach( $records as $record){
                 $sheet->setCellValue('B'.$i, $i-7);
                 $sheet->setCellValue('C'.$i, $record['ba']);
