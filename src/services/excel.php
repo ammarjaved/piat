@@ -24,7 +24,7 @@
         $stmt = $pdo->prepare("UPDATE public.ad_service_qr SET jenis_sn = :jenis WHERE no_sn = :sn ");
         $stmt->bindParam(':jenis',$jen);
         $stmt->bindParam(':sn', $sn);
-        $stmt->execute();
+        // $stmt->execute();
         
 
             echo $sn."  ".$jenis."<br>";

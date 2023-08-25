@@ -55,13 +55,18 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <th class="col-md-6">BA *<br> <span class="text-danger"></span></th>
               <td  colspan="2">
                 
-                <select name="ba" class="form-select required" id="ba" style="border:1px solid black">
-                    <option value="" hidden> Select BA</option>
-                    <option value="KLB - 6121">KLB - 6121</option>
-                    <option value="KLT - 6122">KLT - 6122</option>
-                    <option value="KLP - 6123">KLP - 6123</option>
-                    <option value="KLS - 6124">KLS - 6124</option>
-                </select>
+              <select name="searchBA" id="searchBA" class="form-select">
+    <?php if($_SESSION['user_name'] == "admin"){ ?>
+        <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>" hidden><?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : 'Select BA'; ?></option>
+        <option value="KLB - 6121">KLB - 6121</option>
+        <option value="KLT - 6122">KLT - 6122</option>
+        <option value="KLP - 6123">KLP - 6123</option>
+        <option value="KLS - 6124">KLS - 6124</option>
+    <?php } else {
+        echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
+    }?>
+</select>
+
              </td>
             </tr>
             <tr>
@@ -326,6 +331,7 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <div class="text-center d-flex justify-content-center">
+    <a href="../index.php" ><button type="button" class="btn btn-sm btn-primary  my-3 mx-3"> GO BACK</button></a>
       <button type="submit" class="btn btn-sm btn-success my-3 mx-3" name="submit_button" value="submit">Submit</button>
       <button type="submit" class="btn btn-sm btn-success mx-3 my-3 " style="display: none;"  id="next_foam" name="submit_button" value="next">Next</button>
      </div>
