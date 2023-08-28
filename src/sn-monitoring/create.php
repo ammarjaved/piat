@@ -17,7 +17,7 @@ include '../partials/header.php';
 <div class="container shadow p-5  my-5 bg-white foam-1">
 
 
-    <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
+    <!-- <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3> -->
     <form action="../services/submitSnMonitoring.php" method="post" onsubmit="return submitFoam()">
         <div class="table-responsive table-bordered" style="overflow-y:auto ; "> <!-- TABLE # 1 -->
             <table class="table">
@@ -79,8 +79,8 @@ include '../partials/header.php';
                     </tr>
                  
                     <tr>
-                        <th>Remark *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="remark" id="remark" class="form-control required"></td>
+                        <th>Remark<br> <span class="text-danger"></span></th>
+                        <td colspan="2"><input type="text" name="remark" id="remark" class="form-control"></td>
                     </tr>
                   
 

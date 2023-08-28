@@ -60,9 +60,10 @@
 
 <body>
     <div class="container">
-        <img src="./images/bbgg.png" alt="" height="265">
+        <h1 style="color:#0254B7;">AD KL SN, QR and PIAT Monitoring</h1>
+        <img style="padding-top:30px;" src="./images/bbgg.png" alt="" height="265">
         <a href="./src/index.php">
-            <button class="btn btn-lg btn-success mt-4">Fill Foam</button>
+            <button class="btn btn-lg btn-success mt-4">Login</button>
         </a>
     </div>
 </body>

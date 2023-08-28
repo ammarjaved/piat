@@ -189,7 +189,7 @@ function getAging(event){
     let timeDiff = currentDate - inDate;
 
     // Convert milliseconds to days
-    let daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    let daysDiff = (Math.floor(timeDiff / (1000 * 60 * 60 * 24)))+1;
 
     $("#aging_days").val(daysDiff)
 }

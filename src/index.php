@@ -60,7 +60,7 @@ include './services/connection.php';
 
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/foams/index.php">Piat Check List</a>
+            <a class="navbar-brand" href="/foams/index.php">AD KL SN, QR and PIAT Monitoring</a>
             <a href="./auth/logout.php" class="btn btn-sm btn-secondary">logout</a>
         </div>
     </nav>
@@ -80,7 +80,7 @@ include './services/connection.php';
         }
         ?>
 
-        <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
+        <h3 class="text-center"><?php echo $_SESSION['user_name'];?></h3>
         <div class="text-end mb-3 d-flex justify-content-end">
         <div class="m-2">
 
@@ -141,16 +141,17 @@ include './services/connection.php';
 <?php if($_SESSION['user_name'] == 'admin'){ include "./admin/dashboard-count.php";} ?>
         
         <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
-                    type="button" role="tab" aria-controls="home" aria-selected="true">QR</button>
-            </li>
-            <li class="nav-item" role="presentation">
+        <li class="nav-item" role="presentation">
                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile"
                     type="button" role="tab" aria-controls="profile" aria-selected="false">SN
                     Monitoring</button>
             </li>
 
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
+                    type="button" role="tab" aria-controls="home" aria-selected="true">QR</button>
+            </li>
+            
         </ul>
 
 
