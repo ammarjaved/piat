@@ -46,7 +46,7 @@ include '../partials/header.php';
                         <td colspan="2"><input type="text" name="alamat" id="alamat" class="form-control required"></td>
                     </tr>
                     <tr>
-                        <th>User status *<br> <span class="text-danger"></span></th>
+                        <th>ERMS User Status *<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="text" name="user_status" id="user_status" class="form-control required"></td>
                     </tr>
                     <tr>
@@ -83,6 +83,10 @@ include '../partials/header.php';
                         <td colspan="2"><input type="text" name="remark" id="remark" class="form-control"></td>
                     </tr>
                   
+                    <tr>
+                        <th>Construction Status<br> <span class="text-danger"></span></th>
+                        <td colspan="2"><input type="text" name="remark" id="remark" class="form-control"></td>
+                    </tr>
 
                 </tbody>
             </table>
