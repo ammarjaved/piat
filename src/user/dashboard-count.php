@@ -2,11 +2,11 @@
 
  
 
-$stmt = $pdo->prepare("SELECT a.count ,b.total_count, c.count_sn , d.count_piat FROM 
-(SELECT count(*) as count FROM ad_service_qr WHERE ba = :ba AND status = 'Inprocess')a,
-(SELECT count(*) as total_count FROM ad_service_qr WHERE ba = :ba AND status = 'Complete' OR ba=:ba AND status = '1')b,
-(SELECT count(*) as count_sn FROM ad_service_qr WHERE ba = :ba AND jenis_sambungan = 'UG' )c,
-(SELECT count(*) as count_piat FROM ad_service_qr WHERE ba = :ba AND jenis_sambungan != 'UG')d");
+$stmt = $pdo->prepare("SELECT a.count ,b.complete_count, c.inprocess_count , d.kiv_piat FROM 
+(SELECT count(*) as count FROM ad_service_qr WHERE ba = :ba  )a,
+(SELECT count(*) as complete_count FROM ad_service_qr WHERE ba = :ba AND status = 'Complete' OR ba=:ba AND status = '1')b,
+(SELECT count(*) as inprocess_count FROM ad_service_qr WHERE ba = :ba AND status = 'Inprocess' )c,
+(SELECT count(*) as kiv_piat FROM ad_service_qr WHERE ba = :ba AND status = 'KIV')d");
 
 
 $status = "Inprocess";
@@ -18,24 +18,31 @@ $count = $stmt->fetch(PDO::FETCH_ASSOC);
 
 ?>
 
-<div class="row text-center">
+<div class="row text-center m-4">
     
-    <div class="col-md-3 c bg-light m-2 p-2" style="background-color:  #14DFE4 !important;">
-        <p style="font-weight: 600;">Total  Pending <span class="text-captalize"><?php echo $_SESSION['user_ba']?></span> </p>
-        <div class="text-center"><?php echo $count['count']?></div>
+    <div class="col-md-12   " >
+    <div class="mb-0 m-2  p-1" style="background-color:  #14DFE4 !important;">
+        <p style="font-weight: 600; " class="mb-2"> Total  <span class="text-captalize"><?php echo $_SESSION['user_ba']?></span> </p>
+        <div class="text-center"><?php echo $count['count']?></div></div>
     </div>
-    <div class="col-md-3 c bg-light m-2 p-2" style="background-color:  #14DFE4 !important;">
+    <div class="col-md-4 " >
+    <div class=" m-2 p-1" style="background-color:  #14DFE4 !important;">
         <p style="font-weight: 600;">Total  Complete <span class="text-captalize"><?php echo $_SESSION['user_ba']?></span></p>
-        <div class="text-center"><?php echo $count['total_count']?></div>
+        <div class="text-center"><?php echo $count['complete_count']?></div>
+    </div>
     </div>
 
-    <div class="col-md-2 bg-light m-2 p-2" style="background-color:  #14DFE4 !important;">
-        <p style="font-weight: 600;">Total  SN </p>
-        <div class="text-center"><?php echo $count['count_sn']?></div>
+    <div class="col-md-4 ">
+    <div class=" mx-1 m-2  p-1" style="background-color:  #14DFE4 !important;">
+        <p style="font-weight: 600;">Total  INPROCESS </p>
+        <div class="text-center"><?php echo $count['inprocess_count']?></div>
     </div>
-    <div class="col-md-2 bg-light m-2 p-2" style="background-color:  #14DFE4 !important;">
-        <p style="font-weight: 600;">Total  PIAT </p>
-        <div class="text-center"><?php echo $count['count_piat']?></div>
+    </div>
+    <div class="col-md-4 ">
+    <div class="ml-0 m-2  p-1" style="background-color:  #14DFE4 !important;">
+        <p style="font-weight: 600;">Total  KIV </p>
+        <div class="text-center"><?php echo $count['kiv_piat']?></div>
+    </div>
     </div>
 
         
