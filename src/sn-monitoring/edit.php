@@ -26,7 +26,8 @@ if (!$record) {
 
 
     <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
-    <form action="../services/submitSnMonitoring.php?id=<?php echo $record['id'] ?>" method="post" onsubmit="return submitFoam()">
+    <form action="../services/submitSnMonitoring.php?id=<?php echo $record['id']; ?>" method="post"
+        onsubmit="return submitFoam()">
         <div class="table-responsive table-bordered" style="overflow-y:auto ; "> <!-- TABLE # 1 -->
             <table class="table">
                 <thead>
@@ -35,32 +36,32 @@ if (!$record) {
                 <tbody>
                     <tr>
                         <th>BA<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><select name="searchBA" id="searchBA" class="form-select">
-    <?php if($_SESSION['user_name'] == "admin"){ ?>
-        <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>" hidden><?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : 'Select BA'; ?></option>
-        <option value="KLB - 6121">KLB - 6121</option>
-        <option value="KLT - 6122">KLT - 6122</option>
-        <option value="KLP - 6123">KLP - 6123</option>
-        <option value="KLS - 6124">KLS - 6124</option>
-    <?php } else {
+                        <td colspan="2"><select name="ba" id="ba" class="form-select">
+                                <?php if($_SESSION['user_name'] == "admin"){ ?>
+
+                                <option value="KLB - 6121">KLB - 6121</option>
+                                <option value="KLT - 6122">KLT - 6122</option>
+                                <option value="KLP - 6123">KLP - 6123</option>
+                                <option value="KLS - 6124">KLS - 6124</option>
+                                <?php } else {
         echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
     }?>
-</select>
+                            </select>
 
                         </td>
                     </tr>
-                    
+
                     <tr>
                         <th>Alamat<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="description" id="description" class="form-control required"
-                                value="<?php echo $record['alamat']; ?>"></td>
+                        <td colspan="2"><input type="text" name="description" id="description"
+                                class="form-control required" value="<?php echo $record['alamat']; ?>"></td>
                     </tr>
                     <tr>
                         <th>User status<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="user_status" id="user_status" class="form-control required"
-                                value="<?php echo $record['user_status']; ?>"></td>
+                        <td colspan="2"><input type="text" name="user_status" id="user_status"
+                                class="form-control required" value="<?php echo $record['user_status']; ?>"></td>
                     </tr>
-                 
+
                     <tr>
                         <th>SN Number<br> <span class="text-danger"></span></th>
                         <td colspan="2"><span class="text-danger" id="sn_exits"></span>
@@ -69,45 +70,70 @@ if (!$record) {
                         </td>
                     </tr>
                     <tr>
-                <th>Jenis SN *<br> <span class="text-danger"></span></th>
-                <td ><input type="radio" name="jenis_sn" id="jenis_sn_lkkk" value="LKKK" <?php echo $record['jenis_sn'] == "LKKK" ? 'checked' : ''; ?>> <label for="jenis_sn_lkkk">LKKK</label></td>
-                <td ><input type="radio" name="jenis_sn" id="jenis_sn_express" value="Express" <?php echo $record['jenis_sn'] == "Express" ? 'checked' : ''; ?>> <label for="jenis_sn_express">Express</label></td>
-            </tr>
-            <tr>
-                <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
-                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH"   <?php echo $record['jenis_sambungan'] == "OH" ? 'checked' : ''; ?>> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
-                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG"  <?php echo $record['jenis_sambungan'] == "UG" ? 'checked' : ''; ?>> <label for="jenis_sambungan_ug">UG</label></td>
-            </tr>
+                        <th>Jenis SN *<br> <span class="text-danger"></span></th>
+                        <td><input type="radio" name="jenis_sn" id="jenis_sn_lkkk" value="LKKK" <?php echo $record['jenis_sn'] == 'LKKK' ? 'checked' : ''; ?>>
+                            <label for="jenis_sn_lkkk">LKKK</label>
+                        </td>
+                        <td><input type="radio" name="jenis_sn" id="jenis_sn_express" value="Express"
+                                <?php echo $record['jenis_sn'] == 'Express' ? 'checked' : ''; ?>> <label for="jenis_sn_express">Express</label></td>
+                    </tr>
+                    <tr>
+                        <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
+                        <td> <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH"
+                                <?php echo $record['jenis_sambungan'] == 'OH' ? 'checked' : ''; ?>> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
+                        <td><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG"
+                                <?php echo $record['jenis_sambungan'] == 'UG' ? 'checked' : ''; ?>> <label for="jenis_sambungan_ug">UG</label></td>
+                    </tr>
                     <tr>
                         <th>CSP Paid Date<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date" class="form-control required" onchange="getAging(this)"
-                                value="<?php echo $record['csp_paid_date']; ?>"></td>
+                        <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date"
+                                class="form-control required" onchange="getAging(this)" value="<?php echo $record['csp_paid_date']; ?>">
+                        </td>
                     </tr>
                     <tr>
                         <th>Aging (days)<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="number" name="aging_days" id="aging_days" class="form-control required"
-                                value="<?php echo $record['aging_days']; ?>"></td>
+                        <td colspan="2"><input type="number" name="aging_days" id="aging_days"
+                                class="form-control required" value="<?php echo $record['aging_days']; ?>"></td>
                     </tr>
-                
+
                     <tr>
                         <th>PIC/Vendor<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="pic_vendor" id="pic_vendor" class="form-control required"
-                                value="<?php echo $record['pic_vendor']; ?>"></td>
+                        <td colspan="2"><input type="text" name="pic_vendor" id="pic_vendor"
+                                class="form-control required" value="<?php echo $record['pic_vendor']; ?>"></td>
                     </tr>
-                  
+
                     <tr>
                         <th>Remark<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="remark" id="remark" class="form-control required"
-                                value="<?php echo $record['remark']; ?>"></td>
+                        <td colspan="2"><input type="text" name="remark" id="remark"
+                                class="form-control required" value="<?php echo $record['remark']; ?>"></td>
                     </tr>
-                     
+
+
+                    <tr id="comp_date">
+                        <th>Completion Date<br> <span class="text-danger"></span></th>
+                        <td colspan="2"><input type="date" name="complete_date" id="complete_date"
+                                value="<?php echo $record['tarikh_siap']; ?>" class="form-control">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Construction Status<br> <span class="text-danger"></span></th>
+                        <td colspan="2">
+                            <select name="cons_status" id="cons_status" class="form-select">
+                                <option value="<?php echo $record['status']; ?>" hidden> <?php echo $record['status']; ?></option>
+                                <option value="Inprocess">Inprocess</option>
+                                <option value="Complete">Complete</option>
+                            </select>
+                        </td>
+                    </tr>
+
 
                 </tbody>
             </table>
         </div>
 
         <div class="text-center mt-b">
-        <a href="../index.php" ><button type="button" class="btn btn-sm btn-primary"> GO BACK</button></a>
+            <a href="../index.php"><button type="button" class="btn btn-sm btn-primary"> GO BACK</button></a>
             <button type="submit" class="btn btn-sm btn-success m-3">Submit</button>
         </div>
     </form>

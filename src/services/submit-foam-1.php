@@ -114,7 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 pvc_span_c = :pvc_span_c,
                 bare_span_a = :bare_span_a,
                 bare_span_b = :bare_span_b,
-                bare_span_c = :bare_span_c
+                bare_span_c = :bare_span_c,
+                qr = 'true'
                 WHERE id = :id");
 
             $stmt->bindParam(':id', $id);

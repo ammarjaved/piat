@@ -87,6 +87,19 @@ if (!$record) {
                         <td><?php echo $record['complete_date']; ?></td>
                     </tr>
 
+                    <tr id="comp_date">
+                        <th>Completion Date<br> <span class="text-danger"></span></th>
+                        <td colspan="2"><?php echo $record['tarikh_siap']; ?>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Construction Status<br> <span class="text-danger"></span></th>
+                        <td colspan="2">
+                           <?php echo $record['status']; ?>
+                        </td>
+                    </tr>
+
                 </tbody>
             </table>
 

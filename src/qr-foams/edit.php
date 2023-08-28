@@ -66,9 +66,9 @@
             <tr>
               <th class="col-md-6">BA *<br> <span class="text-danger"></span></th>
               <td  colspan="2">
-              <select name="searchBA" id="searchBA" class="form-select">
+              <select name="ba" id="ba" class="form-select">
     <?php if($_SESSION['user_name'] == "admin"){ ?>
-        <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>" hidden><?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : 'Select BA'; ?></option>
+        
         <option value="KLB - 6121">KLB - 6121</option>
         <option value="KLT - 6122">KLT - 6122</option>
         <option value="KLP - 6123">KLP - 6123</option>

@@ -3,6 +3,7 @@ session_start();
 ob_start();
 include 'connection.php';
 
+// echo " asdasdasd";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if (!isset($_REQUEST['id'])) {
@@ -28,11 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $piat = "no";
             }
        
-            $sql = "INSERT INTO ad_service_qr (ba, alamat, user_status,piat , no_sn, jenis_sn, csp_paid_date, aging_days, jenis_sambungan, pic_vendor,  remark, status, created_by )
-            VALUES (:ba, :alamat, :user_status ,:piat,  :sn_number, :jenis_sn, :csp_paid_date, :aging_days, :jenis_sambungan, :pic_vendor,  :remark , :status, :created)";
+            $sql = "INSERT INTO ad_service_qr (ba, alamat, user_status,piat , no_sn, jenis_sn, csp_paid_date, aging_days, jenis_sambungan, pic_vendor,  remark, status, created_by , tarikh_siap , qr)
+            VALUES (:ba, :alamat, :user_status ,:piat,  :sn_number, :jenis_sn, :csp_paid_date, :aging_days, :jenis_sambungan, :pic_vendor,  :remark , :status, :created , :tarikh_siap , 'false')";
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':status',$stat);
+            $stmt->bindParam(':status',$_POST['cons_status']);
             $stmt->bindParam(':created',$_SESSION['user_id']);
+           
         } else {
             $sql = "UPDATE ad_service_qr SET
             ba = :ba,
@@ -54,7 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':id', $_REQUEST['id']);
            
         }
-
+        $tarik_siap = isset($_POST['complete_date']) ? $_POST['complete_date'] : '';
+        $stmt->bindParam(':tarikh_siap' ,$tarik_siap );
         $stmt->bindParam(':ba', $_POST['ba']);
         $stmt->bindParam(':alamat', $_POST['alamat']);
         $stmt->bindParam(':user_status', $_POST['user_status']);
