@@ -54,7 +54,7 @@ if (!$record) {
                     <tr>
                         <th>Alamat<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="text" name="description" id="description"
-                                class="form-control required" value="<?php echo $record['alamat']; ?>"></td>
+                                class="form-control required" value="<?php echo $record['alamat']; ?>" name="alamat"></td>
                     </tr>
                     <tr>
                         <th>User status<br> <span class="text-danger"></span></th>
@@ -122,6 +122,7 @@ if (!$record) {
                             <select name="cons_status" id="cons_status" class="form-select">
                                 <option value="<?php echo $record['status']; ?>" hidden> <?php echo $record['status']; ?></option>
                                 <option value="Inprocess">Inprocess</option>
+                                <option value="KIV">KIV</option>
                                 <option value="Complete">Complete</option>
                             </select>
                         </td>

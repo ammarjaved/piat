@@ -3,10 +3,10 @@ include '../partials/header.php';
 
 include '../services/connection.php';
 
-$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where status = :stat and tarikh_siap is null");
+$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where jenis_sambungan != 'UG' and tarikh_siap = '' OR tarikh_siap is null");
 $stat = 'Inprocess';  // Set the value you want to bind
 $piat = "";
-$stmt->bindParam(':stat', $stat);
+// $stmt->bindParam(':stat', $stat);
 // $stmt->bindParam(':piat', $piat);
 
 $stmt->execute();

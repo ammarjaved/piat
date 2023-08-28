@@ -237,7 +237,7 @@ include './services/connection.php';
                             
                                     echo '</td><td class="algin-middle text-center">';
                             
-                                    if ($record['status'] == 'Complete' && $record['piat'] == 'yes') {
+                                    if ($record['piat_status'] == 'true') {
                                         echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
                                         echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
@@ -254,9 +254,9 @@ include './services/connection.php';
                                         echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
                                         echo $record['tarikh_siap'] != '' ? 'Edit Foam' : 'Add Qr';
                                         echo '</a></li>';
-                                        if ($record['status'] == 'Complete') {
+                                        if ($record['piat_status'] == 'true') {
                                             echo "  <li><a class='dropdown-item' href='./generate-pdf/previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
-                                        } elseif ($record['status'] == 'Inprocess' && $record['tarikh_siap'] != '') {
+                                        } elseif ( $record['piat_status'] == '') {
                                             echo "  <li><a class='dropdown-item' href='./services/foamRedirect.php?sn={$record['no_sn']}'>Fill Checklist</a></li>";
                                         }
                                         echo "  <li><a class='dropdown-item' href='./piat-foam/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
@@ -307,7 +307,7 @@ include './services/connection.php';
                             $pdo = null;
                             
                             foreach ($records as $record) {
-                                if (($record['status'] == 'Inprocess' && $record['tarikh_siap'] == '') || $record['jenis_sambungan'] == 'UG') {
+                                if (($record['jenis_sambungan'] != 'UG' && $record['tarikh_siap'] == '') || $record['jenis_sambungan'] == 'UG') {
                                     echo '<tr>';
                                     echo "<td>{$record['ba']}</td>";
                                     echo "<td>{$record['no_sn']}</td>";
