@@ -34,7 +34,7 @@ $count = $stmt->fetch(PDO::FETCH_ASSOC);
 
     <div class="col-md-4 ">
     <div class=" mx-1 m-2  p-1" style="background-color:  #14DFE4 !important;">
-        <p style="font-weight: 600;">Total  INPROCESS </p>
+        <p style="font-weight: 600;">Total  Inprogress </p>
         <div class="text-center"><?php echo $count['inprocess_count']?></div>
     </div>
     </div>
