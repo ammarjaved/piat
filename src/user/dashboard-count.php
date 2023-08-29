@@ -22,12 +22,12 @@ $count = $stmt->fetch(PDO::FETCH_ASSOC);
     
     <div class="col-md-12   " >
     <div class="mb-0 m-2  p-1" style="background-color:  #14DFE4 !important;">
-        <p style="font-weight: 600; " class="mb-2"> Total  <span class="text-captalize"><?php echo $_SESSION['user_ba']?></span> </p>
+        <p style="font-weight: 600; " class="mb-2"> Total  </p>
         <div class="text-center"><?php echo $count['count']?></div></div>
     </div>
     <div class="col-md-4 " >
     <div class=" m-2 p-1" style="background-color:  #14DFE4 !important;">
-        <p style="font-weight: 600;">Total  Complete <span class="text-captalize"><?php echo $_SESSION['user_ba']?></span></p>
+        <p style="font-weight: 600;">Total  Complete </p>
         <div class="text-center"><?php echo $count['complete_count']?></div>
     </div>
     </div>

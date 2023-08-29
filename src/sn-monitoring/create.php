@@ -138,15 +138,16 @@ include '../partials/header.php';
             }
         })
 
-        $("#cons_status").on("change",function(){
-          
+        $("#cons_status").on("change", function() {
 
-if(this.value === "Complete"){
-     $("#complete_date").hasClass('required') ? '' : $("#complete_date").addClass('required')
-}else{
-    $("#complete_date").hasClass('required') ? $("#complete_date").removeClass('required') :''
-}
-})
+
+            if (this.value === "Complete") {
+                $("#complete_date").hasClass('required') ? '' : $("#complete_date").addClass('required')
+            } else {
+                $("#complete_date").hasClass('required') ? $("#complete_date").removeClass('required') :
+                    ''
+            }
+        })
 
     })
 </script>
