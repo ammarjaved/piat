@@ -3,18 +3,21 @@ include '../partials/header.php';
 
 include '../services/connection.php';
 
-$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where jenis_sambungan != 'UG' and tarikh_siap = '' OR tarikh_siap is null");
+$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where jenis_sambungan != 'UG' and tarikh_siap = '' and  ba LIKE :ba OR tarikh_siap is null  and ba LIKE :ba");
 $stat = 'Inprocess';  // Set the value you want to bind
-$piat = "";
+$ba = $_SESSION['user_ba'];
 // $stmt->bindParam(':stat', $stat);
-// $stmt->bindParam(':piat', $piat);
+$stmt->execute([':ba' => "%$ba%"]);
 
-$stmt->execute();
+
 $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
 ?>
+<style>.dropdown-menu.show {
+    width: 100% !important;
+}</style>
  
 
 <div class="d-flex justify-content-end">
@@ -54,30 +57,20 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr>
               <th class="col-md-6">BA *<br> <span class="text-danger"></span></th>
               <td  colspan="2">
-                
-              <select name="ba" id="ba" class="form-select">
-    <?php if($_SESSION['user_name'] == "admin"){ ?>
-       
-        <option value="KLB - 6121">KLB - 6121</option>
-        <option value="KLT - 6122">KLT - 6122</option>
-        <option value="KLP - 6123">KLP - 6123</option>
-        <option value="KLS - 6124">KLS - 6124</option>
-    <?php } else {
-        echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
-    }?>
-</select>
+                <span id="ba"></span>
+            
 
              </td>
             </tr>
             <tr>
                 <th>Jenis SN *<br> <span class="text-danger"></span></th>
-                <td ><input type="radio" name="jenis_sn" id="jenis_sn_lkkk" value="LKKK"> <label for="jenis_sn_lkkk">LKKK</label></td>
-                <td ><input type="radio" name="jenis_sn" id="jenis_sn_express" value="Express"> <label for="jenis_sn_express">Express</label></td>
+                <td ><span id="jenis_sn_lkkk" class="check"></span> <label for="jenis_sn_lkkk">LKKK</label></td>
+                <td ><span id="jenis_sn_express" class="check"></span> <label for="jenis_sn_express">Express</label></td>
             </tr>
             <tr>
                 <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
-                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH" onclick="checkPiat(this)"> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
-                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)"> <label for="jenis_sambungan_ug">UG</label></td>
+                <td > <span  id="jenis_sambungan_oh" > </span><label for="jenis_sambungan_oh">OH/Combine Service</label></td>
+                <td ><span  id="jenis_sambungan_ug" > </span><label for="jenis_sambungan_ug">UG</label></td>
             </tr>
             <tr>
                 <th>No. SN *<br> <span class="text-danger"></span></th>
@@ -98,7 +91,7 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tr>
             <tr>
                 <th>Alamat *<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="alamat" id="alamat" class="form-control required"></td>
+                <td colspan="2"><span id="alamat"></span></td>
             </tr>
             <tr>
                 <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
@@ -106,8 +99,8 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tr>
             <tr>
                 <th>PIAT *<br> <span class="text-danger"></span></th>
-                <td > <input type="radio" name="piat" id="piat_yes" value="yes"> <label for="piat_yes">Yes</label></td>
-                <td ><input type="radio" name="piat" id="piat_no" value="no"> <label for="piat_no">No</label></td>
+                <td > <span  id="piat_yes" class="check"></span> <label for="piat_yes">Yes</label></td>
+                <td ><span id="piat_no" class="check"> </span><label for="piat_no">No</label></td>
             </tr>
             <tr>
                 <th>Nama Pencawang / Nama Feeder Pillar <br> <span  style="font-family: Harlow Solid Italic !important; font-size:13px">Jika LKKK Sahaja </span> <span class="text-danger"></span> <br> <span class="text-danger"></span></th>
@@ -303,8 +296,8 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <tr>
                 <th>Talian Utama (M) / Serbis (S)<br> <span class="text-danger"></span></th>
-                <td><input type="radio" name="talian_utama" id="talian_utama_m" value="M" checked> <label for="talian_utama_m"> M</label></td>
-                <td><input type="radio" name="talian_utama" id="talian_utama_s" value="S"> <label for="talian_utama_s"> S</label></td>
+                <td><input type="checkbox" name="talian_utama" id="talian_utama_m" value="M" checked> <label for="talian_utama_m"> M</label></td>
+                <td><input type="checkbox" name="talian_utama_s" id="talian_utama_s" value="S"> <label for="talian_utama_s"> S</label></td>
             </tr>
             <tr>
                 <th>Bil Umbang <br> <span class="text-danger"></span></th>
@@ -343,6 +336,15 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </div>
 <script src="../../assets/js/foam-1.js"></script>
+<script>
+
+    var select_box_element = document.querySelector('#no_sn');
+
+    dselect(select_box_element, {
+        search: true
+    });
+
+</script>
 
  
 </body>

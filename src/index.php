@@ -314,7 +314,7 @@ include './services/connection.php';
                             $pdo = null;
                             
                             foreach ($records as $record) {
-                                if (($record['jenis_sambungan'] != 'UG' && $record['tarikh_siap'] == '') || $record['jenis_sambungan'] == 'UG') {
+                                if (($record['jenis_sambungan'] != 'UG' && $record['status'] != 'Complete') || $record['jenis_sambungan'] == 'UG') {
                                     echo '<tr>';
                                     echo "<td>{$record['ba']}</td>";
                                     echo "<td>{$record['no_sn']}</td>";

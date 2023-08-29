@@ -3,7 +3,7 @@ $(document).ready(function(){
 
  
     
-        $("input,select").on("change",function(){
+        $(".required").on("change",function(){
             this.parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = this.value === ""?  "This feild is required" : "";
         })
 
@@ -111,23 +111,23 @@ function checkPiat(radio) {
     }   
 
 
-    var jenisSn = document.getElementsByName("jenis_sn");
-    var jenisSambungan = document.getElementsByName("jenis_sambungan");   
+    // var jenisSn = document.getElementsByName("jenis_sn");
+    // var jenisSambungan = document.getElementsByName("jenis_sambungan");   
 
      
-    if (!isRadioSelected(jenisSn)) {
-        jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML ="This feild is required";
-        isValid = false;
-    }else{
-        jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
-    }
+    // if (!isRadioSelected(jenisSn)) {
+    //     jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML ="This feild is required";
+    //     isValid = false;
+    // }else{
+    //     jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
+    // }
 
-    if (!isRadioSelected(jenisSambungan)) {
-        jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML =  "This feild is required";
-        isValid = false;
-    }else{
-        jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
-    }
+    // if (!isRadioSelected(jenisSambungan)) {
+    //     jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML =  "This feild is required";
+    //     isValid = false;
+    // }else{
+    //     jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
+    // }
 
     if(golbal_isVaild === true){
       return isValid
@@ -152,25 +152,32 @@ function checkPiat(radio) {
         dataType: "json",
         success: function(response) {
             if(response.data.jenis_sambungan == "OH"){
-                document.getElementById("jenis_sambungan_oh").checked = true
-                document.getElementById("piat_yes").checked = true
+                $("#jenis_sambungan_oh").html('&#x2713;') 
+               
+                $("#piat_yes").html('&#x2713;')
+                $("#jenis_sambungan_ug").html('') 
+               $("#piat_no").html('')
               
             }else{
-                document.getElementById("jenis_sambungan_ug").checked = true
-                document.getElementById("piat_no").checked = true
+                $("#jenis_sambungan_ug").html('&#x2713;') 
+               $("#piat_no").html('&#x2713;')
+               $("#jenis_sambungan_oh").html('') 
+               
+                $("#piat_yes").html('')
             }
             let ba =   $("#ba option:first");
             ba.val(response.data.ba);
             ba.text(response.data.ba);
             $("#id").val(response.data.id)
             if(response.data.jenis_sn == "LKKK"){
-                document.getElementById("jenis_sn_lkkk").checked = true
-                document.getElementById("jenis_sn_express").checked = false
+                $("#jenis_sn_lkkk").html('&#x2713;')
+               $("#jenis_sn_express").html('')
             }else{
-                document.getElementById("jenis_sn_lkkk").checked = false
-                document.getElementById("jenis_sn_express").checked = true
+     $("#jenis_sn_lkkk").html('')
+               $("#jenis_sn_express").html('&#x2713;')
             }
-            $("#alamat").val(response.data.alamat)
+            $("#alamat").html(response.data.alamat)
+            $("#ba").html(response.data.ba)
            
         },
         error: function(xhr, status, error) {

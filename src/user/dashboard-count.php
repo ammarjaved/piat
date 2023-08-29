@@ -1,28 +1,30 @@
 <?php
-// $ba = $_SESSION['user_ba'];
-// if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_POST['submitButton'] == 'filter') {
-//     $from = isset($_POST['from_date']) ? $_POST['from_date'] : '';
-//     $to = isset($_POST['to_date']) ? $_POST['to_date'] : '';
-//     $date = '';
+$ba = $_SESSION['user_ba'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_POST['submitButton'] == 'filter') {
+    $from = isset($_POST['from_date']) ? $_POST['from_date'] : '';
+    $to = isset($_POST['to_date']) ? $_POST['to_date'] : '';
+    $date = '';
 
-//     if ($from == '' || $to == '') {
-//         // if dates are null and only ba is selected then first get min and max date
-//         $stmt = $pdo->prepare('SELECT MAX(tarikh_siap) AS max_date, MIN(tarikh_siap) AS min_date FROM public.ad_service_qr ');
-//         $stmt->execute();
-//         $date = $stmt->fetch(PDO::FETCH_ASSOC);
-//     }
+    if ($from == '' || $to == '') {
+        // if dates are null and only ba is selected then first get min and max date
+        $stmt = $pdo->prepare('SELECT MAX(tarikh_siap) AS max_date, MIN(tarikh_siap) AS min_date FROM public.ad_service_qr ');
+        $stmt->execute();
+        $date = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-//     $from = $from == '' ? $date['min_date'] : $from;
-//     $to = $to == '' ? $date['max_date'] : $to;
+    $from = $from == '' ? $date['min_date'] : $from;
+    $to = $to == '' ? $date['max_date'] : $to;
+    echo $from ;
+    echo $to;
 
-//     $stmt = $pdo->prepare("SELECT
-//         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to) AS count,
-//         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to) AS complete_count,
-//         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprocess' AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to) AS inprocess_count,
-//         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV' AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to) AS kiv_piat
-//     ");
-//   $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
-// } else {
+    $stmt = $pdo->prepare("SELECT
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND tarikh_siap >= :from AND tarikh_siap <= :to) AS count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') AND tarikh_siap >= :from AND tarikh_siap <= :to) AS complete_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprocess' AND tarikh_siap >= :from AND tarikh_siap <= :to) AS inprocess_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV' AND tarikh_siap >= :from AND tarikh_siap <= :to) AS kiv_piat
+    ");
+  $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
+} else {
     $stmt = $pdo->prepare("SELECT
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba) AS count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1')) AS complete_count,
@@ -30,7 +32,7 @@
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV') AS kiv_piat
     ");
     $stmt->bindParam(':ba', $_SESSION['user_ba']);
-// }
+}
 $status = 'Inprocess';
 
 
