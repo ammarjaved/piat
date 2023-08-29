@@ -105,7 +105,7 @@ include '../partials/header.php';
                         <th>Construction Status<br> <span class="text-danger"></span></th>
                         <td colspan="2">
                             <select name="cons_status" id="cons_status" class="form-select">
-                                <option value="Inprocess">Inprogress</option>
+                                <option value="Inprogress">Inprogress</option>
                                 <option value="KIV">KIV</option>
                                 <option value="Complete">Complete</option>
                             </select>

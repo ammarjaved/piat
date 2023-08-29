@@ -33,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $companySignJson = $companySign ? json_encode($companySign) : null;
     $checklistItemsJson = $checklistItems ? json_encode($checklistItems) : null;
     $sn_id = $_SESSION['sn_id'];
+    
    
     if($checklistItems != ''){
  
@@ -67,8 +68,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             VALUES
             (:piatDate, :projectNo, :projectName, :feederCircuit, :feederCircuitFrom, :feederCircuitTo,
             :feederCircuitLength, :voltageLevel, :cableType, :company, :companyName, :companyPhoneNo,
-            :companySign, :inspectionChecklist, :result, :attemptNo, :prepareBy, :prepSign , :serviceId, :created)");
-            $stmt->bindParam('serviceId',$sn_id);
+            :companySign, :inspectionChecklist, :result, :attemptNo, :prepareBy, :prepSign , :ad_service_id, :created)");
+            $stmt->bindParam(':ad_service_id',$sn_id);
             $stmt->bindParam(':created',$_SESSION['user_id']);
         }
         else{
@@ -132,10 +133,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }else{
 
             $status = "Complete";
-            $stmt = $pdo->prepare("UPDATE public.ad_service_qr SET complete_date = :complete_date , piat_status = 'true' WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE public.ad_service_qr SET complete_date = :complete_date , piat_status = 'true' , status= :status WHERE id = :id");
             $stmt->bindParam(':id', $sn_id);
             $stmt->bindParam(':complete_date',date('Y-m-d'));
-            // $stmt->bindParam(':status',$status);
+            $stmt->bindParam(':status',$status);
             $stmt->execute();
 
  

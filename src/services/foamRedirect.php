@@ -104,14 +104,18 @@ ob_start();
                     $_SESSION['sn_id'] = $record['id'];
 
                     $stmt = $pdo->prepare("SELECT * FROM public.inspection_checklist WHERE ad_service_id = :snId");
-                    $stmt->bindParam(':snId', $sn_id['id']);
+                    $stmt->bindParam(':snId',$record['id']);
                     $stmt->execute();
                     $foam = $stmt->fetch(PDO::FETCH_ASSOC);
                     $pdo = null;
+
+                  
+
                     
                     if($foam){
                         $_SESSION['foam'] = $foam;
                         header("Location: ../piat-foam/edit.php");
+                        exit();
                     }else{
                         header("Location: ../piat-foam/create.php")     ;
                     }
