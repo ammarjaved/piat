@@ -256,7 +256,7 @@ include './services/connection.php';
                                                               <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
                                     if ($record['piat'] == 'yes') {
                                         echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
-                                        echo $record['tarikh_siap'] != '' ? 'Edit Foam' : 'Add Qr';
+                                        echo $record['tarikh_siap'] != '' ? 'Edit Foam' : 'Add QR';
                                         echo '</a></li>';
                                         if ($record['piat_status'] == 'true') {
                                             echo "  <li><a class='dropdown-item' href='./generate-pdf/previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
@@ -266,7 +266,7 @@ include './services/connection.php';
                                         echo "  <li><a class='dropdown-item' href='./piat-foam/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
                                     }
                             
-                                    echo "  <li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}' >Edit sn</a></li>";
+                                    echo "  <li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}' >Edit SN</a></li>";
                                     echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Remove </button'></li>";
                                     echo '</ul></div></td>';
                                     echo '</tr>';
@@ -328,7 +328,7 @@ include './services/connection.php';
                                                           </button>
                                                           <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>";
                                     if ($record['jenis_sambungan'] != 'UG') {
-                                     echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>Add Qr</a></li>";
+                                     echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>Add QR</a></li>";
                                     }
                                    
                                     echo "<li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}'>Edit Foam</a></li>";

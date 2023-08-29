@@ -1,7 +1,9 @@
 <?php 
 
  
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter') {
+    
+}
 $stmt = $pdo->prepare("SELECT a.count ,b.complete_count, c.inprocess_count , d.kiv_piat FROM 
 (SELECT count(*) as count FROM ad_service_qr WHERE ba = :ba  )a,
 (SELECT count(*) as complete_count FROM ad_service_qr WHERE ba = :ba AND status = 'Complete' OR ba=:ba AND status = '1')b,
