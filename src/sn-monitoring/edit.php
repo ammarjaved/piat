@@ -93,7 +93,7 @@ if (!$record) {
                     <tr>
                         <th>Aging (days)<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="number" name="aging_days" id="aging_days"
-                                class="form-control required" value="<?php echo $record['aging_days']; ?>"></td>
+                                class="form-control required" value="<?php echo $record['aging_days']; ?>" onchange="getAging(this)"></td>
                     </tr>
 
                     <tr>
@@ -105,7 +105,7 @@ if (!$record) {
                     <tr>
                         <th>Remark<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="text" name="remark" id="remark"
-                                class="form-control required" value="<?php echo $record['remark']; ?>"></td>
+                                class="form-control " value="<?php echo $record['remark']; ?>"></td>
                     </tr>
 
 
@@ -121,7 +121,7 @@ if (!$record) {
                         <td colspan="2">
                             <select name="cons_status" id="cons_status" class="form-select">
                                 <option value="<?php echo $record['status']; ?>" hidden> <?php echo $record['status']; ?></option>
-                                <option value="Inprocess">Inprogress</option>
+                                <option value="Inprogress">Inprogress</option>
                                 <option value="KIV">KIV</option>
                                 <option value="Complete">Complete</option>
                             </select>
@@ -139,7 +139,7 @@ if (!$record) {
         </div>
     </form>
 </div>
-<script src="../../assets/js/sn-monitoring.js"></script>
+<script src="../../assets/js/foam-1.js"></script>
 <script >
 
     $(document).ready(function(){
