@@ -105,7 +105,7 @@ if (!$record) {
                     <tr>
                         <th>Remark<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="text" name="remark" id="remark"
-                                class="form-control required" value="<?php echo $record['remark']; ?>"></td>
+                                class="form-control" value="<?php echo $record['remark']; ?>"></td>
                     </tr>
 
 
