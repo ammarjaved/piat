@@ -63,42 +63,35 @@
                 <th colspan="3" class="text-center  ">Section A</th>
             </thead>
             <tbody>
+
             <tr>
               <th class="col-md-6">BA *<br> <span class="text-danger"></span></th>
               <td  colspan="2">
-              <select name="ba" id="ba" class="form-select">
-    <?php if($_SESSION['user_name'] == "admin"){ ?>
-        
-        <option value="KLB - 6121">KLB - 6121</option>
-        <option value="KLT - 6122">KLT - 6122</option>
-        <option value="KLP - 6123">KLP - 6123</option>
-        <option value="KLS - 6124">KLS - 6124</option>
-    <?php } else {
-        echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
-    }?>
-</select>
+              <?php echo $record['ba'] 
+              ?>
+           
 
              </td>
             </tr>
             <tr>
                 <th>Jenis SN *<br> <span class="text-danger"></span></th>
-                <td ><input type="radio" name="jenis_sn" id="jenis_sn_lkkk" value="LKKK" <?php echo $record['jenis_sn'] == "LKKK" ? 'checked' : ''; ?>> <label for="jenis_sn_lkkk">LKKK</label></td>
-                <td ><input type="radio" name="jenis_sn" id="jenis_sn_express" value="Express" <?php echo $record['jenis_sn'] == "Express" ? 'checked' : ''; ?>> <label for="jenis_sn_express">Express</label></td>
+                <td ><span class="check"><?php echo $record['jenis_sn'] == "LKKK" ? '&#x2713;' : ''; ?></span> <label for="jenis_sn_lkkk">LKKK</label></td>
+                <td ><span  class="check"> <?php echo $record['jenis_sn'] == "Express" ? '&#x2713;' : ''; ?></span><label for="jenis_sn_express">Express</label></td>
             </tr>
             <tr>
                 <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
-                <td > <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "OH" ? 'checked' : ''; ?>> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
-                <td ><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG" onclick="checkPiat(this)" <?php echo $record['jenis_sambungan'] == "UG" ? 'checked' : ''; ?>> <label for="jenis_sambungan_ug">UG</label></td>
+                <td > <span class="check"><?php echo $record['jenis_sambungan'] == "OH" ? '&#x2713;' : ''; ?></span> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
+                <td ><span class="cehck"> <?php echo $record['jenis_sambungan'] == "UG" ? '&#x2713;' : ''; ?> </span>  <label for="jenis_sambungan_ug">UG</label></td>
             </tr>
             <tr>
                 <th>No. SN *<br> <span class="text-danger"></span></th>
                 <td colspan="2">
                 <span class="text-danger" id="sn_exits"></span>
-                <input type="text" name="no_sn" id="no_sn" class="form-control required edit" onchange="handleKeyPress(event)" value="<?php echo !empty($record['no_sn']) ? $record['no_sn'] : ''; ?>"></td>
+                <?php echo $record['no_sn'] ?> <input type="hidden" name="no_sn" value="<?php echo $record['no_sn'] ?> "/></td>
             </tr>
             <tr>
                 <th>Alamat *<br> <span class="text-danger"></span></th>
-                <td colspan="2"><input type="text" name="alamat" id="alamat" class="form-control required" value="<?php echo !empty($record['alamat']) ? $record['alamat'] : ''; ?>"></td>
+                <td colspan="2"><?php echo !empty($record['alamat']) ? $record['alamat'] : ''; ?></td>
             </tr>
             <tr>
                 <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
@@ -108,8 +101,8 @@
             </tr>
             <tr>
                 <th>PIAT *<br> <span class="text-danger"></span></th>
-                <td > <input type="radio" name="piat" id="piat_yes" value="yes" <?php echo $record['piat'] == "yes" ? "checked" : ''; ?>> <label for="piat_yes">Yes</label></td>
-                <td ><input type="radio" name="piat" id="piat_no" value="no" <?php echo $record['piat'] == "no" ? "checked" : ''; ?>> <label for="piat_no">No</label></td>
+                <td ><span class="check"><?php echo $record['piat'] == "yes" ? "&#x2713;" : ''; ?></span> <label for="piat_yes">Yes</label></td>
+                <td ><span class="cehck"><?php echo $record['piat'] == "no" ? "&#x2713;" : ''; ?></span><label for="piat_no">No</label></td>
             </tr>
             <tr>
                 <th>Nama Pencawang / Nama Feeder Pillar <br> <span  style="font-family: Harlow Solid Italic !important; font-size:13px">Jika LKKK Sahaja </span>  <br> <span class="text-danger"></span></th>
@@ -305,8 +298,8 @@
 
             <tr>
                 <th>Talian Utama (M) / Serbis (S)<br> <span class="text-danger"></span></th>
-                <td><input type="radio" name="talian_utama" id="talian_utama_m" value="M" <?php echo $record['talian_utama']  == 'M' || $record['talian_utama'] ==''? 'checked': '' ?>> <label for="talian_utama_m"> M</label></td>
-                <td><input type="radio" name="talian_utama" id="talian_utama_s" value="S" <?php echo $record['talian_utama'] == 'S' ? 'checked': ''?>> <label for="talian_utama_s"> S</label></td>
+                <td><input type="checkbox" name="talian_utama" id="talian_utama_m" value="M" <?php echo $record['talian_utama']  == 'M' || $record['talian_utama'] ==''? 'checked': '' ?>> <label for="talian_utama_m"> M</label></td>
+                <td><input type="checkbox" name="talian_utama_s" id="talian_utama_s" value="S" <?php echo $record['talian_utama_s'] == 'S' ? 'checked': ''?>> <label for="talian_utama_s"> S</label></td>
             </tr>
             <tr>
                 <th>Bil Umbang <br> <span class="text-danger"></span></th>

@@ -20,7 +20,7 @@ if (!isset($_SESSION['no_sn'])) {
 
 
     <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
-    <form action="../services/submitFoam.php" method="post">
+    <form action="../services/submitFoam.php" method="post" onsubmit="return submitFoam()">
 
         <div class="table-responsive table-bordered" style="overflow-y:auto ; "> <!-- TABLE # 1 -->
             <table class="table">
@@ -684,7 +684,7 @@ if (!isset($_SESSION['no_sn'])) {
 
         <div class="table-responsive table-bordered" style="overflow-y:auto ; ">
             <table class="table caption-top">
-                <caption class="text-dark ">D. RESULT</caption>
+                <caption class="text-dark ">D. RESULT <span class="text-danger" id="result" style="font-weight: 700;"></span></caption>
                 <tr>
                     <td class="" rowspan="2"><input type="radio" name="result" id="result_pass"
                             value="pass"> <label for="result_pass"><strong>PASS</strong></label><br>(All Comply)
@@ -846,6 +846,27 @@ if (!isset($_SESSION['no_sn'])) {
             }
         }
     }
+
+    function submitFoam(){
+       var res = document.getElementsByName("result");
+       var isValid = true;
+       if(!isRadioSelected(res)){
+        $("#result").html("Select one ");
+        isValid =false;
+
+       }else{
+        $("#result").html("");
+       }
+       return isValid;
+    }
+    function isRadioSelected(radioButtons) {
+    for (var i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+        return true;
+        }
+    }
+    return false;
+  }
 </script>
 
 </html>

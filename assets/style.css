@@ -46,6 +46,10 @@ input[type="radio"]:checked::before{
 .form-control,.form-select{
   border : 1px solid black !important;
 }
+span.check {
+  color: green !important;
+  font-weight: 700 !important;
+}
   @media only screen and (max-width: 445px) {
     td{
       font-size: 11px !important;

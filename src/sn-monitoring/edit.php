@@ -23,9 +23,7 @@ if (!$record) {
 </div>
 
 <div class="container shadow p-5  my-5 bg-white foam-1 mt-2">
-
-
-    <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
+ 
     <form action="../services/submitSnMonitoring.php?id=<?php echo $record['id']; ?>" method="post"
         onsubmit="return submitFoam()">
         <div class="table-responsive table-bordered" style="overflow-y:auto ; "> <!-- TABLE # 1 -->

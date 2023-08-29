@@ -27,8 +27,7 @@ if (!$record) {
 
 <div class="container shadow p-5  my-5 bg-white foam-1 mt-2">
 
-
-    <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
+ 
    
         <div class="table-responsive table-bordered" style="overflow-y:auto ; "> <!-- TABLE # 1 -->
             <table class="table">
