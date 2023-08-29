@@ -23,9 +23,7 @@ if (!$record) {
 </div>
 
 <div class="container shadow p-5  my-5 bg-white foam-1 mt-2">
-
-
-    <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
+ 
     <form action="../services/submitSnMonitoring.php?id=<?php echo $record['id']; ?>" method="post"
         onsubmit="return submitFoam()">
         <div class="table-responsive table-bordered" style="overflow-y:auto ; "> <!-- TABLE # 1 -->
@@ -93,7 +91,7 @@ if (!$record) {
                     <tr>
                         <th>Aging (days)<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="number" name="aging_days" id="aging_days"
-                                class="form-control required" value="<?php echo $record['aging_days']; ?>"></td>
+                                class="form-control required" value="<?php echo $record['aging_days']; ?>" onchange="getAging(this)"></td>
                     </tr>
 
                     <tr>
@@ -121,7 +119,7 @@ if (!$record) {
                         <td colspan="2">
                             <select name="cons_status" id="cons_status" class="form-select">
                                 <option value="<?php echo $record['status']; ?>" hidden> <?php echo $record['status']; ?></option>
-                                <option value="Inprocess">Inprogress</option>
+                                <option value="Inprogress">Inprogress</option>
                                 <option value="KIV">KIV</option>
                                 <option value="Complete">Complete</option>
                             </select>
@@ -139,7 +137,7 @@ if (!$record) {
         </div>
     </form>
 </div>
-<script src="../../assets/js/sn-monitoring.js"></script>
+<script src="../../assets/js/foam-1.js"></script>
 <script >
 
     $(document).ready(function(){

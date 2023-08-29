@@ -22,7 +22,7 @@ include './services/connection.php';
         integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT" crossorigin="anonymous">
     </script>
 
-    <title>Index</title>
+    <title>AD KL SN, QR and PIAT Monitoring</title>
 
     <style>
         .container.shadow.p-5.my-5.bg-white {
@@ -202,7 +202,7 @@ include './services/connection.php';
                                 $to = $to == '' ? $record['max'] : $to;
                             
                                 // filter query
-                                $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to  ORDER BY tarikh_siap DESC');
+                                $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from AND tarikh_siap <= :to  ORDER BY tarikh_siap DESC');
                                 $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
                             } else {
                                 // without filter
@@ -224,7 +224,9 @@ include './services/connection.php';
                             
                                     echo '<tr>';
                             
-                                    echo "<td>{$record['no_sn']}</td>";
+                                    echo "<td><a class='text-decoration-none text-dark' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
+                                    echo $record['no_sn'];
+                                    echo '</a></td>';
                             
                                     echo "<td>{$record['jenis_sn']}</td>";
                                     echo "<td>{$record['jenis_sambungan']}</td>";
@@ -256,7 +258,7 @@ include './services/connection.php';
                                                               <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
                                     if ($record['piat'] == 'yes') {
                                         echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
-                                        echo $record['tarikh_siap'] != '' ? 'Edit Foam' : 'Add QR';
+                                        echo $record['tarikh_siap'] != '' ? 'Edit QR' : 'Add QR';
                                         echo '</a></li>';
                                         if ($record['piat_status'] == 'true') {
                                             echo "  <li><a class='dropdown-item' href='./generate-pdf/previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
@@ -267,7 +269,7 @@ include './services/connection.php';
                                     }
                             
                                     echo "  <li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}' >Edit SN</a></li>";
-                                    echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Remove </button'></li>";
+                                    echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
                                     echo '</ul></div></td>';
                                     echo '</tr>';
                                 }
@@ -288,6 +290,7 @@ include './services/connection.php';
                                 <th>BA</th>
                                 <th>SN NO</th>
                                 <th>JENIS SN</th>
+                                <th>JENIS SAMBUNGAN</th>
                                 <th>AGING (days)</th>
                                 <th>CSP DATE</th>
                                 <th>COMPLETION DATE</th>
@@ -311,11 +314,12 @@ include './services/connection.php';
                             $pdo = null;
                             
                             foreach ($records as $record) {
-                                if (($record['jenis_sambungan'] != 'UG' && $record['tarikh_siap'] == '') || $record['jenis_sambungan'] == 'UG') {
+                                if (($record['jenis_sambungan'] != 'UG' && $record['status'] != 'Complete') || $record['jenis_sambungan'] == 'UG') {
                                     echo '<tr>';
                                     echo "<td>{$record['ba']}</td>";
                                     echo "<td>{$record['no_sn']}</td>";
                                     echo "<td>{$record['jenis_sn']}</td>";
+                                    echo "<td>{$record['jenis_sambungan']}</td>";
                                     echo "<td>{$record['aging_days']}</td>";
                                     echo "<td>{$record['csp_paid_date']}</td>";
                                     echo "<td>{$record['tarikh_siap']}</td>";
@@ -327,14 +331,14 @@ include './services/connection.php';
                                                           <img src='../images/three-dots-vertical.svg'  >
                                                           </button>
                                                           <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>";
-                                    if ($record['jenis_sambungan'] != 'UG') {
-                                     echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>Add QR</a></li>";
-                                    }
+                                    // if ($record['jenis_sambungan'] != 'UG') {
+                                    //  echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>Add QR</a></li>";
+                                    // }
                                    
-                                    echo "<li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}'>Edit Foam</a></li>";
+                                    echo "<li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}'>Edit SN</a></li>";
                             
                                     echo "  <li><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
-                                    echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Remove </button'></li>";
+                                    echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
                                     echo "</ul>
                                                                                                   </div></td>";
                                     echo '</tr>';

@@ -293,7 +293,7 @@
             <tr>
                 <th>Talian Utama (M) / Serbis (S)<br> <span class="text-danger"></span></th>
                 <td><?php echo $record['talian_utama'] == 'M' ? '<span class="check">&#x2713; </span>': '' ?> <label for="talian_utama_m"> M</label></td>
-                <td><?php echo $record['talian_utama'] == 'S' ? '<span class="check">&#x2713; </span>': ''?><label for="talian_utama_s"> S</label></td>
+                <td><?php echo $record['talian_utama_s'] == 'S' ? '<span class="check">&#x2713; </span>': ''?><label for="talian_utama_s"> S</label></td>
             </tr>
             <tr>
                 <th>Bil Umbang <br> <span class="text-danger"></span></th>
