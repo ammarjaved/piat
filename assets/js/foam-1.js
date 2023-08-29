@@ -94,8 +94,7 @@ function checkPiat(radio) {
             }
         },
         error: function(xhr, status, error) {
-            console.log("Error: " + error);
-        }
+                   }
     });
 }
 
@@ -181,7 +180,7 @@ function checkPiat(radio) {
            
         },
         error: function(xhr, status, error) {
-            console.log("Error: " + error);
+            
         }
     });
 }
