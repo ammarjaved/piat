@@ -53,8 +53,8 @@ if (!$record) {
 
                     <tr>
                         <th>Alamat<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="description" id="description"
-                                class="form-control required" value="<?php echo $record['alamat']; ?>" name="alamat"></td>
+                        <td colspan="2"><input type="text" name="alamat" id="description"
+                                class="form-control required" value="<?php echo $record['alamat']; ?>" ></td>
                     </tr>
                     <tr>
                         <th>User status<br> <span class="text-danger"></span></th>
@@ -121,7 +121,7 @@ if (!$record) {
                         <td colspan="2">
                             <select name="cons_status" id="cons_status" class="form-select">
                                 <option value="<?php echo $record['status']; ?>" hidden> <?php echo $record['status']; ?></option>
-                                <option value="Inprocess">Inprocess</option>
+                                <option value="Inprocess">Inprogress</option>
                                 <option value="KIV">KIV</option>
                                 <option value="Complete">Complete</option>
                             </select>
@@ -140,6 +140,19 @@ if (!$record) {
     </form>
 </div>
 <script src="../../assets/js/sn-monitoring.js"></script>
+<script >
+
+    $(document).ready(function(){
+        $("#cons_status").on("change",function(){
+
+            if(this.value === "Complete"){
+                 $("#complete_date").hasClass('required') ? '' : $("#complete_date").addClass('required')
+            }else{
+                $("#complete_date").hasClass('required') ? $("#complete_date").removeClass('required') :''
+            }
+        })
+    })
+</script>
 </body>
 
 </html>

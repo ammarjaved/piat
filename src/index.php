@@ -173,7 +173,9 @@ include './services/connection.php';
                                 <th>SN NO</th>
                                 <th>JENIS SN</th>
                                 <th>JENIS SAMBUNGAN</th>
+                                <th>CSP DATE</th>
                                 <th>COMPLETION DATE</th>
+                                
                                 <th>CONSTRUCTION STATUS</th>
                                 <th>QR</th>
                                 <th>PIAT</th>
@@ -226,7 +228,9 @@ include './services/connection.php';
                             
                                     echo "<td>{$record['jenis_sn']}</td>";
                                     echo "<td>{$record['jenis_sambungan']}</td>";
+                                    echo "<td>{$record['csp_paid_date']}</td>";
                                     echo "<td>{$record['tarikh_siap']}</td>";
+                                    
                                     echo "<td>{$record['status']}</td>";
                                     echo "<td class='text-center'>";
                                     if ($record['tarikh_siap'] != '' ) {
@@ -256,7 +260,7 @@ include './services/connection.php';
                                         echo '</a></li>';
                                         if ($record['piat_status'] == 'true') {
                                             echo "  <li><a class='dropdown-item' href='./generate-pdf/previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
-                                        } elseif ( $record['piat_status'] == '') {
+                                        } elseif ( $record['qr'] ==  'true') {
                                             echo "  <li><a class='dropdown-item' href='./services/foamRedirect.php?sn={$record['no_sn']}'>Fill Checklist</a></li>";
                                         }
                                         echo "  <li><a class='dropdown-item' href='./piat-foam/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
