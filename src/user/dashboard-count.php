@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
     $stmt = $pdo->prepare("SELECT
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND tarikh_siap >= :from AND tarikh_siap <= :to) AS count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') AND tarikh_siap >= :from AND tarikh_siap <= :to) AS complete_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprocess' AND tarikh_siap >= :from AND tarikh_siap <= :to) AS inprocess_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprogress' AND tarikh_siap >= :from AND tarikh_siap <= :to) AS inprocess_count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV' AND tarikh_siap >= :from AND tarikh_siap <= :to) AS kiv_piat
     ");
   $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
     $stmt = $pdo->prepare("SELECT
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba) AS count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1')) AS complete_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprocess') AS inprocess_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprogress') AS inprocess_count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV') AS kiv_piat
     ");
     $stmt->bindParam(':ba', $_SESSION['user_ba']);
