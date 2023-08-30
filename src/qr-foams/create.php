@@ -46,7 +46,7 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
     ?>
 <h3 class="text-center">AD Service QR 2023</h3> 
- <form action="../services/submit-foam-1.php" method="post" onsubmit="return submitFoam()">
+ <form action="../services/submit-foam-1.php" method="post" onsubmit="return submitFoam2()">
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
       <table class="table caption-top">  
       <caption class="text-sm font-medium text-gray-500 mb-2 text-left">Section A </caption>
@@ -78,11 +78,11 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <input type="hidden" id="id" name="id">
 
                 <span class="text-danger" id="sn_exits"></span>
-                <select name="no_sn" id="no_sn" class="form-select" onchange="getSnDetail(this)">
+                <select name="no_sn" id="no_sn" class="form-select required" >
     <option value="" hidden>Select SN</option>
     <?php 
     foreach ($records as $record) {
-        echo "<option value='{$record['no_sn']}'>{$record['no_sn']}</option>";
+        echo "<option value='{$record['no_sn']}' >{$record['no_sn']}</option>";
     }
     ?>
 </select>
@@ -343,6 +343,16 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
     dselect(select_box_element, {
         search: true
     });
+
+    var select_box_element = document.querySelector('#no_sn');
+
+select_box_element.addEventListener('change', function() {
+    // Call your function when the select value changes
+    getSnDetail(this);
+});
+
+
+
 
 </script>
 

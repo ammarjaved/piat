@@ -7,6 +7,10 @@ $(document).ready(function(){
             this.parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = this.value === ""?  "This feild is required" : "";
         })
 
+        $("input[type='radio']").on("change",function(){
+            this.parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = this.value === ""?  "This feild is required" : "";
+        })
+
         
   
     $("input[type='number']").on("blur", function() {
@@ -94,14 +98,63 @@ function checkPiat(radio) {
             }
         },
         error: function(xhr, status, error) {
-            console.log("Error: " + error);
-        }
+                   }
     });
 }
 
+  function submitFoam2(){
+
+    var class_error = document.getElementsByClassName("required");
+    var sn = document.getElementById("no_sn");
+    var isValid = true
+    for(var i = 0 ; i < class_error.length ; i++){      
+        class_error[i].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = class_error[i].value === ""?  "This feild is required" : "";
+        if(isValid){
+        isValid =  class_error[i].value === ""? false : true
+        }
+    }   
+    if (sn.length >0) {
+        sn.parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = sn.value === ""?  "This feild is required" : "";
+        if(isValid){
+        isValid =  sn.value === ""? false : true
+        }
+    }
+
+
+    var jenisSn = document.getElementsByName("jenis_sn");
+    var jenisSambungan = document.getElementsByName("jenis_sambungan");   
+
+     if (jenisSn.length > 0) {
+        if (!isRadioSelected(jenisSn)) {
+            jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML ="This feild is required";
+            isValid = false;
+        }else{
+            jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
+        }
+     }
+    
+     if (jenisSambungan.length >0) {
+        if (!isRadioSelected(jenisSambungan)) {
+        jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML =  "This feild is required";
+        isValid = false;
+    }else{
+        jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
+    }
+
+     }
+
+    
+    if(golbal_isVaild === true){
+      return isValid
+    }
+    return golbal_isVaild;
+  }
+
+  
   function submitFoam(){
 
     var class_error = document.getElementsByClassName("required");
+
     var isValid = true
     for(var i = 0 ; i < class_error.length ; i++){      
         class_error[i].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = class_error[i].value === ""?  "This feild is required" : "";
@@ -111,29 +164,35 @@ function checkPiat(radio) {
     }   
 
 
-    // var jenisSn = document.getElementsByName("jenis_sn");
-    // var jenisSambungan = document.getElementsByName("jenis_sambungan");   
+    var jenisSn = document.getElementsByName("jenis_sn");
+    var jenisSambungan = document.getElementsByName("jenis_sambungan");   
+
+   
+        if (!isRadioSelected(jenisSn)) {
+            jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML ="This feild is required";
+            isValid = false;
+        }else{
+            jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
+        }
+     
+    
+   
+        if (!isRadioSelected(jenisSambungan)) {
+        jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML =  "This feild is required";
+        isValid = false;
+    }else{
+        jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
+    }
 
      
-    // if (!isRadioSelected(jenisSn)) {
-    //     jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML ="This feild is required";
-    //     isValid = false;
-    // }else{
-    //     jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
-    // }
 
-    // if (!isRadioSelected(jenisSambungan)) {
-    //     jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML =  "This feild is required";
-    //     isValid = false;
-    // }else{
-    //     jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
-    // }
-
+    
     if(golbal_isVaild === true){
       return isValid
     }
     return golbal_isVaild;
   }
+
 
   function isRadioSelected(radioButtons) {
     for (var i = 0; i < radioButtons.length; i++) {
@@ -181,7 +240,7 @@ function checkPiat(radio) {
            
         },
         error: function(xhr, status, error) {
-            console.log("Error: " + error);
+            
         }
     });
 }
