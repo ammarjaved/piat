@@ -63,7 +63,7 @@ if (!$record) {
                     <tr>
                         <th>SN Number<br> <span class="text-danger"></span></th>
                         <td colspan="2"><span class="text-danger" id="sn_exits"></span>
-                            <input type="text" name="sn_number" id="sn_number" class="form-control required"
+                            <input type="number" name="sn_number" id="sn_number" class="form-control required"
                                 onchange="handleKeyPress(event)" value="<?php echo $record['no_sn']; ?>">
                         </td>
                     </tr>
@@ -148,6 +148,10 @@ if (!$record) {
             }else{
                 $("#complete_date").hasClass('required') ? $("#complete_date").removeClass('required') :''
             }
+        })
+
+        $("#complete_date").on("change",function(){
+            $("#cons_status").val("Complete");
         })
     })
 </script>

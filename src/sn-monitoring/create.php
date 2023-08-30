@@ -55,7 +55,7 @@ include '../partials/header.php';
                     <tr>
                         <th>SN Number *<br> <span class="text-danger"></span></th>
                         <td colspan="2"><span class="text-danger" id="sn_exits"></span>
-                            <input type="text" name="sn_number" id="sn_number" class="form-control required"
+                            <input type="number" name="sn_number" id="sn_number" class="form-control required"
                                 onchange="handleKeyPress(event)">
                         </td>
                     </tr>
