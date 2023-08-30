@@ -31,6 +31,10 @@ $(document).ready(function(){
         }
 
     });
+
+    $("#no_sn").on("change",function () {
+        getSnDetail(this)
+    })
 })
 
 
@@ -110,38 +114,16 @@ function checkPiat(radio) {
     for(var i = 0 ; i < class_error.length ; i++){      
         class_error[i].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = class_error[i].value === ""?  "This feild is required" : "";
         if(isValid){
-        isValid =  class_error[i].value === ""? false : true
+            isValid =  class_error[i].value === ""? false : true
         }
     }   
-    if (sn.length >0) {
+    
         sn.parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = sn.value === ""?  "This feild is required" : "";
         if(isValid){
         isValid =  sn.value === ""? false : true
         }
-    }
-
-
-    // var jenisSn = document.getElementsByName("jenis_sn");
-    // var jenisSambungan = document.getElementsByName("jenis_sambungan");   
-
-    //  if (jenisSn.length > 0) {
-    //     if (!isRadioSelected(jenisSn)) {
-    //         jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML ="This feild is required";
-    //         isValid = false;
-    //     }else{
-    //         jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
-    //     }
-    //  }
     
-    //  if (jenisSambungan.length >0) {
-    //     if (!isRadioSelected(jenisSambungan)) {
-    //     jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML =  "This feild is required";
-    //     isValid = false;
-    // }else{
-    //     jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
-    // }
 
-    //  }
 
     
     if(golbal_isVaild === true){
@@ -164,19 +146,19 @@ function checkPiat(radio) {
     }   
 
 
-    var jenisSn = document.getElementsByName("jenis_sn");
+   var jenisSn = document.getElementsByName("jenis_sn");
     var jenisSambungan = document.getElementsByName("jenis_sambungan");   
 
-   
+     if (jenisSn.length > 0) {
         if (!isRadioSelected(jenisSn)) {
             jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML ="This feild is required";
             isValid = false;
         }else{
             jenisSn[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
         }
-     
+     }
     
-   
+     if (jenisSambungan.length >0) {
         if (!isRadioSelected(jenisSambungan)) {
         jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML =  "This feild is required";
         isValid = false;
@@ -184,7 +166,9 @@ function checkPiat(radio) {
         jenisSambungan[0].parentNode.parentNode.firstElementChild.lastElementChild.innerHTML = ""
     }
 
-    
+     }
+
+
 
      
 
@@ -259,5 +243,5 @@ function getAging(event){
     // Convert milliseconds to days
     let daysDiff = (Math.floor(timeDiff / (1000 * 60 * 60 * 24)))+1;
 
-    $("#aging_days").val(daysDiff)
+    $("#aging_days").val(daysDiff);
 }

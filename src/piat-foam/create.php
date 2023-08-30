@@ -107,7 +107,7 @@ if (!isset($_SESSION['no_sn'])) {
         <div class="table-responsive" style="overflow-y:auto ;"> <!-- ATTENDANCE TABLE -->
 
             <table class="table table-responsive caption-top">
-                <caption class=""> B. ATTENDANCE </caption>
+                <caption class=""> B. ATTENDANCE  <span class="text-danger" style="font-weight: 700;" id="company_name_error"></span></caption>
                 <thead>
                     <tr>
                         <th class="">Unit / Department /
@@ -129,7 +129,7 @@ if (!isset($_SESSION['no_sn'])) {
         <div class="table-responsive">
 
             <table class="table caption-top">
-                <caption class="">C. INSPECTION CHECKLIST</caption>
+                <caption class="">C. INSPECTION CHECKLIST <span class="text-danger" style="font-weight: 700;" id="check_list_error"></span></caption>
                 <thead class="">
                     <tr>
                         <th class="" rowspan="2">No.</th>
@@ -750,6 +750,7 @@ if (!isset($_SESSION['no_sn'])) {
 
 
 </body>
+<script src="../../assets/js/piatFoam.js"></script>
 <script>
     var check = '';
     var prepare = true;
@@ -791,7 +792,7 @@ if (!isset($_SESSION['no_sn'])) {
       <td class=""><input type="text" name="company[]" value="" id="company"></td>
       <td class="">
         <select name="company_name[]" id="company_name" class="form-select" onchange="userChange(this)" style="min-width:150px !important">
-          <option hidden>Select Name</option>
+          <option value="" hidden>Select Name</option>
           ${
             users.map((user) => {
               return `<option value="${user.name}">${user.name}</option>`;
@@ -847,26 +848,7 @@ if (!isset($_SESSION['no_sn'])) {
         }
     }
 
-    function submitFoam(){
-       var res = document.getElementsByName("result");
-       var isValid = true;
-       if(!isRadioSelected(res)){
-        $("#result").html("Select one ");
-        isValid =false;
-
-       }else{
-        $("#result").html("");
-       }
-       return isValid;
-    }
-    function isRadioSelected(radioButtons) {
-    for (var i = 0; i < radioButtons.length; i++) {
-        if (radioButtons[i].checked) {
-        return true;
-        }
-    }
-    return false;
-  }
+    
 </script>
 
 </html>

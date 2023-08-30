@@ -78,7 +78,7 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <input type="hidden" id="id" name="id">
 
                 <span class="text-danger" id="sn_exits"></span>
-                <select name="no_sn" id="no_sn" class="form-select required" >
+                <select name="no_sn" id="no_sn" class="form-select " >
     <option value="" hidden>Select SN</option>
     <?php 
     foreach ($records as $record) {

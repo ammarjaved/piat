@@ -6,7 +6,7 @@
   
  
       if (!isset($_SESSION['no_sn']) && isset($_SESSION['foam'])) {
-        header("location: ./foam-1.php");
+        header("location: ./create.php");
         exit();  
       }
       $record = $_SESSION['foam'];
@@ -24,7 +24,7 @@
     
   
     <h3 class="text-center">PIAT CHECKLIST LV OVERHEAD</h3>
-    <form action="./services/submitFoam.php" method="post">
+    <form action="../services/submitFoam.php" method="post" onsubmit="return submitFoam()">
 <input type="hidden" name="id" id="id" value="<?php echo $record['id'];?>">
 
     <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                      <!-- TABLE # 1 -->
@@ -100,7 +100,7 @@
     <div class="table-responsive" style="overflow-y:auto ;" >                     <!-- ATTENDANCE TABLE -->
        
         <table class="table table-responsive caption-top">
-          <caption class=""> B. ATTENDANCE   </caption>
+          <caption class=""> B. ATTENDANCE   <span class="text-danger" style="font-weight: 700;" id="company_name_error"></span></caption>
           <thead>
             <tr>
               <th class="">Unit / Department /
@@ -121,6 +121,9 @@
           <tbody id="table-body">
           <?php 
                 for($i = 0 ; $i < sizeof($company); $i++){
+                  if ($name[$i] != '') {
+                    # code...
+                
                     echo "<tr>";
                     echo "<td class=''><input type='text' name='company[]' value='{$company[$i]}' id='company'></td>";
                     echo "<td><select class='form-select'  name='company_name[]' id='company_name' onchange='userChange(this)' style='min-width:150px !important'> ";
@@ -134,6 +137,7 @@
                     echo "<td class='text-center'><button class='btn btn-sm remove-row-btn' onclick='removeRow(this)'>
                     <i class='fa fa-minus-circle remove-row-btn' style='font-size:28px;color:red'></i></button></td>";
                     echo "</tr>";
+                  }
                 }
                 ?>
           </tbody>
@@ -143,7 +147,7 @@
       <div class="table-responsive"   >
                             
         <table class="table caption-top">
-          <caption class="">C. INSPECTION CHECKLIST</caption>
+          <caption class="">C. INSPECTION CHECKLIST <span class="text-danger" style="font-weight: 700;" id="check_list_error"></span></caption>
           <thead class="">
             <tr>
               <th class="" rowspan="2">No.</th>
@@ -682,7 +686,7 @@
 
      <div class="table-responsive table-bordered" style="overflow-y:auto ; ">                     
       <table class="table caption-top">  
-        <caption class="text-dark ">D. RESULT</caption>
+        <caption class="text-dark ">D. RESULT <span class="text-danger" id="result" style="font-weight: 700;"></span></caption>
             <tr>
               <td class="" rowspan="2"><input type="radio" name="result" id="result_pass" value="pass" <?php echo $record['result'] =="pass" ? 'checked' : '' ?>> <label for="result_pass" ><strong>PASS</strong></label><br>(All Comply)</td>
               <td class="" rowspan="2"><input type="radio" name="result" id="result_conditional_pass" value="conditional_pass" <?php echo $record['result'] =="conditional_pass" ? 'checked' : '' ?>> <label for="result_conditional_pass"><strong>CONDITIONAL PASS</strong></label><br>(If any minor non-compliance)</td>
@@ -721,10 +725,12 @@
         </table>
     </div> 
 
-     <div class="text-center mt-b">
-     <a href="./editFoam-1.php?no_sn=<?php echo $_SESSION['no_sn'] ?>"><button class="btn btn-success btn-sm m-3" type="button">Goto QR</button></a>
-      <button type="submit" class="btn btn-sm btn-success m-3">Submit</button>
-     </div>
+    <div class="text-center mt-b">
+            <a href="../qr-foams/edit.php?no_sn=<?php echo $_SESSION['no_sn']; ?>"><button class="btn btn-success btn-sm m-3"
+                    type="button">Goto QR</button></a>
+            <button type="submit" class="btn btn-sm btn-success m-3">Submit</button>
+        </div>
+
 
     </form>
     </div>
@@ -736,7 +742,8 @@
 
 
 
-</body>
+
+<script src="../../assets/js/piatFoam.js"></script>
 <script>
   var check = '';
   var prepare = true;
@@ -776,7 +783,7 @@
       <td class=""><input type="text" name="company[]" value="" id="company"></td>
       <td class="">
         <select name="company_name[]" id="company_name" class="form-select" onchange="userChange(this)" style="min-width:150px !important">
-          <option hidden>Select Name</option>
+          <option value="" hidden>Select Name</option>
           ${
             users.map((user) => {
               return `<option value="${user.name}">${user.name}</option>`;
@@ -833,5 +840,5 @@
   }
 
 </script>
-
+</body>
 </html>

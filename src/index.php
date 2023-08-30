@@ -202,7 +202,7 @@ include './services/connection.php';
                                 $to = $to == '' ? $record['max'] : $to;
                             
                                 // filter query
-                                $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from AND tarikh_siap <= :to  ORDER BY tarikh_siap DESC');
+                                $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from AND tarikh_siap <= :to  ORDER BY csp_piad_date::date DESC');
                                 $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
                             } else {
                                 // without filter
@@ -314,7 +314,7 @@ include './services/connection.php';
                             $pdo = null;
                             
                             foreach ($records as $record) {
-                                if (($record['jenis_sambungan'] != 'UG' && $record['status'] != 'Complete') || $record['jenis_sambungan'] == 'UG') {
+                               
                                     echo '<tr>';
                                     echo "<td>{$record['ba']}</td>";
                                     echo "<td>{$record['no_sn']}</td>";
@@ -324,8 +324,12 @@ include './services/connection.php';
                                     echo "<td>{$record['csp_paid_date']}</td>";
                                     echo "<td>{$record['tarikh_siap']}</td>";
                                     echo "<td>{$record['status']}</td>";
-                                    echo "<td>{$record['remark']}</td>";
-                                   
+                                    $remark = $record['remark'];
+                                    if (strlen($remark) > 15) {
+                                        $remark = substr($remark, 0, 15) . "...";
+                                    }
+                                    echo "<td>{$remark}</td>";
+
                                     echo "<td class='text-center'><div class='dropdown'>
                                                           <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
                                                           <img src='../images/three-dots-vertical.svg'  >
@@ -342,7 +346,7 @@ include './services/connection.php';
                                     echo "</ul>
                                                                                                   </div></td>";
                                     echo '</tr>';
-                                }
+                                
                             }
                             ?>
 
