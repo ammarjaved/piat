@@ -202,14 +202,14 @@ include './services/connection.php';
                                 $to = $to == '' ? $record['max'] : $to;
                             
                                 // filter query
-                                $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from AND tarikh_siap <= :to  ORDER BY csp_piad_date::date DESC');
+                                $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from AND tarikh_siap <= :to  ORDER BY csp_paid_date DESC');
                                 $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
                             } else {
                                 // without filter
                                 if ($_SESSION['user_name'] == 'admin') {
                                     $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr    ORDER BY id DESC');
                                 } else {
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba ORDER BY tarikh_siap DESC');
+                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba ORDER BY csp_paid_date DESC');
                                     // $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
                                     $stmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
                                 }
