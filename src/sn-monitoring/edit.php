@@ -153,6 +153,10 @@ if (!$record) {
         $("#complete_date").on("change",function(){
             $("#cons_status").val("Complete");
         })
+
+        $("#no_sn").on("change",function () {
+        getSnDetail(this)
+    })
     })
 </script>
 </body>

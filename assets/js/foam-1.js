@@ -14,6 +14,9 @@ $(document).ready(function(){
         
   
     $("input[type='number']").on("blur", function() {
+        if (this.name === "sn_number") {
+            return false
+        }
         var inputValue = $(this).val();
         var parentElement = $(this).parent();
         var errorSpan = parentElement.find('span');
@@ -32,9 +35,7 @@ $(document).ready(function(){
 
     });
 
-    $("#no_sn").on("change",function () {
-        getSnDetail(this)
-    })
+    
 })
 
 
