@@ -166,7 +166,7 @@ include './services/connection.php';
 
             <div class="tab-pane fade  " id="home" role="tabpanel" aria-labelledby="home-tab">
                 <div class="table-responsive table-bordered py-3" style="overflow-y:auto ; ">
-                    <table id="myTable" class="table table-striped table-responsive table-bordered">
+                    <table id="myTable" class="table table-striped table-responsive table-bordered" data-table>
                         <thead>
                             <tr>
 
@@ -209,14 +209,21 @@ include './services/connection.php';
                                 if ($_SESSION['user_name'] == 'admin') {
                                     $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr    ORDER BY id DESC');
                                 } else {
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba ORDER BY csp_paid_date DESC');
+                                    $status =  isset($_REQUEST['status']) ? $_REQUEST['status'] :'';
+                                    
+                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba  ORDER BY csp_paid_date DESC');
                                     // $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
                                     $stmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
+
                                 }
                                 $stmt->execute();
                             }
                             
                             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            // print_r("<pre>");
+                            // print_r($records);
+                            // print_r("</pre>");
+                            // exit;
                             
                             foreach ($records as $record) {
                                 if ($record['jenis_sambungan'] != 'UG') {
@@ -394,17 +401,29 @@ include './services/connection.php';
 
     <script>
         $(document).ready(function() {
-            $('#myTable').DataTable();
-            $("#snTable").DataTable()
 
-            $(document).ready(function() {
+            $('#myTable').DataTable({
+                aaSorting:[[3, 'desc']]
+            });
+            $("#snTable").DataTable({
+                aaSorting:[[3, 'desc']]
+            })
+
+            $('#searchButton').on('click', function () {
+        var searchTerm = $('#searchInput').val(); 
+        var table = $('#myTable').DataTable();
+        table.search(searchTerm).draw(); 
+    });
+
                 $('#exampleModal').on('show.bs.modal', function(event) {
                     var button = $(event.relatedTarget);
                     var id = button.data('sn');
                     var modal = $(this);
                     $('#modal-sn').val(id)
                 });
-            });
+
+
+   
 
             reset();
         });
@@ -413,7 +432,7 @@ include './services/connection.php';
             var sub = "<?php echo isset($_POST['submitButton']) ? $_POST['submitButton'] : ''; ?>";
             if (sub == 'reset') {
                 $('#searchBA').find('option').first().remove();
-                $('#searchBA').prepend('<option value="" selected hidden>Select ba</option')
+                $('#searchBA').prepend('<option value=" <?php $_SESSION['user_ba'] ?>"> <?php $_SESSION['user_ba'] == ""? "Select ba" : $_SESSION['user_ba'] ?></option>')
                 $('#to_date').val('')
                 $('#from_date').val('')
                 $("#exc_ba").val('')
@@ -433,6 +452,13 @@ include './services/connection.php';
             $("#exc_to").val(to)
 
             return true
+        }
+
+        function searchTable(param) {
+            var table = $('#myTable').DataTable();
+        table.search(param).draw(); 
+        var table2 = $('#snTable').DataTable();
+        table2.search(param).draw(); 
         }
     </script>
 </body>

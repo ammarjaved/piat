@@ -28,15 +28,17 @@ $ba = isset($_POST['exc_ba']) ? $_POST['exc_ba'] : '';
           $to = isset($_POST['exc_to']) ? $_POST['exc_to'] : '';
           $record ='';
           if( $from == '' || $to == ''){
-            $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr ");
+            $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr where tarikh_siap != ''");
             $stmt->execute();
             $record = $stmt->fetch(PDO::FETCH_ASSOC);
           }
           $from = $from == '' ? $record['min'] : $from;
           $to = $to == '' ? $record['max'] : $to;
+          echo $from;
+          echo $to;
           
           $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba 
-                    AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to"); 
+                    AND tarikh_siap >= :from AND tarikh_siap <= :to"); 
                     
                     
           $stmt->execute([':ba' => "%$ba%",':from' => $from,':to' => $to,]); 
