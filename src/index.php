@@ -432,7 +432,7 @@ include './services/connection.php';
             var sub = "<?php echo isset($_POST['submitButton']) ? $_POST['submitButton'] : ''; ?>";
             if (sub == 'reset') {
                 $('#searchBA').find('option').first().remove();
-                $('#searchBA').prepend('<option value=" <?php $_SESSION['user_ba'] ?>"> <?php $_SESSION['user_ba'] == ""? "Select ba" : $_SESSION['user_ba'] ?></option>')
+                $('#searchBA').prepend('<option value="<?php echo $_SESSION['user_ba'] ?>"> <?php echo $_SESSION['user_ba'] == ""? "Select ba" : $_SESSION['user_ba'] ?></option>')
                 $('#to_date').val('')
                 $('#from_date').val('')
                 $("#exc_ba").val('')

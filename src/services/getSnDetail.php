@@ -1,5 +1,6 @@
 <?php
-// ob_start();
+ob_start();
+
 include("connection.php");
 
 
@@ -23,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $response = array('success' => false, 'message' => 'No records found');
     }
 
-    header('Content-Type: application/json');
+    // header('Content-Type: application/json');
     echo json_encode($response);
 
 }
