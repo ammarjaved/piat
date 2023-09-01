@@ -325,8 +325,10 @@ include './services/connection.php';
                                     echo "<td>{$record['tarikh_siap']}</td>";
                                     echo "<td>{$record['status']}</td>";
                                     $remark = $record['remark'];
+                                    if($remark){
                                     if (strlen($remark) > 15) {
                                         $remark = substr($remark, 0, 15) . "...";
+                                    }
                                     }
                                     echo "<td>{$remark}</td>";
 
