@@ -60,7 +60,7 @@ include './services/connection.php';
 
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/foams/index.php">AD KL SN, QR and PIAT Monitoring</a>
+            <a class="navbar-brand" href="">AD KL SN, QR and PIAT Monitoring</a>
             <a href="./auth/logout.php" class="btn btn-sm btn-secondary">logout</a>
         </div>
     </nav>
@@ -93,13 +93,14 @@ include './services/connection.php';
                 <form action="./services/generateExcel.php" method="POST">
                     <input type="hidden" name="exc_ba" id="exc_ba" value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>">
                     <input type="hidden" name="exc_from" id="exc_from" value="<?php echo isset($_POST['from_date']) ? $_POST['from_date'] : ''; ?>">
+                    <input type="hidden" name="exc_date_type" id="exc_date_type" value="<?php echo isset($_POST['date_type']) ? $_POST['date_type'] : ''; ?>">
                     <input type="hidden" name="exc_to" id="exc_to" value="<?php echo isset($_POST['to_date']) ? $_POST['to_date'] : ''; ?>">
                     <button href="./services/generateExcel.php" class="btn btn-success btn-sm" type="submit">Download
                         Excel</button>
                 </form>
             </div>
         </div>
-        <form action="" method="post">
+        <form action="" method="post" onsubmit="return searchFoam()">
             <div class="text-end mb-3 row">
 
                 <div class="m-2 col-md-2">
@@ -116,6 +117,15 @@ include './services/connection.php';
     }?>
                     </select>
 
+                </div>
+                <div class="m-2 col-md-2">
+                    <label for="">Date Type * :</label> <br>
+                    <span class="text-danger " id="date_type_error"></span>
+                    <select name="date_type" id="date_type" class="form-select">
+                        <option value="<?php echo isset($_POST['date_type']) && $_POST['date_type'] != ""? $_POST['date_type'] :'CSP'  ?>" hidden><?php echo isset($_POST['date_type']) && $_POST['date_type'] != "" ? $_POST['date_type'] :'CSP'  ?></option>
+                        <option value="CSP">CSP Date</option>
+                        <option value="Completion">Completion Date</option>
+                    </select>
                 </div>
                 <div class="m-2 col-md-2">
                     <label for="">From Date :</label> <br>
@@ -166,10 +176,13 @@ include './services/connection.php';
 
             <div class="tab-pane fade  " id="home" role="tabpanel" aria-labelledby="home-tab">
                 <div class="table-responsive table-bordered py-3" style="overflow-y:auto ; ">
-                    <table id="myTable" class="table table-striped table-responsive table-bordered">
+                    <table id="myTable" class="table table-striped table-responsive table-bordered" data-table>
                         <thead>
                             <tr>
-
+                                <?php
+                            if ($_SESSION['user_name'] == "admin") { ?>
+                                        <th>BA</th>
+                                 <?php   } ?>
                                 <th>SN NO</th>
                                 <th>JENIS SN</th>
                                 <th>JENIS SAMBUNGAN</th>
@@ -187,42 +200,44 @@ include './services/connection.php';
                             
                             if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter') {
                                 $ba = isset($_POST['searchBA']) ? $_POST['searchBA'] : '';
-                                $from = isset($_POST['from_date']) ? $_POST['from_date'] : '';
-                                $to = isset($_POST['to_date']) ? $_POST['to_date'] : '';
+                
                                 $record = '';
                             
-                                if ($from == '' || $to == '') {
-                                    // if dates are null and only ba is selected then first get min and max date
-                                    $stmt = $pdo->prepare('SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr ');
-                                    $stmt->execute();
-                                    $record = $stmt->fetch(PDO::FETCH_ASSOC);
-                                }
-                            
-                                $from = $from == '' ? $record['min'] : $from;
-                                $to = $to == '' ? $record['max'] : $to;
-                            
-                                // filter query
-                                $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from AND tarikh_siap <= :to  ORDER BY csp_piad_date::date DESC');
+                             
+                              
+                                     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to  ORDER BY csp_paid_date DESC");
+
+                               
                                 $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
                             } else {
                                 // without filter
                                 if ($_SESSION['user_name'] == 'admin') {
                                     $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr    ORDER BY id DESC');
                                 } else {
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba ORDER BY tarikh_siap DESC');
+                                    $status =  isset($_REQUEST['status']) ? $_REQUEST['status'] :'';
+                                    
+                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba  ORDER BY csp_paid_date DESC');
                                     // $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
                                     $stmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
+
                                 }
                                 $stmt->execute();
                             }
                             
                             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            // print_r("<pre>");
+                            // print_r($records);
+                            // print_r("</pre>");
+                            // exit;
                             
                             foreach ($records as $record) {
                                 if ($record['jenis_sambungan'] != 'UG') {
                                     # code...
                             
                                     echo '<tr>';
+                                    if ($_SESSION['user_name'] == "admin") {
+                                        echo "<td>{$record['ba']}</td>";
+                                    }
                             
                                     echo "<td><a class='text-decoration-none text-dark' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
                                     echo $record['no_sn'];
@@ -320,13 +335,30 @@ include './services/connection.php';
                                     echo "<td>{$record['no_sn']}</td>";
                                     echo "<td>{$record['jenis_sn']}</td>";
                                     echo "<td>{$record['jenis_sambungan']}</td>";
-                                    echo "<td>{$record['aging_days']}</td>";
+                                    if ($record['csp_paid_date'] != '') {
+                                 
+
+                                        $agingDateTime = new DateTime( $record['csp_paid_date']);
+
+                                        $todayDateTime = new DateTime();
+
+        
+                                        $interval = $agingDateTime->diff(new DateTime());
+                                        $differenceInDays = $interval->format('%a');
+                                        echo "<td> ".$differenceInDays + 1 ."</td>";
+                                    }else{
+
+                                         echo "<td>{$record['aging_days']}</td>";
+                                    }
+                                   
                                     echo "<td>{$record['csp_paid_date']}</td>";
                                     echo "<td>{$record['tarikh_siap']}</td>";
                                     echo "<td>{$record['status']}</td>";
                                     $remark = $record['remark'];
+                                    if($remark){
                                     if (strlen($remark) > 15) {
                                         $remark = substr($remark, 0, 15) . "...";
+                                    }
                                     }
                                     echo "<td>{$remark}</td>";
 
@@ -335,10 +367,7 @@ include './services/connection.php';
                                                           <img src='../images/three-dots-vertical.svg'  >
                                                           </button>
                                                           <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>";
-                                    // if ($record['jenis_sambungan'] != 'UG') {
-                                    //  echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>Add QR</a></li>";
-                                    // }
-                                   
+                                 
                                     echo "<li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}'>Edit SN</a></li>";
                             
                                     echo "  <li><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
@@ -392,17 +421,29 @@ include './services/connection.php';
 
     <script>
         $(document).ready(function() {
-            $('#myTable').DataTable();
-            $("#snTable").DataTable()
 
-            $(document).ready(function() {
+            $('#myTable').DataTable({
+                aaSorting:[[3, 'desc']]
+            });
+            $("#snTable").DataTable({
+                aaSorting:[[5, 'desc']]
+            })
+
+            $('#searchButton').on('click', function () {
+        var searchTerm = $('#searchInput').val(); 
+        var table = $('#myTable').DataTable();
+        table.search(searchTerm).draw(); 
+    });
+
                 $('#exampleModal').on('show.bs.modal', function(event) {
                     var button = $(event.relatedTarget);
                     var id = button.data('sn');
                     var modal = $(this);
                     $('#modal-sn').val(id)
                 });
-            });
+
+
+   
 
             reset();
         });
@@ -411,8 +452,9 @@ include './services/connection.php';
             var sub = "<?php echo isset($_POST['submitButton']) ? $_POST['submitButton'] : ''; ?>";
             if (sub == 'reset') {
                 $('#searchBA').find('option').first().remove();
-                $('#searchBA').prepend('<option value="" selected hidden>Select ba</option')
+                $('#searchBA').prepend('<option value="<?php echo $_SESSION['user_ba'] ?>"> <?php echo $_SESSION['user_ba'] == ""? "Select ba" : $_SESSION['user_ba'] ?></option>')
                 $('#to_date').val('')
+                $('#date_type').prepend('<option value="CSP" hidden selected>CSP</option>')
                 $('#from_date').val('')
                 $("#exc_ba").val('')
                 $('#exc_from').val('')
@@ -432,6 +474,37 @@ include './services/connection.php';
 
             return true
         }
+
+        function searchTable(param) {
+            var table = $('#myTable').DataTable();
+        table.search(param).draw(); 
+        var table2 = $('#snTable').DataTable();
+        table2.search(param).draw(); 
+        }
+
+        function searchFoam() {
+            var searchValid = true;
+            var getDateType = $('#date_type').val();
+            if (getDateType == '') {
+                $('#date_type_error').html("Select date type");
+                searchValid = false;
+            }
+            return searchValid;
+        }
+
+        function adminSearch(ba , status) {
+    var table = $('#myTable').DataTable();
+   var table2 = $('#snTable').DataTable();
+
+    table.columns(0).search(ba); // Filter Column 1
+    table.columns(6).search(status); // Filter Column 2
+
+    table2.columns(0).search(ba); // Filter Column 1
+    table2.columns(7).search(status); //
+
+    table.draw(); 
+    table2.draw();
+}
     </script>
 </body>
 

@@ -85,13 +85,13 @@ if (!$record) {
                     <tr>
                         <th>CSP Paid Date<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date"
-                                class="form-control required" onchange="getAging(this)" value="<?php echo $record['csp_paid_date']; ?>">
+                                class="form-control required" onchange="getAging(this)" value="<?php echo $record['csp_paid_date']; ?>" max="<?php echo $record['csp_paid_date']; ?>">
                         </td>
                     </tr>
                     <tr>
                         <th>Aging (days)<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="number" name="aging_days" id="aging_days"
-                                class="form-control required" value="<?php echo $record['aging_days']; ?>" onchange="getAging(this)"></td>
+                                class="form-control required"  ></td>
                     </tr>
 
                     <tr>
@@ -141,6 +141,23 @@ if (!$record) {
 <script >
 
     $(document).ready(function(){
+
+          // Get the input element by its ID
+  var agingDaysInput = document.getElementById('aging_days');
+
+// Get the value of aging days from PHP (assuming it's stored in a variable)
+var agingDaysValue = <?php echo $record['csp_paid_date']; ?>;
+
+// Get today's date
+var todayDate = new Date();
+
+// Calculate the difference between aging days and today's date
+var differenceInDays = agingDaysValue - todayDate.getDate();
+let daysDiff = (Math.floor(differenceInDays / (1000 * 60 * 60 * 24)))+1;
+
+// Set the calculated difference as the value of the input field
+agingDaysInput.value = daysDiff;
+
         $("#cons_status").on("change",function(){
 
             if(this.value === "Complete"){
@@ -153,6 +170,12 @@ if (!$record) {
         $("#complete_date").on("change",function(){
             $("#cons_status").val("Complete");
         })
+
+        $("#no_sn").on("change",function () {
+            getSnDetail(this)
+        })
+
+
     })
 </script>
 </body>

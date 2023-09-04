@@ -1,5 +1,8 @@
 <?php
+ob_start();
+
 include("connection.php");
+
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
 

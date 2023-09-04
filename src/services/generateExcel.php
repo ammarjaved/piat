@@ -15,7 +15,7 @@ if(!isset($_SESSION['user_name'])){
  include('./connection.php');
 
 
- if ($_SERVER["REQUEST_METHOD"] == "POST") {
+ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['exc_date_type'])) {
 
     if($_SESSION['user_name']== 'admin'){
 $ba = isset($_POST['exc_ba']) ? $_POST['exc_ba'] : ''; 
@@ -23,20 +23,35 @@ $ba = isset($_POST['exc_ba']) ? $_POST['exc_ba'] : '';
         $ba = $_SESSION['user_ba'];
     }
       
-                        
+                   
           $from = isset($_POST['exc_from']) ? $_POST['exc_from'] : '';
           $to = isset($_POST['exc_to']) ? $_POST['exc_to'] : '';
           $record ='';
-          if( $from == '' || $to == ''){
-            $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) , MIN(tarikh_siap) FROM public.ad_service_qr ");
+          if ($from == '' || $to == '') {
+            // if dates are null and only ba is selected then first get min and max date
+            $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) AS max_date, MIN(tarikh_siap) AS min_date FROM public.ad_service_qr where tarikh_siap != ''");
             $stmt->execute();
-            $record = $stmt->fetch(PDO::FETCH_ASSOC);
-          }
-          $from = $from == '' ? $record['min'] : $from;
-          $to = $to == '' ? $record['max'] : $to;
-          
+            $comp_date = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            $stmt = $pdo->prepare("SELECT MAX(csp_paid_date) AS max_date, MIN(csp_paid_date) AS min_date FROM public.ad_service_qr ");
+            $stmt->execute();
+            $csp_date = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+    
+        if (isset($_POST['exc_date_type'])) {
+           if ($_POST['exc_date_type'] == "CSP") {
+                $col_name = 'csp_paid_date';
+                $from = $from == '' ? $comp_date['min_date'] : $from;
+                $to = $to == '' ? $comp_date['max_date'] : $to;
+           }else{
+            $col_name = 'tarikh_siap';
+            $from = $from == '' ? $csp_date['min_date'] : $from;
+            $to = $to == '' ? $csp_date['max_date'] : $to;
+           }
+        }
+
           $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba 
-                    AND tarikh_siap::date >= :from AND tarikh_siap::date <= :to"); 
+                    AND ".$col_name." >= :from AND ".$col_name." <= :to"); 
                     
                     
           $stmt->execute([':ba' => "%$ba%",':from' => $from,':to' => $to,]); 

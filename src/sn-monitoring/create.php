@@ -76,7 +76,7 @@ include '../partials/header.php';
                     <tr>
                         <th>CSP Paid Date *<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date"
-                                class="form-control required" value="<?php echo date('Y-m-d'); ?>" onchange="getAging(this)">
+                                class="form-control required" value="<?php echo date('Y-m-d'); ?>" onchange="getAging(this)" max="<?php echo date('Y-m-d'); ?>">
                         </td>
                     </tr>
                     <tr>
@@ -125,16 +125,31 @@ include '../partials/header.php';
 <script src="../../assets/js/foam-1.js"></script>
 <script>
     $(document).ready(function() {
+
         $('input[name="jenis_sambungan"').on("change", function() {
 
-
+            var select = $('#cons_status').find('option[value="Complete"]');
+            
             if (this.value === "UG") {
                 $('#comp_date').html(`<th>Completion Date<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="date" name="complete_date" id="complete_date" class="form-control">
                         </td>`);
+                
+                        if (select.length < 1) {
+                            $('#cons_status').prepend('<option value="Complete">Complete</option>')
+            }
+
+                        
 
             } else {
                 $('#comp_date').html('')
+
+            if (select.length > 0) {
+                select.remove();
+            }
+
+
+
             }
         })
 

@@ -84,6 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt->execute();
 
+        if (isset($_REQUEST['id'])) {
+            $stmt = $pdo->prepare("UPDATE public.inspection_checklist SET project_no = :sn WHERE ad_service_id = :id");
+            $stmt->bindParam(':sn',$_POST['sn_number']);
+            $stmt->bindParam(':id',$_REQUEST['id']);
+            $stmt->execute();
+        }
+
        
         $_SESSION['alert'] = 'alert-success';
         $_SESSION['message'] = 'inserted successfully';
