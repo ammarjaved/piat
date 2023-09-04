@@ -216,7 +216,8 @@ include './services/connection.php';
                                 } else {
                                     $status =  isset($_REQUEST['status']) ? $_REQUEST['status'] :'';
                                     
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba  ORDER BY csp_paid_date DESC');
+                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba ORDER BY csp_paid_date DESC, id DESC');
+
                                     // $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
                                     $stmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
 

@@ -81,7 +81,7 @@ include '../partials/header.php';
                     </tr>
                     <tr>
                         <th>Aging (days) *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="number" name="aging_days" value="1" id="aging_days"
+                        <td colspan="2"><input disabled type="number" name="aging_days" value="1" id="aging_days"
                                 class="form-control required"></td>
                     </tr>
 
