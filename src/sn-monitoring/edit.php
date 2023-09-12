@@ -126,6 +126,13 @@ if (!$record) {
                         </td>
                     </tr>
 
+                    <tr>
+                        <th>ERMS Status</th>
+                        <td colspan="2"><input type="checkbox"  id="erms" > <label
+                                for="erms"></label></td>
+                        <input type="text" id="erms1" name="erms" value="<?php echo $record['erms_status']; ?>" style="display:none;"/>
+                    </tr>
+
 
                 </tbody>
             </table>
@@ -174,6 +181,27 @@ agingDaysInput.value = daysDiff;
         $("#no_sn").on("change",function () {
             getSnDetail(this)
         })
+
+// setTimeout(() => {
+    var erms_val= $("#erms1").val();
+      if(erms_val=='done'){
+        $('#erms').prop('checked', true);
+      }else{
+        $('#erms').prop('checked', false);
+      }  
+// }, 3000);
+    
+
+        $(document).on('change', '#erms', function() {
+
+            if($(this).is(":checked")){
+            $("#erms1").val('done')
+            }
+            else
+            {
+            $("#erms1").val('pending')
+            }
+        });
 
 
     })

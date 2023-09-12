@@ -112,6 +112,13 @@ include '../partials/header.php';
                         </td>
                     </tr>
 
+                    <tr>
+                        <th>ERMS Status</th>
+                        <td colspan="2"><input type="checkbox"  id="erms" > <label
+                                for="erms"></label></td>
+                        <input type="text" id="erms1" name="erms" style="display:none;"/>
+                    </tr>
+
                 </tbody>
             </table>
         </div>
@@ -163,6 +170,17 @@ include '../partials/header.php';
                     ''
             }
         })
+
+        $(document).on('change', '#erms', function() {
+
+            if($(this).is(":checked")){
+              $("#erms1").val('done')
+            }
+            else
+            {
+              $("#erms1").val('pending')
+            }
+        });
 
     })
 </script>

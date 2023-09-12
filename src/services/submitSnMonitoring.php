@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $piat = "no";
             }
        
-            $sql = "INSERT INTO ad_service_qr (ba, alamat, user_status,piat , no_sn, jenis_sn, csp_paid_date, aging_days, jenis_sambungan, pic_vendor,  remark, status, created_by , tarikh_siap , qr)
-            VALUES (:ba, :alamat, :user_status ,:piat,  :sn_number, :jenis_sn, :csp_paid_date, :aging_days, :jenis_sambungan, :pic_vendor,  :remark , :status, :created , :tarikh_siap , 'false')";
+            $sql = "INSERT INTO ad_service_qr (ba, alamat, user_status,piat , no_sn, jenis_sn, csp_paid_date, aging_days, jenis_sambungan, pic_vendor,  remark, status, created_by , tarikh_siap , qr,erms_status)
+            VALUES (:ba, :alamat, :user_status ,:piat,  :sn_number, :jenis_sn, :csp_paid_date, :aging_days, :jenis_sambungan, :pic_vendor,  :remark , :status, :created , :tarikh_siap , 'false',:erms)";
             $stmt = $pdo->prepare($sql);
             
             $stmt->bindParam(':created',$_SESSION['user_id']);
@@ -49,7 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             remark = :remark,
             piat = :piat,
             tarikh_siap =:tarikh_siap,
-            status =:status
+            status =:status,
+            erms_status=:erms
             WHERE id = :id";
 
             $stmt = $pdo->prepare($sql);
@@ -79,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':pic_vendor', $_POST['pic_vendor']);
         $stmt->bindParam(':remark', $_POST['remark']);
         $stmt->bindParam(':piat',$piat);
+        $stmt->bindParam(':erms',$_POST['erms']);
         
         
 
