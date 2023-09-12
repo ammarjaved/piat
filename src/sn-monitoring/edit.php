@@ -85,7 +85,7 @@ if (!$record) {
                     <tr>
                         <th>CSP Paid Date<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date"
-                                class="form-control required" onchange="getAging(this)" value="<?php echo $record['csp_paid_date']; ?>" max="<?php echo $record['csp_paid_date']; ?>">
+                                class="form-control required" onchange="getAging(this)" value="<?php echo $record['csp_paid_date']; ?>" max="<?php echo date('Y-m-d');  ?>">
                         </td>
                     </tr>
                     <tr>
