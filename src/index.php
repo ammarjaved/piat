@@ -190,10 +190,10 @@ include './services/connection.php';
                                 <th>COMPLETION DATE</th>
                                 
                                 <th>CONSTRUCTION STATUS</th>
-                                <th>ERMS</th>
+
                                 <th>QR</th>
                                 <th>PIAT</th>
-                                
+                                                                <th>ERMS</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -253,11 +253,7 @@ include './services/connection.php';
                                     
                                     echo "<td>{$record['status']}</td>";
                                     echo "<td class='text-center'>";
-                                    if ($record['erms_status'] != '' ) {
-                                        echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
-                                    } else {
-                                        echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
-                                    }
+                                 
                                     echo '</td>';
                                     echo "<td class='text-center'>";
                                     if ($record['tarikh_siap'] != '' ) {
@@ -270,6 +266,12 @@ include './services/connection.php';
                             
                                     if ($record['piat_status'] == 'true') {
                                         echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
+                                    } else {
+                                        echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
+                                    }
+
+                                    if ($record['erms_status'] != '' ) {
+                                        echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
                                         echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                                     }
