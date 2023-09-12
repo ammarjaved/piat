@@ -153,7 +153,7 @@ if (!$record) {
   var agingDaysInput = document.getElementById('aging_days');
 
 // Get the value of aging days from PHP (assuming it's stored in a variable)
-var agingDaysValue = <?php echo $record['csp_paid_date']; ?>;
+var agingDaysValue = <?php echo $record['csp_paid_date'] != '' ? $record['csp_paid_date'] : '""'; ?> ;
 
 // Get today's date
 var todayDate = new Date();
@@ -163,7 +163,8 @@ var differenceInDays = agingDaysValue - todayDate.getDate();
 let daysDiff = (Math.floor(differenceInDays / (1000 * 60 * 60 * 24)))+1;
 
 // Set the calculated difference as the value of the input field
-agingDaysInput.value = daysDiff;
+agingDaysInput.value = daysDiff
+
 
         $("#cons_status").on("change",function(){
 
@@ -173,6 +174,35 @@ agingDaysInput.value = daysDiff;
                 $("#complete_date").hasClass('required') ? $("#complete_date").removeClass('required') :''
             }
         })
+
+
+        $('input[name="jenis_sambungan"').on("change", function() {
+
+var select = $('#cons_status').find('option[value="Complete"]');
+
+if (this.value === "UG") {
+    $('#comp_date').html(`<th>Completion Date<br> <span class="text-danger"></span></th>
+            <td colspan="2"><input type="date" name="complete_date" id="complete_date" class="form-control" onchange="changestatus()" min="<?php echo date('Y-m-d'); ?>">
+            </td>`);
+    
+            if (select.length < 1) {
+                $('#cons_status').prepend('<option value="Complete">Complete</option>')
+}
+
+            
+
+} else {
+    $('#comp_date').html('')
+
+if (select.length > 0) {
+    select.remove();
+}
+
+
+
+}
+})
+
 
         $("#complete_date").on("change",function(){
             $("#cons_status").val("Complete");
@@ -202,9 +232,16 @@ agingDaysInput.value = daysDiff;
             $("#erms1").val('pending')
             }
         });
-
+        onLoad()
 
     })
+
+    function onLoad() {
+        var jenis = "<?php echo $record['jenis_sambungan']?>"
+        if (jenis == 'OH' && $('#complete_date').val() == '') {
+            $('#comp_date').html('')
+        }
+    }
 </script>
 </body>
 
