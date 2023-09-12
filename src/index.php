@@ -186,7 +186,7 @@ include './services/connection.php';
                                 <th>SN NO</th>
                                 <th>JENIS SN</th>
                                 <th>JENIS SAMBUNGAN</th>
-                                <th>CSP DATE</th>
+                                <th>CSPDATE</th>
                                 <th>COMPLETION DATE</th>
                                 
                                 <th>CONSTRUCTION STATUS</th>
@@ -252,9 +252,7 @@ include './services/connection.php';
                                     echo "<td>{$record['tarikh_siap']}</td>";
                                     
                                     echo "<td>{$record['status']}</td>";
-                                    echo "<td class='text-center'>";
-                                 
-                                    echo '</td>';
+                                   
                                     echo "<td class='text-center'>";
                                     if ($record['tarikh_siap'] != '' ) {
                                         echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
@@ -262,16 +260,20 @@ include './services/connection.php';
                                         echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                                     }
                             
-                                    echo '</td><td class="algin-middle text-center">';
-                            
-                                    if ($record['piat_status'] == 'true') {
-                                        echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
+                                    echo '</td>';
+                                    echo "<td class='text-center'>";
+                                    if ($record['erms_status'] != '' ) {
+                                        echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
                                         echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                                     }
-
-                                    if ($record['erms_status'] != '' ) {
-                                        echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
+                                    echo '</td>';
+                                    
+                                    
+                                    echo'<td class="algin-middle text-center">';
+                            
+                                    if ($record['piat_status'] == 'true') {
+                                        echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
                                         echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                                     }
