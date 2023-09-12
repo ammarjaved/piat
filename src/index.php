@@ -272,7 +272,10 @@ include './services/connection.php';
                                                             </button>
                                                             <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
                                                               <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
-                                    if ($record['piat'] == 'yes') {
+                                    if ($record['csp_paid_date'] == '') {
+                                       
+                                    echo "  <li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}' >Ad CSP date</a></li>";
+                                    }else{
                                         echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
                                         echo $record['tarikh_siap'] != '' ? 'Edit QR' : 'Add QR';
                                         echo '</a></li>';
@@ -282,8 +285,8 @@ include './services/connection.php';
                                             echo "  <li><a class='dropdown-item' href='./services/foamRedirect.php?sn={$record['no_sn']}'>Fill Checklist</a></li>";
                                         }
                                         echo "  <li><a class='dropdown-item' href='./piat-foam/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
+                                    
                                     }
-                            
                                     echo "  <li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}' >Edit SN</a></li>";
                                     echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
                                     echo '</ul></div></td>';

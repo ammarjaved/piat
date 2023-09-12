@@ -3,7 +3,7 @@ include '../partials/header.php';
 
 include '../services/connection.php';
 
-$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where jenis_sambungan != 'UG' and tarikh_siap = '' and  ba LIKE :ba OR tarikh_siap is null  and ba LIKE :ba");
+$stmt = $pdo->prepare("SELECT no_sn FROM public.ad_service_qr where jenis_sambungan != 'UG' and tarikh_siap = '' and  ba LIKE :ba OR tarikh_siap is null  and ba LIKE :ba and jenis_sambungan != 'UG'");
 $stat = 'Inprocess';  // Set the value you want to bind
 $ba = $_SESSION['user_ba'];
 // $stmt->bindParam(':stat', $stat);
@@ -326,7 +326,7 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="text-center d-flex justify-content-center">
     <a href="../index.php" ><button type="button" class="btn btn-sm btn-primary  my-3 mx-3"> GO BACK</button></a>
       <button type="submit" class="btn btn-sm btn-success my-3 mx-3" name="submit_button" value="submit">Submit</button>
-      <button type="submit" class="btn btn-sm btn-success mx-3 my-3 " style="display: none;"  id="next_foam" name="submit_button" value="next">Next</button>
+      <button type="submit" class="btn btn-sm btn-success mx-3 my-3 "    id="next_foam" name="submit_button" value="next">Next</button>
      </div>
     
 

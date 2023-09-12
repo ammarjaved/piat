@@ -93,7 +93,7 @@ include '../partials/header.php';
 
                     <tr>
                         <th>Remark<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="remark" id="remark" class="form-control">
+                        <td colspan="2"><input type="text" name="remark" id="remark" class="form-control"  >
                         </td>
                     </tr>
 
@@ -132,6 +132,7 @@ include '../partials/header.php';
 <script src="../../assets/js/foam-1.js"></script>
 <script>
     $(document).ready(function() {
+       
 
         $('input[name="jenis_sambungan"').on("change", function() {
 
@@ -139,7 +140,7 @@ include '../partials/header.php';
             
             if (this.value === "UG") {
                 $('#comp_date').html(`<th>Completion Date<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="date" name="complete_date" id="complete_date" class="form-control">
+                        <td colspan="2"><input type="date" name="complete_date" id="complete_date" class="form-control" onchange="changestatus()" min="<?php echo date('Y-m-d'); ?>">
                         </td>`);
                 
                         if (select.length < 1) {
@@ -171,6 +172,7 @@ include '../partials/header.php';
             }
         })
 
+      
         $(document).on('change', '#erms', function() {
 
             if($(this).is(":checked")){
@@ -183,6 +185,10 @@ include '../partials/header.php';
         });
 
     })
+    function changestatus(){
+        console.log($('#cons_Status'));
+            $('#cons_status').append('<option value="Complete" hidden selected>Complete</option>')
+        }
 </script>
 
 
