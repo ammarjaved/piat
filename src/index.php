@@ -261,6 +261,14 @@ include './services/connection.php';
                                     }
                             
                                     echo '</td>';
+                                    echo'<td class="algin-middle text-center">';
+                            
+                                    if ($record['piat_status'] == 'true') {
+                                        echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
+                                    } else {
+                                        echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
+                                    }
+                                    echo '</td>';
                                     echo "<td class='text-center'>";
                                     if ($record['erms_status'] != '' ) {
                                         echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
@@ -270,14 +278,7 @@ include './services/connection.php';
                                     echo '</td>';
                                     
                                     
-                                    echo'<td class="algin-middle text-center">';
-                            
-                                    if ($record['piat_status'] == 'true') {
-                                        echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
-                                    } else {
-                                        echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
-                                    }
-                                    echo '</td>';
+                                    
                             
                                     echo "<td class='text-center'><div class='dropdown'>
                                                             <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
