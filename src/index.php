@@ -186,7 +186,7 @@ include './services/connection.php';
                                 <th>SN NO</th>
                                 <th>JENIS SN</th>
                                 <th>JENIS SAMBUNGAN</th>
-                                <th>CSPDATE</th>
+                                <th>CSP DATE</th>
                                 <th>COMPLETION DATE</th>
                                 
                                 <th>CONSTRUCTION STATUS</th>
