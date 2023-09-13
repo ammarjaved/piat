@@ -97,7 +97,7 @@
                 <th>Tarikh Siap *<br> <span class="text-danger"></span></th>
 
  
-                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required"  min="<?php echo date('Y-m-d'); ?>" ></td>
+                <td colspan="2"><input type="date" name="tarikh_siap" id="tarikh_siap" class="form-control required"  min="<?php echo $record['csp_paid_date']; ?>" ></td>
             </tr>
             <tr>
                 <th>PIAT *<br> <span class="text-danger"></span></th>
