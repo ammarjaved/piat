@@ -93,42 +93,42 @@ $count = $stmt->fetch(PDO::FETCH_ASSOC);
   </div>
     
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLB - 6121' , 'Inprogress' ) ">
-        <div class=" m-2 p-1" style="background-color:  #006a4cb0 !important ;" >
+        <div class=" m-2 p-1" style="background-color:  #F86828 !important ;" >
             <p style="font-weight: 600;">Total  Inprogress KLB </p>
             <div class="text-center"><?php echo $count['klb_count']?></div>
         </div>
     </div>
 
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLB - 6121' , 'Complete' ) ">
-        <div class=" m-2 p-1" style="background-color:   #006a4cb0 !important;" >
+        <div class=" m-2 p-1" style="background-color:   #F86828 !important;" >
             <p style="font-weight: 600;">Total  Complete KLB </p>
             <div class="text-center"><?php echo $count['total_klb_count']?></div>
         </div> 
     </div>
 
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLB - 6121' , 'KIV' ) ">
-        <div class=" m-2 p-1" style="background-color:   #006a4cb0 !important;">
+        <div class=" m-2 p-1" style="background-color:   #F86828 !important;">
             <p style="font-weight: 600;">Total  KIV KLB </p>
             <div class="text-center"><?php echo $count['kiv_klb_count']?></div>
         </div>
     </div>
     
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLT - 6122' , 'Inprogress' ) ">
-        <div class=" m-2 p-1" style="background-color:  #8bc34a !important;">
+        <div class=" m-2 p-1" style="background-color:  #92C400 !important;">
             <p style="font-weight: 600;">Total  Inprogress KLT </p>
             <div class="text-center"><?php echo $count['klt_count']?></div>
         </div>
     </div>
 
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLT - 6122' , 'Complete' ) ">
-        <div class=" m-2 p-1" style="background-color:  #8bc34a !important;">
+        <div class=" m-2 p-1" style="background-color:  #92C400 !important;">
             <p style="font-weight: 600;">Total  Complete KLT </p>
             <div class="text-center"><?php echo $count['total_klt_count']?></div>
         </div>
     </div>
 
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLT - 6122' , 'KIV' ) ">
-        <div class=" m-2 p-1" style="background-color:  #8bc34a !important;">
+        <div class=" m-2 p-1" style="background-color:  #92C400 !important;">
             <p style="font-weight: 600;">Total  KIV KLT </p>
             <div class="text-center"><?php echo $count['kiv_klt_count']?></div>
         </div>
@@ -156,21 +156,21 @@ $count = $stmt->fetch(PDO::FETCH_ASSOC);
     </div>
     
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLS - 6124' , 'Inprogress' ) ">
-        <div class=" m-2 p-1" style="background-color:  #009688 !important;">
+        <div class=" m-2 p-1" style="background-color:  #FFC400 !important;">
             <p style="font-weight: 600;">Total Inprogress KLS </p>
             <div class="text-center"><?php echo $count['kls_count']?></div>
         </div>
     </div>
 
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLS - 6124' , 'Complete' ) ">
-        <div class=" m-2 p-1" style="background-color: #009688  !important;">
+        <div class=" m-2 p-1" style="background-color: #FFC400  !important;">
             <p style="font-weight: 600;">Total Complete KLS </p>
             <div class="text-center"><?php echo $count['total_kls_count']?></div>
         </div>
     </div>
 
     <div class="col-md-2 "  style="cursor: pointer;" onclick="adminSearch('KLS - 6124' , 'KIV' ) ">
-        <div class=" m-2 p-1" style="background-color:  #009688  !important;">
+        <div class=" m-2 p-1" style="background-color:  #FFC400  !important;">
             <p style="font-weight: 600;">Total KIV KLS </p>
             <div class="text-center"><?php echo $count['kiv_kls_count']?></div>
         </div>
