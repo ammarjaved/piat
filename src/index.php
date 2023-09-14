@@ -123,10 +123,11 @@ include './services/connection.php';
 
                 </div>
                 <div class="m-2 col-md-2">
-                    <label for="">Date Type * :</label> <br>
+                    <label for="">Date Type :</label> <br>
                     <span class="text-danger " id="date_type_error"></span>
                     <select name="date_type" id="date_type" class="form-select">
-                        <option value="<?php echo isset($_POST['date_type']) && $_POST['date_type'] != ""? $_POST['date_type'] :'CSP'  ?>" hidden><?php echo isset($_POST['date_type']) && $_POST['date_type'] != "" ? $_POST['date_type'] :'CSP'  ?></option>
+                        <option value="<?php echo isset($_POST['date_type']) && $_POST['date_type'] != ""? $_POST['date_type'] :'Both'  ?>" hidden><?php echo isset($_POST['date_type']) && $_POST['date_type'] != "" ? $_POST['date_type'] :'Selet dateType'  ?></option>
+                        <option value="Both">Both</option>
                         <option value="CSP">CSP Date</option>
                         <option value="Completion">Completion Date</option>
                     </select>
@@ -192,12 +193,10 @@ include './services/connection.php';
                                 <th>JENIS SAMBUNGAN</th>
                                 <th>CSP DATE</th>
                                 <th>COMPLETION DATE</th>
-                                
                                 <th>CONSTRUCTION STATUS</th>
-
                                 <th>QR</th>
                                 <th>PIAT</th>
-                                                                <th>ERMS</th>
+                                <th>ERMS</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -210,11 +209,18 @@ include './services/connection.php';
                                 $record = '';
                             
                              
-                              
-                                     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to  ORDER BY csp_paid_date DESC");
-
-                               
-                                $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
+                              if ( $col_name == 'both') {
+                                $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid OR ba LIKE :ba AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  ORDER BY csp_paid_date DESC");
+                                $stmt->bindParam(':from_paid' ,$from_paid);
+                                $stmt->bindParam(':to_paid',$to_paid);
+                                $stmt->bindParam(':from_siap' ,$from_siap);
+                                $stmt->bindParam(':to_siap',$to_siap);
+                                $stmt->bindValue(':ba', '%' . $ba . '%', PDO::PARAM_STR);
+                                $stmt->execute();
+                              }else{
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to  ORDER BY csp_paid_date DESC");
+                                    $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
+                              }
                             } else {
                                 // without filter
                                 if ($_SESSION['user_name'] == 'admin') {
@@ -232,10 +238,7 @@ include './services/connection.php';
                             }
                             
                             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                            // print_r("<pre>");
-                            // print_r($records);
-                            // print_r("</pre>");
-                            // exit;
+                     
                             
                             foreach ($records as $record) {
                                 if ($record['jenis_sambungan'] != 'UG') {
@@ -280,9 +283,6 @@ include './services/connection.php';
                                         echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                                     }
                                     echo '</td>';
-                                    
-                                    
-                                    
                             
                                     echo "<td class='text-center'><div class='dropdown'>
                                                             <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
@@ -407,6 +407,7 @@ include './services/connection.php';
             </div>
 
         </div>
+        
     </div>
 
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
