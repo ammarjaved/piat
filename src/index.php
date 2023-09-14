@@ -95,8 +95,11 @@ include './services/connection.php';
                     <input type="hidden" name="exc_from" id="exc_from" value="<?php echo isset($_POST['from_date']) ? $_POST['from_date'] : ''; ?>">
                     <input type="hidden" name="exc_date_type" id="exc_date_type" value="<?php echo isset($_POST['date_type']) ? $_POST['date_type'] : ''; ?>">
                     <input type="hidden" name="exc_to" id="exc_to" value="<?php echo isset($_POST['to_date']) ? $_POST['to_date'] : ''; ?>">
-                    <button href="./services/generateExcel.php" class="btn btn-success btn-sm" type="submit">Download
-                        Excel</button>
+                    <button href="./services/generateExcel.php" class="btn btn-success btn-sm" type="submit" value="download-qr" name="submit-button">Download
+                        QR</button>
+
+                        <button href="./services/generateExcel.php" class="btn btn-success btn-sm mx-2" value="download-sn" type="submit" name="submit-button">Download
+                        SN</button>
                 </form>
             </div>
         </div>
@@ -107,11 +110,12 @@ include './services/connection.php';
                     <label for="">Select BA :</label> <br>
                     <select name="searchBA" id="searchBA" class="form-select">
                         <?php if($_SESSION['user_name'] == "admin"){ ?>
-                        <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>" hidden><?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : 'Select BA'; ?></option>
+                        <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>" hidden><?php echo isset($_POST['searchBA']) && $_POST['searchBA'] !='' ? $_POST['searchBA'] : 'All Ba'; ?></option>
                         <option value="KLB - 6121">KLB - 6121</option>
                         <option value="KLT - 6122">KLT - 6122</option>
                         <option value="KLP - 6123">KLP - 6123</option>
                         <option value="KLS - 6124">KLS - 6124</option>
+                        <option value="">All Ba</option>
                         <?php } else {
         echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
     }?>
@@ -347,7 +351,7 @@ include './services/connection.php';
                                
                                     echo '<tr>';
                                     echo "<td>{$record['ba']}</td>";
-                                    echo "<td>{$record['no_sn']}</td>";
+                                    echo "<td><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >{$record['no_sn']}</a></td>";
                                     echo "<td>{$record['jenis_sn']}</td>";
                                     echo "<td>{$record['jenis_sambungan']}</td>";
                                     if ($record['csp_paid_date'] != '') {
@@ -375,7 +379,7 @@ include './services/connection.php';
                                         $remark = substr($remark, 0, 15) . "...";
                                     }
                                     }
-                                    echo "<td>{$remark}</td>";
+                                    echo "<td><a type='button' class='dropdown-item' data-bs-toggle='modal' data-remark='{$record['remark']}' data-bs-target='#remarkModal'>{$remark}</a></td>";
 
                                     echo "<td class='text-center'><div class='dropdown'>
                                                           <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
@@ -428,6 +432,28 @@ include './services/connection.php';
     </div>
 
 
+    <div class="modal fade" id="remarkModal" tabindex="-1" aria-labelledby="remrkModalLabel"
+        aria-hidden="true">
+        <div class=" modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="remrkModalLabel">Remarks </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="./services/removeSn.php" method="post">
+                    <div class="modal-body">
+                       <p id="remark-detail"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -457,6 +483,13 @@ include './services/connection.php';
                     var id = button.data('sn');
                     var modal = $(this);
                     $('#modal-sn').val(id)
+                });
+
+                $('#remarkModal').on('show.bs.modal', function(event) {
+                    var button = $(event.relatedTarget);
+                    var detail = button.data('remark');
+                    var modal = $(this);
+                    $('#remark-detail').html(detail)
                 });
 
 
