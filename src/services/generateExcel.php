@@ -84,6 +84,35 @@ $ba = isset($_POST['exc_ba']) ? $_POST['exc_ba'] : '';
 			
             try{
 			
+                if ($_POST['submit-button'] == 'download-sn') {
+                   
+                    $spreadsheet = IOFactory::load('../../assets/sn-excel-template.xlsx');
+  
+
+
+                $sheet = $spreadsheet->getActiveSheet();
+                $i = 2 ;
+				
+                foreach( $records as $record){
+                $sheet->setCellValue('A'.$i, $i-1);
+                $sheet->setCellValue('B'.$i, $record['ba']);
+                $sheet->setCellValue('C'.$i, $record['alamat']);
+                $sheet->setCellValue('D'.$i, $record['user_status'] == '' ? '-' : $record['erms_status']);
+                $sheet->setCellValue('E'.$i, $record['no_sn']);
+                $sheet->setCellValue('F'.$i, $record['jenis_sn']);
+                $sheet->setCellValue('G'.$i, $record['jenis_sambungan']);
+                $sheet->setCellValue('H'.$i, $record['csp_piad_date']);
+                $sheet->setCellValue('I'.$i, $record['pic_vendor']);
+                $sheet->setCellValue('J'.$i, $record['remark'] == '' ? '-' : $record['remark']);
+                $sheet->setCellValue('K'.$i, $record['status'] == '' ? '-' : $record['status']);
+                $sheet->setCellValue('L'.$i, $record['tarikh_siap'] == '' ? '-' : $record['tarikh_siap']);
+                $sheet->setCellValue('M'.$i, $record['erms_status'] == '' ? '-' : $record['erms_status']);
+                
+               
+                $i++;
+                }
+
+                }else{
                 $spreadsheet = IOFactory::load('../../assets/Excel- template.xlsx');
   
 
@@ -131,6 +160,7 @@ $ba = isset($_POST['exc_ba']) ? $_POST['exc_ba'] : '';
                 $i++;
 
                 }
+            }
 
                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
                 $writer->save('../../assets/Excel/'.$name .'.xlsx');
