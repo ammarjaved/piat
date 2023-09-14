@@ -3,7 +3,7 @@
 
     $hostname = '121.121.232.54'; 
     $port        =  5433;
-    $database    = 'piat_checklist';
+    $database    = 'piat_prod';
     $username    = 'postgres';
     $password    = 'Admin123';
  

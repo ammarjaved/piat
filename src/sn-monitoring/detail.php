@@ -66,7 +66,22 @@ if (!$record) {
                     </tr>
                     <tr>
                         <th>Aging (days)<br> <span class="text-danger"></span></th>
-                        <td><?php echo $record['aging_days']; ?></td>
+                        <?php   
+                    
+                    if ($record['csp_paid_date'] != '') {
+                        # code...
+                   
+                $agingDateTime = new DateTime( $record['csp_paid_date']);
+
+                $todayDateTime = $record['tarikh_siap'] != '' ? new DateTime($record['tarikh_siap'])  : new DateTime();
+
+
+                $interval = $agingDateTime->diff($todayDateTime);
+                $differenceInDays = $interval->format('%a'); }else{
+                    $differenceInDays= 0;
+                } ?>
+ 
+                        <td><?php echo $differenceInDays +1 ?></td>
                     </tr>
                     <tr>
                         <th>Jenis Sambungan<br> <span class="text-danger"></span></th>
@@ -81,10 +96,7 @@ if (!$record) {
                         <th>Remark<br> <span class="text-danger"></span></th>
                         <td><?php echo $record['remark']; ?></td>
                     </tr>
-                    <tr>
-                        <th>Date Complete<br> <span class="text-danger"></span></th>
-                        <td><?php echo $record['complete_date']; ?></td>
-                    </tr>
+                     
 
                     <tr id="comp_date">
                         <th>Completion Date<br> <span class="text-danger"></span></th>

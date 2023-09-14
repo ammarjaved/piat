@@ -85,13 +85,27 @@ if (!$record) {
                     <tr>
                         <th>CSP Paid Date<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date"
-                                class="form-control required" onchange="getAging(this)" value="<?php echo $record['csp_paid_date']; ?>" max="<?php echo date('Y-m-d');  ?>">
+                                class="form-control required" onchange="getAging(this)" value="<?php echo $record['csp_paid_date']; ?>" max="<?php echo $record['tarikh_siap'] != ''? $record['tarikh_siap'] : date('Y-m-d');  ?>">
                         </td>
                     </tr>
                     <tr>
+                    <?php   
+                    
+                        if ($record['csp_paid_date'] != '') {
+                            # code...
+                       
+                    $agingDateTime = new DateTime( $record['csp_paid_date']);
+
+                    $todayDateTime = $record['tarikh_siap'] != '' ? new DateTime($record['tarikh_siap'])  : new DateTime();
+
+
+                    $interval = $agingDateTime->diff($todayDateTime);
+                    $differenceInDays = $interval->format('%a'); }else{
+                        $differenceInDays= 0;
+                    } ?>
                         <th>Aging (days)<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input disabled type="number" name="aging_days" id="aging_days"
-                                class="form-control required"  ></td>
+                                class="form-control required" value="<?php echo $differenceInDays +1 ?>"  ></td>
                     </tr>
 
                     <tr>
@@ -110,7 +124,7 @@ if (!$record) {
                     <tr id="comp_date">
                         <th>Completion Date<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="date" name="complete_date" id="complete_date"
-                                value="<?php echo $record['tarikh_siap']; ?>" class="form-control">
+                                value="<?php echo $record['tarikh_siap']; ?>" class="form-control" min="<?php echo $record['csp_paid_date']; ?>" >
                         </td>
                     </tr>
 
@@ -150,20 +164,20 @@ if (!$record) {
     $(document).ready(function(){
 
           // Get the input element by its ID
-  var agingDaysInput = document.getElementById('aging_days');
+//   var agingDaysInput = document.getElementById('aging_days');
 
-// Get the value of aging days from PHP (assuming it's stored in a variable)
-var agingDaysValue = <?php echo $record['csp_paid_date'] != '' ? $record['csp_paid_date'] : '""'; ?> ;
+// // Get the value of aging days from PHP (assuming it's stored in a variable)
+// var agingDaysValue = <?php echo $record['csp_paid_date'] != '' ? $record['csp_paid_date'] : '""'; ?> ;
 
-// Get today's date
-var todayDate = new Date();
+// // Get today's date
+// var todayDate = new Date();
 
-// Calculate the difference between aging days and today's date
-var differenceInDays = agingDaysValue - todayDate.getDate();
-let daysDiff = (Math.floor(differenceInDays / (1000 * 60 * 60 * 24)))+1;
+// // Calculate the difference between aging days and today's date
+// var differenceInDays = agingDaysValue - todayDate.getDate();
+// let daysDiff = (Math.floor(differenceInDays / (1000 * 60 * 60 * 24)))+1;
 
-// Set the calculated difference as the value of the input field
-agingDaysInput.value = daysDiff
+// // Set the calculated difference as the value of the input field
+// agingDaysInput.value = daysDiff
 
 
         $("#cons_status").on("change",function(){

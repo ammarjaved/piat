@@ -141,8 +141,8 @@ include './services/connection.php';
 
                     <button class="btn btn-secondary mt-4 btn-sm" type="submit" name='submitButton'
                         value="filter">Filter</button>
-                    <button class="btn btn-secondary btn-sm mt-4" type="submit" name='submitButton' onclick="reset()"
-                        value="reset">Reset</button>
+                   <a href="./index.php"> <button class="btn btn-secondary btn-sm mt-4" type="button" name='submitButton'   
+                        value="reset">Reset</button></a>
                 </div>
 
             </div>
@@ -355,10 +355,10 @@ include './services/connection.php';
 
                                         $agingDateTime = new DateTime( $record['csp_paid_date']);
 
-                                        $todayDateTime = new DateTime();
+                                        $todayDateTime = $record['tarikh_siap'] != '' ? new DateTime($record['tarikh_siap'])  : new DateTime();
 
         
-                                        $interval = $agingDateTime->diff(new DateTime());
+                                        $interval = $agingDateTime->diff($todayDateTime);
                                         $differenceInDays = $interval->format('%a');
                                         echo "<td> ".$differenceInDays + 1 ."</td>";
                                     }else{
@@ -438,10 +438,12 @@ include './services/connection.php';
         $(document).ready(function() {
 
             $('#myTable').DataTable({
-                aaSorting:[[3, 'desc']]
+                aaSorting:[[3, 'desc']],
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             });
             $("#snTable").DataTable({
-                aaSorting:[[5, 'desc']]
+                aaSorting:[[5, 'desc']],
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             })
 
             $('#searchButton').on('click', function () {
@@ -460,22 +462,22 @@ include './services/connection.php';
 
    
 
-            reset();
+            // reset();
         });
 
-        function reset() {
-            var sub = "<?php echo isset($_POST['submitButton']) ? $_POST['submitButton'] : ''; ?>";
-            if (sub == 'reset') {
-                $('#searchBA').find('option').first().remove();
-                $('#searchBA').prepend('<option value="<?php echo $_SESSION['user_ba'] ?>"> <?php echo $_SESSION['user_ba'] == ""? "Select ba" : $_SESSION['user_ba'] ?></option>')
-                $('#to_date').val('')
-                $('#date_type').prepend('<option value="CSP" hidden selected>CSP</option>')
-                $('#from_date').val('')
-                $("#exc_ba").val('')
-                $('#exc_from').val('')
-                $("#exc_to").val('')
-            }
-        }
+        // function reset() {
+        //     var sub = "<?php echo isset($_POST['submitButton']) ? $_POST['submitButton'] : ''; ?>";
+        //     if (sub == 'reset') {
+        //         $('#searchBA').find('option').first().remove();
+        //         $('#searchBA').prepend('<option value="<?php echo $_SESSION['user_ba'] ?>" selected hidden> <?php echo $_SESSION['user_ba'] == ""? "Select ba" : $_SESSION['user_ba'] ?></option>')
+        //         $('#to_date').val('')
+        //         $('#date_type').prepend('<option value="CSP" hidden selected>CSP</option>')
+        //         $('#from_date').val('')
+        //         $("#exc_ba").val('')
+        //         $('#exc_from').val('')
+        //         $("#exc_to").val('')
+        //     }
+        // }
 
 
         function genrateExcel() {
