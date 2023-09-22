@@ -36,7 +36,7 @@ if (!$record) {
                         <th>BA<br> <span class="text-danger"></span></th>
                         <td colspan="2"><select name="ba" id="ba" class="form-select">
                                 <?php if($_SESSION['user_name'] == "admin"){ ?>
-
+                                   <option value="<?php echo  $record['ba'] ?>"><?php echo $record['ba'] ?></option>";
                                 <option value="KLB - 6121">KLB - 6121</option>
                                 <option value="KLT - 6122">KLT - 6122</option>
                                 <option value="KLP - 6123">KLP - 6123</option>
