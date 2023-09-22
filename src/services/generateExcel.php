@@ -98,11 +98,11 @@ if ($records) {
                 $sheet->setCellValue('A' . $i, $i - 1);
                 $sheet->setCellValue('B' . $i, $record['ba']);
                 $sheet->setCellValue('C' . $i, $record['alamat']);
-                $sheet->setCellValue('D' . $i, $record['user_status'] == '' ? '-' : $record['erms_status']);
-                $sheet->setCellValue('E' . $i, $record['no_sn']);
+				$sheet->setCellValue('D' . $i, $record['no_sn']);
+                $sheet->setCellValue('E' . $i, $record['user_status']);
                 $sheet->setCellValue('F' . $i, $record['jenis_sn']);
                 $sheet->setCellValue('G' . $i, $record['jenis_sambungan']);
-                $sheet->setCellValue('H' . $i, $record['csp_piad_date']);
+                $sheet->setCellValue('H' . $i, $record['csp_paid_date']);
                 $sheet->setCellValue('I' . $i, $record['pic_vendor']);
                 $sheet->setCellValue('J' . $i, $record['remark'] == '' ? '-' : $record['remark']);
                 $sheet->setCellValue('K' . $i, $record['status'] == '' ? '-' : $record['status']);
