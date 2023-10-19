@@ -224,6 +224,9 @@ function checkPiat(radio) {
             }
             $("#alamat").html(response.data.alamat)
             $("#ba").html(response.data.ba)
+
+            $("#tarikh_siap").val('');
+            $('#tarikh_siap').attr('min',response.data.csp_paid_date);
            
         },
         error: function(xhr, status, error) {
