@@ -29,6 +29,13 @@ include './services/connection.php';
             padding: 20px !important;
         }
 
+        @media  (min-width: 2200px){
+        .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+            /* min-width: 2000px !important; */
+            max-width: 2000px !important;
+        }
+        }
+
         @media only screen and (max-width: 445px) {
 
             .dataTables_filter input {
