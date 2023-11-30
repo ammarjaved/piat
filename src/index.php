@@ -394,7 +394,7 @@ include './services/connection.php';
                                         $remark = substr($remark, 0, 15) . '...';
                                     }
                                 }
-                                echo "<td><a type='button' class='dropdown-item' data-bs-toggle='modal' data-remark='{$record['remark']}' data-bs-target='#remarkModal'>{$remark}</a></td>";
+                                echo "<td><a type='button' class='dropdown-item' data-bs-toggle='modal' data-remark='{$record['remark']}' data-id='{$record['id']}' data-bs-target='#remarkModal'>{$remark}</a></td>";
                             
                                 echo "<td class='text-center'><div class='dropdown'>
                                                                                       <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
@@ -458,7 +458,7 @@ include './services/connection.php';
                     <h5 class="modal-title" id="remrkModalLabel">Remarks </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="./services/removeSn.php" method="post">
+                <form action="./services/update-remarks.php" method="post">
                     <div class="modal-body">
                         <input type="hidden" name="id" id="update-remarks-id">
                         <label class="form-label" for="remark-detail"><strong> Remarks : </strong> </label>
@@ -467,7 +467,7 @@ include './services/connection.php';
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success" data-bs-dismiss="modal">update</button>
+                        <button type="submit" class="btn btn-success" >update</button>
 
 
                     </div>
@@ -494,6 +494,9 @@ include './services/connection.php';
                     [10, 25, 50, -1],
                     [10, 25, 50, "All"]
                 ],
+                // initComplete: function () {                    
+                //     this.api().page(10).draw( 'page' );
+                // }
 
             });
             // $("").DataTable({
@@ -532,29 +535,19 @@ include './services/connection.php';
                 var detail = button.data('remark');
                 var modal = $(this);
                 $('#remark-detail').html(detail)
+                $('#update-remarks-id').val(button.data('id'))
             });
-            var targetPageIndex = 9; // Set your desired page index here
+   
 
-var dataTable = $('#myTable').DataTable();
-
-// Check if the targetPageIndex is within the valid range
-if (targetPageIndex >= 0 && targetPageIndex < dataTable.page.info().pages) {
-    // Trigger the click only if it's a valid page index
-    $(".paginate_button [data-dt-idx='" + targetPageIndex + "']").trigger("click");
-} else {
-    console.warn("Invalid page index:", targetPageIndex);
-}
-
-
-            // var savedPage = localStorage.getItem('savedPage');
-            // console.log(savedPage);
-            // // If a page number is saved, use it; otherwise, default to the first page (0-indexed)
-            // var defaultPage = savedPage ? parseInt(savedPage, 10) : 0;
+            var savedPage = localStorage.getItem('savedPage');
+            console.log(savedPage);
+            // If a page number is saved, use it; otherwise, default to the first page (0-indexed)
+            var defaultPage = savedPage ? parseInt(savedPage, 10) : 0;
 
             $(".paginate_button  [data-dt-idx='9']").trigger("click");
 
             $('#myTable').on('page.dt', function () {
-            var currentPage = $('#myTable').DataTable().page.info().page;
+            // var currentPage = $('#myTable').DataTable().page.info().page;
             console.log(currentPage);
             localStorage.setItem('savedPage', currentPage);
         });
