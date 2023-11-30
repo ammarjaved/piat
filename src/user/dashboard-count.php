@@ -91,14 +91,14 @@ $count = $stmt->fetch(PDO::FETCH_ASSOC);
 
 <div class="row text-center m-4">
 
-    <div class="col-md-12   " onclick="searchTable('')" style="cursor: pointer;">
+    <div class="col-md-12   " onclick="adminSearch('<?php echo $_SESSION['user_ba'] ?>', '')" style="cursor: pointer;">
       
         <div class="mb-0 m-2  p-1" style="background-color:  #14DFE4 !important;">
             <p style="font-weight: 600; " class="mb-2"> Total </p>
             <div class="text-center"><?php echo $count['count']; ?></div>
         </div>
     </div>
-    <div class="col-md-4 " onclick="searchTable('Complete')" style="cursor: pointer;">
+    <div class="col-md-4 " onclick="adminSearch('<?php echo $_SESSION['user_ba'] ?>','Complete')" style="cursor: pointer;">
     
         <div class=" m-2 p-1" style="background-color:  #14DFE4 !important;">
             <p style="font-weight: 600;">Total Complete </p>
@@ -107,7 +107,7 @@ $count = $stmt->fetch(PDO::FETCH_ASSOC);
      
     </div>
 
-    <div class="col-md-4 " onclick="searchTable('Inprogress')" style="cursor: pointer;">
+    <div class="col-md-4 " onclick="adminSearch('<?php echo $_SESSION['user_ba'] ?>','Inprogress')" style="cursor: pointer;">
     
         <div class=" mx-1 m-2  p-1" style="background-color:  #14DFE4 !important;">
             <p style="font-weight: 600;">Total Inprogress </p>
@@ -115,7 +115,7 @@ $count = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
  
     </div>
-    <div class="col-md-4 " onclick="searchTable('KIV')" style="cursor: pointer;">
+    <div class="col-md-4 " onclick="adminSearch('<?php echo $_SESSION['user_ba'] ?>','KIV')" style="cursor: pointer;">
  
         <div class="ml-0 m-2  p-1" style="background-color:  #14DFE4 !important;">
             <p style="font-weight: 600;">Total KIV </p>
