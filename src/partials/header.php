@@ -25,7 +25,14 @@ if(!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])){
     <link rel="stylesheet" href="../../assets/style.css">
     <script src="../../assets/js/js.js"></script>
     
-    
+    <style>
+         @media  (min-width: 2200px){
+        .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+            /* min-width: 2000px !important; */
+            max-width: 2000px !important;
+        }
+        }
+    </style>
 </head>
 <body>
 
