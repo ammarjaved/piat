@@ -107,7 +107,9 @@ if ($records) {
                 $sheet->setCellValue('J' . $i, $record['remark'] == '' ? '-' : $record['remark']);
                 $sheet->setCellValue('K' . $i, $record['status'] == '' ? '-' : $record['status']);
                 $sheet->setCellValue('L' . $i, $record['tarikh_siap'] == '' ? '-' : $record['tarikh_siap']);
-                $sheet->setCellValue('M' . $i, $record['erms_status'] == '' ? '-' : $record['erms_status']);
+                $sheet->setCellValue('M' . $i, $record['qr'] == '' ? '-' : $record['qr']);
+				$sheet->setCellValue('N' . $i, $record['piat'] == '' ? '-' : $record['piat']);
+				$sheet->setCellValue('O' . $i, $record['erms_status'] == '' ? '-' : $record['erms_status']);
 
                 $i++;
             }
