@@ -87,9 +87,9 @@ include '../partials/header.php';
                     </tr>
 
                     <tr>
-                        <th>Vendor *<br> <span class="text-danger"></span></th>
+                        <th>Vendor <br> <span class="text-danger"></span></th>
                         <td colspan="2">
-                            <select   name="vendor" id="vendor" class="form-select required">
+                            <select   name="vendor" id="vendor" class="form-select ">
 
                             </select>
                         </td>
