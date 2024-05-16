@@ -29,13 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_name'])) {
                seksyen_dari, seksyen_ke, bil_saiz_tiang_a, bil_saiz_tiang_b, bil_saiz_tiang_c,
                bil_jenis_spun, bil_jenis_konkrit, bil_jenis_besi, bil_jenis_kayu, abc_span_a, abc_span_b,
                abc_span_c, abc_span_d, pvc_span_a, pvc_span_b, pvc_span_c, bare_span_a, bare_span_b, bare_span_c, status ,user_status,
-               csp_paid_date,aging_days,pic_vendor,remark,complete_date,created_at,created_by, qr, piat_status,talian_utama_s
+               csp_paid_date,aging_days,pic,remark,complete_date,created_at,created_by, qr, piat_status,talian_utama_s,vendor
            ) VALUES ( :ba, :jenis_sn, :jenis_sambungan, :no_sn, :alamat, :tarikh_siap, :piat, :nama_feeder_pillar,
                :nama_jalan, :jumlah_span, :talian_utama, :bil_umbang, :bil_black_box, :bil_lvpt,
                :bilangan_serbis, :catatan, :seksyen_dari, :seksyen_ke, :bil_saiz_tiang_a, :bil_saiz_tiang_b,
                :bil_saiz_tiang_c, :bil_jenis_spun, :bil_jenis_konkrit, :bil_jenis_besi, :bil_jenis_kayu,
                :abc_span_a, :abc_span_b, :abc_span_c, :abc_span_d, :pvc_span_a, :pvc_span_b, :pvc_span_c,
-               :bare_span_a, :bare_span_b, :bare_span_c, :status ,:user_status , :csp_paid_date,:aging_days, :pic_vendor ,:remark,:complete_date,:created_at ,:created_by, :qr, :piat_status,:talian_utama_s)");
+               :bare_span_a, :bare_span_b, :bare_span_c, :status ,:user_status , :csp_paid_date,:aging_days, :pic ,:remark,:complete_date,:created_at ,:created_by, :qr, :piat_status,:talian_utama_s,:vendor)");
                 // bind params
                 $stmt->bindParam(':piat_status', $record['piat_status']);
                 // $stmt->bindParam(':remove_date', date('y-m-d'));
@@ -47,7 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_name'])) {
                 $stmt->bindParam(':user_status', $record['user_status']);
                 $stmt->bindParam(':csp_paid_date', $record['csp_paid_date']);
                 $stmt->bindParam(':aging_days', $record['aging_days']);//
-                $stmt->bindParam(':pic_vendor', $record['pic_vendor']);
+                $stmt->bindParam(':pic', $record['pic']);
+                $stmt->bindParam(':vendor', $record['vendor']);
                 $stmt->bindParam(':remark', $record['remark']);
                 $stmt->bindParam(':ba',$record['ba']);
                 $stmt->bindParam(':jenis_sn', $record['jenis_sn']);

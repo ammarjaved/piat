@@ -28,67 +28,71 @@ include '../partials/header.php';
                 <tbody>
                     <tr>
                         <th>BA *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><select name="ba" id="ba" class="form-select">
+                        <td colspan="2"><select name="ba" id="ba" class="form-select" onchange="getUsersPIC()">
                                 <?php if($_SESSION['user_name'] == "admin"){ ?>
 
                                 <option value="KLB - 6121">KLB - 6121</option>
                                 <option value="KLT - 6122">KLT - 6122</option>
                                 <option value="KLP - 6123">KLP - 6123</option>
                                 <option value="KLS - 6124">KLS - 6124</option>
-                                <?php } else {
-        echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
-    }?>
+                                <?php } 
+                                else {
+                                    echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
+                                }?>
                             </select>
 
                         </td>
                     </tr>
                     <tr>
                         <th>Alamat *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="alamat" id="alamat"
-                                class="form-control required"></td>
+                        <td colspan="2"><input type="text" name="alamat" id="alamat" class="form-control required"></td>
                     </tr>
                     <tr>
                         <th>ERMS User Status *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="user_status" id="user_status"
-                                class="form-control required"></td>
+                        <td colspan="2"><input type="text" name="user_status" id="user_status" class="form-control required"></td>
                     </tr>
                     <tr>
                         <th>SN Number *<br> <span class="text-danger"></span></th>
                         <td colspan="2"><span class="text-danger" id="sn_exits"></span>
-                            <input type="number" name="sn_number" id="sn_number" class="form-control required"
-                                onchange="handleKeyPress(event)">
+                            <input type="number" name="sn_number" id="sn_number" class="form-control required" onchange="handleKeyPress(event)">
                         </td>
                     </tr>
                     <tr>
                         <th>Jenis SN *<br> <span class="text-danger"></span></th>
-                        <td><input type="radio" name="jenis_sn" id="jenis_sn_lkkk" value="LKKK"> <label
-                                for="jenis_sn_lkkk">LKKK</label></td>
-                        <td><input type="radio" name="jenis_sn" id="jenis_sn_express" value="Express"> <label
-                                for="jenis_sn_express">Express</label></td>
+                        <td><input type="radio" name="jenis_sn" id="jenis_sn_lkkk" value="LKKK"> <label or="jenis_sn_lkkk">LKKK</label></td>
+                        <td><input type="radio" name="jenis_sn" id="jenis_sn_express" value="Express"> <label for="jenis_sn_express">Express</label></td>
                     </tr>
                     <tr>
                         <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
-                        <td> <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH"> <label
-                                for="jenis_sambungan_oh">OH/Combine Service</label></td>
-                        <td><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG"> <label
-                                for="jenis_sambungan_ug">UG</label></td>
+                        <td> <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH"> <label for="jenis_sambungan_oh">OH/Combine Service</label></td>
+                        <td><input type="radio" name="jenis_sambungan" id="jenis_sambungan_ug" value="UG"> <label for="jenis_sambungan_ug">UG</label></td>
                     </tr>
                     <tr>
                         <th>CSP Paid Date *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date"
-                                class="form-control required" value="<?php echo date('Y-m-d'); ?>" onchange="getAging(this)" max="<?php echo date('Y-m-d'); ?>">
+                        <td colspan="2"><input type="date" name="csp_paid_date" id="csp_paid_date" class="form-control required" value="<?php echo date('Y-m-d'); ?>" onchange="getAging(this)" max="<?php echo date('Y-m-d'); ?>">
                         </td>
                     </tr>
                     <tr>
                         <th>Aging (days) *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input disabled type="number" name="aging_days" value="1" id="aging_days"
-                                class="form-control required"></td>
+                        <td colspan="2"><input disabled type="number" name="aging_days" value="1" id="aging_days" class="form-control required"></td>
                     </tr>
 
                     <tr>
-                        <th>PIC/Vendor *<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="pic_vendor" id="pic_vendor"
-                                class="form-control required"></td>
+                        <th>PIC *<br> <span class="text-danger"></span></th>
+                        <td colspan="2"> 
+                                <select name="pic" id="pic" class="form-select required" >
+
+                                </select>    
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Vendor *<br> <span class="text-danger"></span></th>
+                        <td colspan="2">
+                            <select   name="vendor" id="vendor" class="form-select required">
+
+                            </select>
+                        </td>
                     </tr>
 
                     <tr>
@@ -114,8 +118,7 @@ include '../partials/header.php';
 
                     <tr>
                         <th>ERMS Status</th>
-                        <td colspan="2"><input type="checkbox"  id="erms" > <label
-                                for="erms"></label></td>
+                        <td colspan="2"><input type="checkbox"  id="erms" > <label for="erms"></label></td>
                         <input type="text" id="erms1" name="erms" style="display:none;"/>
                     </tr>
 
@@ -142,53 +145,51 @@ include '../partials/header.php';
                 $('#comp_date').html(`<th>Completion Date<br> <span class="text-danger"></span></th>
                         <td colspan="2"><input type="date" name="complete_date" id="complete_date" class="form-control" onchange="changestatus()" min="<?php echo date('Y-m-d'); ?>">
                         </td>`);
-                
-                        if (select.length < 1) {
-                            $('#cons_status').prepend('<option value="Complete">Complete</option>')
-            }
-
-                        
-
+                if (select.length < 1) {
+                    $('#cons_status').prepend('<option value="Complete">Complete</option>')
+                }
             } else {
                 $('#comp_date').html('')
 
-            if (select.length > 0) {
-                select.remove();
-            }
-
-
-
+                if (select.length > 0) {
+                    select.remove();
+                }
             }
         })
 
-        $("#cons_status").on("change", function() {
 
+
+        $("#cons_status").on("change", function() {
 
             if (this.value === "Complete") {
                 $("#complete_date").hasClass('required') ? '' : $("#complete_date").addClass('required')
             } else {
-                $("#complete_date").hasClass('required') ? $("#complete_date").removeClass('required') :
-                    ''
+                $("#complete_date").hasClass('required') ? $("#complete_date").removeClass('required') : ''
             }
         })
 
       
-        $(document).on('change', '#erms', function() {
+  
 
-            if($(this).is(":checked")){
-              $("#erms1").val('done')
-            }
-            else
-            {
-              $("#erms1").val('pending')
-            }
-        });
+        if($(this).is(":checked")){
+            $("#erms1").val('done')
+        } else {
+            $("#erms1").val('pending')
+        }
+        
 
-    })
-    function changestatus(){
-        console.log($('#cons_Status'));
+        if ($('#ba').val() != '') {
+            getUsersPIC()
+        }
+        getVendors()
+        })
+
+        function changestatus(){
+            // console.log($('#cons_Status'));
             $('#cons_status').append('<option value="Complete" hidden selected>Complete</option>')
         }
+
+        
 </script>
 
 

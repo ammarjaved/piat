@@ -52,6 +52,8 @@ function handleKeyPress(event) {
 }
 
 
+
+
 function submitFoam(){
 
     var class_error = document.getElementsByClassName("required");
@@ -67,6 +69,6 @@ function submitFoam(){
         return isValid
       }
       return golbal_isVaild;
-    }
+}
   
 

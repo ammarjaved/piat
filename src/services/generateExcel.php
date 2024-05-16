@@ -103,7 +103,7 @@ if ($records) {
                 $sheet->setCellValue('F' . $i, $record['jenis_sn']);
                 $sheet->setCellValue('G' . $i, $record['jenis_sambungan']);
                 $sheet->setCellValue('H' . $i, $record['csp_paid_date']);
-                $sheet->setCellValue('I' . $i, $record['pic_vendor']);
+                $sheet->setCellValue('I' . $i, $record['pic']);
                 $sheet->setCellValue('J' . $i, $record['remark'] == '' ? '-' : $record['remark']);
                 $sheet->setCellValue('K' . $i, $record['status'] == '' ? '-' : $record['status']);
                 $sheet->setCellValue('L' . $i, $record['tarikh_siap'] == '' ? '-' : $record['tarikh_siap']);

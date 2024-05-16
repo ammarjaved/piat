@@ -252,3 +252,55 @@ function getAging(event){
 
 
 
+function getUsersPIC() {
+    var picBA = $('#ba').val();
+    if (picBA != '') {
+        const myArray = picBA.split(" ");
+        let searchBA = myArray[0];
+        dat = { ba: searchBA };
+
+        $.ajax({
+            url: "../services/getUsersByBA.php",
+            type: "GET",
+            data: dat,
+            dataType: "json",
+            success: function(response) {
+                var data = response.data
+                $('#pic').append("<option value='' hidden> select</option>")
+                for (let index = 0; index < data.length; index++) {
+                    const element = data[index];
+                    $('#pic').append(`<option value="${element.name}">${element.name}</option>`)
+                    //  console.log(element.name);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log("Error: " + error);
+            }
+        });      
+    }
+}
+
+function getVendors() {
+    
+   
+
+        $.ajax({
+            url: "../services/getVendors.php",
+            type: "GET", 
+            dataType: "json",
+            success: function(response) {
+                var data = response.data
+                console.log(response);
+                $('#vendor').append("<option value='' hidden> select</option>")
+                for (let index = 0; index < data.length; index++) {
+                    const element = data[index];
+                    $('#vendor').append(`<option value="${element.vendor_name}">${element.vendor_name}</option>`)
+                    //  console.log(element.name);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log("Error: " + error);
+            }
+        });      
+     
+}

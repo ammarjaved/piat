@@ -485,6 +485,7 @@ include './services/connection.php';
 
     <script>
         $(document).ready(function() {
+            
 
             $('#myTable , #snTable').DataTable({
                 aaSorting: [

@@ -88,8 +88,12 @@ if (!$record) {
                         <td><?php echo $record['jenis_sambungan']== "OH" ? 'OH/Combine Service':'UG' ?></td>
                     </tr>
                     <tr>
-                        <th>PIC/Vendor<br> <span class="text-danger"></span></th>
-                        <td><?php echo $record['pic_vendor']; ?></td>
+                        <th>PIC<br> <span class="text-danger"></span></th>
+                        <td><?php echo $record['pic']; ?></td>
+                    </tr>
+                    <tr>
+                        <th>Vendor<br> <span class="text-danger"></span></th>
+                        <td><?php echo $record['vendor']; ?></td>
                     </tr>
                     
                     <tr>

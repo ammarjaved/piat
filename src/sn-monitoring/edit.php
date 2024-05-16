@@ -34,7 +34,7 @@ if (!$record) {
                 <tbody>
                     <tr>
                         <th>BA<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><select name="ba" id="ba" class="form-select">
+                        <td colspan="2"><select name="ba" id="ba" class="form-select" onchange="getUsersPIC()">
                                 <?php if($_SESSION['user_name'] == "admin"){ ?>
                                    <option value="<?php echo  $record['ba'] ?>"><?php echo $record['ba'] ?></option>";
                                 <option value="KLB - 6121">KLB - 6121</option>
@@ -42,8 +42,8 @@ if (!$record) {
                                 <option value="KLP - 6123">KLP - 6123</option>
                                 <option value="KLS - 6124">KLS - 6124</option>
                                 <?php } else {
-        echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
-    }?>
+                                    echo "<option value='{$_SESSION['user_ba']}'>{$_SESSION['user_ba']}</option>";
+                                }?>
                             </select>
 
                         </td>
@@ -109,9 +109,22 @@ if (!$record) {
                     </tr>
 
                     <tr>
-                        <th>PIC/Vendor<br> <span class="text-danger"></span></th>
-                        <td colspan="2"><input type="text" name="pic_vendor" id="pic_vendor"
-                                class="form-control required" value="<?php echo $record['pic_vendor']; ?>"></td>
+                        <th>PIC *<br> <span class="text-danger"></span></th>
+                        <td colspan="2"> 
+                                <select name="pic" id="pic" class="form-select required" onchange="getUsersPIC()">
+                                    <option value="<?php echo $record['pic']?>"><?php echo $record['pic']?></option>
+                                </select>    
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Vendor *<br> <span class="text-danger"></span></th>
+                        <td colspan="2">
+                            <select   name="vendor" id="vendor" class="form-select required">
+                                <option value="<?php echo $record['vendor']?>"><?php echo $record['vendor']?></option>
+
+                            </select>
+                        </td>
                     </tr>
 
                     <tr>
@@ -161,24 +174,8 @@ if (!$record) {
 <script src="../../assets/js/foam-1.js"></script>
 <script >
 
-    $(document).ready(function(){
-
-          // Get the input element by its ID
-//   var agingDaysInput = document.getElementById('aging_days');
-
-// // Get the value of aging days from PHP (assuming it's stored in a variable)
-// var agingDaysValue = <?php echo $record['csp_paid_date'] != '' ? $record['csp_paid_date'] : '""'; ?> ;
-
-// // Get today's date
-// var todayDate = new Date();
-
-// // Calculate the difference between aging days and today's date
-// var differenceInDays = agingDaysValue - todayDate.getDate();
-// let daysDiff = (Math.floor(differenceInDays / (1000 * 60 * 60 * 24)))+1;
-
-// // Set the calculated difference as the value of the input field
-// agingDaysInput.value = daysDiff
-
+    $(document).ready(function()
+    {
 
         $("#cons_status").on("change",function(){
 
@@ -192,30 +189,24 @@ if (!$record) {
 
         $('input[name="jenis_sambungan"').on("change", function() {
 
-var select = $('#cons_status').find('option[value="Complete"]');
+            var select = $('#cons_status').find('option[value="Complete"]');
 
-if (this.value === "UG") {
-    $('#comp_date').html(`<th>Completion Date<br> <span class="text-danger"></span></th>
-            <td colspan="2"><input type="date" name="complete_date" id="complete_date" class="form-control" onchange="changestatus()" min="<?php echo date('Y-m-d'); ?>">
-            </td>`);
-    
-            if (select.length < 1) {
-                $('#cons_status').prepend('<option value="Complete">Complete</option>')
-}
-
-            
-
-} else {
-    $('#comp_date').html('')
-
-if (select.length > 0) {
-    select.remove();
-}
-
-
-
-}
-})
+            if (this.value === "UG") 
+            {
+                $('#comp_date').html(`<th>Completion Date<br> <span class="text-danger"></span></th>
+                        <td colspan="2"><input type="date" name="complete_date" id="complete_date" class="form-control" onchange="changestatus()" min="<?php echo date('Y-m-d'); ?>">
+                        </td>`);
+                
+                if (select.length < 1) {
+                    $('#cons_status').prepend('<option value="Complete">Complete</option>')
+                }
+            } else {
+                $('#comp_date').html('')
+                if (select.length > 0) {
+                    select.remove();
+                }
+            }
+        })
 
 
         $("#complete_date").on("change",function(){
@@ -226,27 +217,28 @@ if (select.length > 0) {
             getSnDetail(this)
         })
 
-// setTimeout(() => {
-    var erms_val= $("#erms1").val();
-      if(erms_val=='done'){
-        $('#erms').prop('checked', true);
-      }else{
-        $('#erms').prop('checked', false);
-      }  
-// }, 3000);
-    
 
-        $(document).on('change', '#erms', function() {
+        var erms_val= $("#erms1").val();
+        if(erms_val=='done'){
+            $('#erms').prop('checked', true);
+        }else{
+            $('#erms').prop('checked', false);
+        }  
 
-            if($(this).is(":checked")){
+
+  
+
+        if($(this).is(":checked")){
             $("#erms1").val('done')
-            }
-            else
-            {
+        } else {
             $("#erms1").val('pending')
-            }
-        });
+        }
+    
         onLoad()
+
+ 
+        getUsersPIC()
+        getVendors()
 
     })
 
