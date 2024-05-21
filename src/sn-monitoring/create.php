@@ -182,7 +182,7 @@ include '../partials/header.php';
             getUsersPIC()
         }
         getVendors()
-        })
+    })
 
         function changestatus(){
             // console.log($('#cons_Status'));

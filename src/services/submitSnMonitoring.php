@@ -59,13 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':id', $_REQUEST['id']);
            
         }
-        if ($_POST['jenis_sambungan'] == "OH") {
-           
-            $piat = "yes";
-        }else{
-           
-            $piat = "no";
-        }
+
+        $piat = $_POST['jenis_sambungan'] == "OH" ? "yes" : "no";
+        $erms = isset($_POST['erms']) ? "done" : "complete";
+
+
+
         $tarik_siap = isset($_POST['complete_date']) ? $_POST['complete_date'] : '';
         $stmt->bindParam(':status',$_POST['cons_status']);
         $stmt->bindParam(':tarikh_siap' ,$tarik_siap );
@@ -81,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':vendor', $_POST['vendor']);
         $stmt->bindParam(':remark', $_POST['remark']);
         $stmt->bindParam(':piat',$piat);
-        $stmt->bindParam(':erms',$_POST['erms']);
+        $stmt->bindParam(':erms',$erms);
         
         
 

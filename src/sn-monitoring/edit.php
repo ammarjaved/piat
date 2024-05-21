@@ -157,7 +157,7 @@ if (!$record) {
                         <th>ERMS Status</th>
                         <td colspan="2"><input type="checkbox"  id="erms" > <label
                                 for="erms"></label></td>
-                        <input type="text" id="erms1" name="erms" value="<?php echo $record['erms_status']; ?>" style="display:none;"/>
+                        <input type="text" id="erms1" name="erms" value="<?php echo $record['erms_status']; ?>"  style="display:none;"/>
                     </tr>
 
 
@@ -226,13 +226,23 @@ if (!$record) {
         }  
 
 
-  
+        // $('#erms1').change(function() {
+        //     console.log(this.checked);
+        //     if (this.checked) {
+        //         $("#erms1").val('done')
 
-        if($(this).is(":checked")){
-            $("#erms1").val('done')
-        } else {
-            $("#erms1").val('pending')
-        }
+        //     } else {
+        //         $("#erms1").val('pending')
+        //     }
+        // });
+  
+        $("#erms1").on("change",function(){
+            if($(this).is(":checked")){
+                $("#erms1").val('done')
+            } else {
+                $("#erms1").val('pending')
+            }
+        })
     
         onLoad()
 
@@ -248,6 +258,16 @@ if (!$record) {
             $('#comp_date').html('')
         }
     }
+
+    // function ermsChecked(event){
+    //     alert("ASd");
+    //     if (event.checked) {
+    //             $("#erms1").val('done')
+
+    //         } else {
+    //             $("#erms1").val('pending')
+    //         }
+    // }
 </script>
 </body>
 
