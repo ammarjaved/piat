@@ -46,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             aging_days = :aging_days,
             jenis_sambungan = :jenis_sambungan,
             pic = :pic,
+			vendor=:vendor,
             remark = :remark,
             piat = :piat,
             tarikh_siap =:tarikh_siap,
@@ -66,6 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            
             $piat = "no";
         }
+	//	echo $_POST['erms'];
+	//	exit();
         $tarik_siap = isset($_POST['complete_date']) ? $_POST['complete_date'] : '';
         $stmt->bindParam(':status',$_POST['cons_status']);
         $stmt->bindParam(':tarikh_siap' ,$tarik_siap );
@@ -84,8 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':erms',$_POST['erms']);
         
         
-
+         
         $stmt->execute();
+		
+		 
 
         if (isset($_REQUEST['id'])) {
             $stmt = $pdo->prepare("UPDATE public.inspection_checklist SET project_no = :sn WHERE ad_service_id = :id");

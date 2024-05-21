@@ -302,7 +302,7 @@ include './services/connection.php';
                                     }
                                     echo '</td>';
                                     echo "<td class='text-center'>";
-                                    if ($record['erms_status'] != '') {
+                                    if ($record['erms_status'] == 'done') {
                                         echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
                                         echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
