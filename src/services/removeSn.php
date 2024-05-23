@@ -29,13 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_name'])) {
                seksyen_dari, seksyen_ke, bil_saiz_tiang_a, bil_saiz_tiang_b, bil_saiz_tiang_c,
                bil_jenis_spun, bil_jenis_konkrit, bil_jenis_besi, bil_jenis_kayu, abc_span_a, abc_span_b,
                abc_span_c, abc_span_d, pvc_span_a, pvc_span_b, pvc_span_c, bare_span_a, bare_span_b, bare_span_c, status ,user_status,
-               csp_paid_date,aging_days,pic,remark,complete_date,created_at,created_by, qr, piat_status,talian_utama_s,vendor
+               csp_paid_date,aging_days,pic,remark,complete_date,created_at,created_by, qr, piat_status,talian_utama_s,vendor,work_type
            ) VALUES ( :ba, :jenis_sn, :jenis_sambungan, :no_sn, :alamat, :tarikh_siap, :piat, :nama_feeder_pillar,
                :nama_jalan, :jumlah_span, :talian_utama, :bil_umbang, :bil_black_box, :bil_lvpt,
                :bilangan_serbis, :catatan, :seksyen_dari, :seksyen_ke, :bil_saiz_tiang_a, :bil_saiz_tiang_b,
                :bil_saiz_tiang_c, :bil_jenis_spun, :bil_jenis_konkrit, :bil_jenis_besi, :bil_jenis_kayu,
                :abc_span_a, :abc_span_b, :abc_span_c, :abc_span_d, :pvc_span_a, :pvc_span_b, :pvc_span_c,
-               :bare_span_a, :bare_span_b, :bare_span_c, :status ,:user_status , :csp_paid_date,:aging_days, :pic ,:remark,:complete_date,:created_at ,:created_by, :qr, :piat_status,:talian_utama_s,:vendor)");
+               :bare_span_a, :bare_span_b, :bare_span_c, :status ,:user_status , :csp_paid_date,:aging_days, :pic ,:remark,:complete_date,:created_at ,:created_by, :qr, :piat_status,:talian_utama_s,:vendor,:work_type)");
                 // bind params
                 $stmt->bindParam(':piat_status', $record['piat_status']);
                 // $stmt->bindParam(':remove_date', date('y-m-d'));
@@ -86,6 +86,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_name'])) {
                 $stmt->bindParam(':bare_span_b', $record['bare_span_b']);
                 $stmt->bindParam(':bare_span_c', $record['bare_span_c']);
                 $stmt->bindParam(':status', $record['status']);
+                $stmt->bindParam(':work_type', $record['work_type']);
+
 
                 $stmt->execute();
                 // echo "befoore";

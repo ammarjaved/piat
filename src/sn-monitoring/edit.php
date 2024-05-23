@@ -121,7 +121,7 @@ if (!$record) {
                         <th>Vendor <br> <span class="text-danger"></span></th>
                         <td colspan="2">
                             <select   name="vendor" id="vendor" class="form-select ">
-                                <option value="<?php echo $record['vendor']?>"><?php echo $record['vendor']?></option>
+                                <option value="<?php echo $record['vendor'] !='' ?$record['vendor'] : '' ?>"><?php echo $record['vendor'] !='' ?$record['vendor'] : '' ?></option>
 
                             </select>
                         </td>
@@ -155,11 +155,24 @@ if (!$record) {
 
                     <tr>
                         <th>ERMS Status</th>
-                        <td colspan="2"><input type="checkbox"  id="erms" > <label
+                        <td colspan="2"><input type="checkbox"  id="erms" name="erms" <?php echo $record['erms_status'] == 'done' ?'checked' :'' ?> > <label
                                 for="erms"></label></td>
-                        <input type="text" id="erms1" name="erms" value="<?php echo $record['erms_status']; ?>"  style="display:none;"/>
                     </tr>
-
+                    <tr>
+                        <th>Work Type</th>
+                        <td colspan="2">
+                            <input type="radio" name="work_type" id="work_type_less_then_3_poles" value="less then 3 poles" <?php echo $record['work_type'] == 'less then 3 poles' ?'checked' :''?> > 
+                            <label for="work_type_less_then_3_poles">less then 3 poles</label>
+                            <br>
+                            <input type="radio" name="work_type" id="work_type_more_then_3_poles" value="more then 3 poles" <?php echo $record['work_type'] == 'more then 3 poles' ?'checked' :''?>> <label for="work_type_more_then_3_poles">more then 3 poles</label>
+                            <br>
+                            <input type="radio" name="work_type" id="work_type_ug_without_permit" value="ug without permit" <?php echo $record['work_type'] == 'ug without permit' ?'checked' :''?>> <label for="work_type_ug_without_permit">ug without permit</label>
+                            <br>
+                            <input type="radio" name="work_type" id="work_type_ug_with_permit" value="ug with permit" <?php echo $record['work_type'] == 'ug with permit' ?'checked' :''?>> <label for="work_type_ug_with_permit">ug with permit</label>
+                            <br>
+                            <input type="radio" name="work_type" id="work_type_meter_only" value="meter only" <?php echo $record['work_type'] == 'meter only' ?'checked' :''?>> <label for="work_type_meter_only">meter only</label>
+                        </td>
+                    </tr>
 
                 </tbody>
             </table>
@@ -218,31 +231,6 @@ if (!$record) {
         })
 
 
-        var erms_val= $("#erms1").val();
-        if(erms_val=='done'){
-            $('#erms').prop('checked', true);
-        }else{
-            $('#erms').prop('checked', false);
-        }  
-
-
-        // $('#erms1').change(function() {
-        //     console.log(this.checked);
-        //     if (this.checked) {
-        //         $("#erms1").val('done')
-
-        //     } else {
-        //         $("#erms1").val('pending')
-        //     }
-        // });
-  
-        $("#erms1").on("change",function(){
-            if($(this).is(":checked")){
-                $("#erms1").val('done')
-            } else {
-                $("#erms1").val('pending')
-            }
-        })
     
         onLoad()
 

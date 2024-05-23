@@ -114,6 +114,14 @@ if (!$record) {
                            <?php echo $record['status']; ?>
                         </td>
                     </tr>
+                    <tr>
+                        <th>ERMS Status</th>
+                        <td colspan="2"><?php echo $record['erms_status']; ?></td>
+                    </tr>
+                    <tr>
+                        <th>Work Type</th>
+                        <td colspan="2"><?php echo $record['work_type']; ?></td>
+                    </tr>
 
                 </tbody>
             </table>

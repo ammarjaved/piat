@@ -101,7 +101,7 @@ include './services/connection.php';
                 <a href="./sn-monitoring/create.php" class="btn btn-success btn-sm ">ADD SN</a>
             </div>
             <div class="m-2"><a href="./qr-foams/create.php" class="btn btn-success btn-sm ">ADD QR AND PIAT</a> </div>
-            <div class="m-2"><a href="./qr-foams/create.php" class="btn btn-success btn-sm ">ADD QR AND PIAT</a> </div>
+            <!-- <div class="m-2"><a href="./qr-foams/create.php" class="btn btn-success btn-sm ">ADD QR AND PIAT</a> </div> -->
             <div class="m-2">
                 <button type="button" class='btn btn-sm btn-success' data-bs-toggle='modal' data-bs-target='#addVendorModal' aria-expanded='false'>
                     Add Vendor
@@ -307,7 +307,7 @@ include './services/connection.php';
                                     }
                                     echo '</td>';
                                     echo "<td class='text-center'>";
-                                    if ($record['erms_status'] != '') {
+                                    if ($record['erms_status'] == 'done') {
                                         echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
                                         echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';

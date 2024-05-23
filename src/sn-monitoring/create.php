@@ -118,10 +118,24 @@ include '../partials/header.php';
 
                     <tr>
                         <th>ERMS Status</th>
-                        <td colspan="2"><input type="checkbox"  id="erms" > <label for="erms"></label></td>
-                        <input type="text" id="erms1" name="erms" style="display:none;"/>
+                        <td colspan="2"><input type="checkbox"  id="erms" name="erms" > <label for="erms"></label></td>
+                        <!-- <input type="text" id="erms1" name="erms" style="display:none;" /> -->
                     </tr>
-
+                    
+                    <tr>
+                        <th>Work Type</th>
+                        <td colspan="2">
+                            <input type="radio" name="work_type" id="work_type_less_then_3_poles" value="less then 3 poles"> <label for="work_type_less_then_3_poles">less then 3 poles</label>
+                            <br>
+                            <input type="radio" name="work_type" id="work_type_more_then_3_poles" value="more then 3 poles"> <label for="work_type_more_then_3_poles">more then 3 poles</label>
+                            <br>
+                            <input type="radio" name="work_type" id="work_type_ug_without_permit" value="ug without permit"> <label for="work_type_ug_without_permit">ug without permit</label>
+                            <br>
+                            <input type="radio" name="work_type" id="work_type_ug_with_permit" value="ug with permit"> <label for="work_type_ug_with_permit">ug with permit</label>
+                            <br>
+                            <input type="radio" name="work_type" id="work_type_meter_only" value="meter only"> <label for="work_type_meter_only">meter only</label>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -136,7 +150,7 @@ include '../partials/header.php';
 <script>
     $(document).ready(function() {
        
-
+   
         $('input[name="jenis_sambungan"').on("change", function() {
 
             var select = $('#cons_status').find('option[value="Complete"]');
@@ -168,14 +182,7 @@ include '../partials/header.php';
             }
         })
 
-      
-  
 
-        if($(this).is(":checked")){
-            $("#erms1").val('done')
-        } else {
-            $("#erms1").val('pending')
-        }
         
 
         if ($('#ba').val() != '') {
