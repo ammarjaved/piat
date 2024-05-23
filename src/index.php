@@ -100,7 +100,11 @@ include './services/connection.php';
 
                 <a href="./sn-monitoring/create.php" class="btn btn-success btn-sm ">ADD SN</a>
             </div>
-            <div class="m-2"><a href="./qr-foams/create.php" class="btn btn-success btn-sm ">ADD QR AND PIAT</a>
+            <div class="m-2"><a href="./qr-foams/create.php" class="btn btn-success btn-sm ">ADD QR AND PIAT</a> </div>
+            <div class="m-2">
+                <button type="button" class='btn btn-sm btn-success' data-bs-toggle='modal' data-bs-target='#addVendorModal' aria-expanded='false'>
+                    Add Vendor
+                </button>
             </div>
 
             <div class="m-2">
@@ -404,10 +408,9 @@ include './services/connection.php';
                             
                                 echo "<li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}'>Edit SN</a></li>";
                             
-                                echo "  <li><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
+                                echo "<li><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
                                 echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
-                                echo "</ul>
-                                                                                                                              </div></td>";
+                                echo "</ul></div></td>";
                                 echo '</tr>';
                             }
                             ?>
@@ -443,6 +446,29 @@ include './services/connection.php';
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-danger">Remove</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+        <!-- MODAL FOR ADD VENDOR -->
+        <div class="modal fade" id="addVendorModal" tabindex="-1" aria-labelledby="addVendorModalLabel"
+        aria-hidden="true">
+        <div class=" modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVendorModalLabel">Add Vendor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="./services/addVendor.php" method="post">
+                    <div class="modal-body">
+                        <label for="vendor"><strong> Add Vendor Name</strong></label>
+                        <input type="text" class="form-control" name="vendor" id="vendor" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Add</button>
                     </div>
                 </form>
             </div>
