@@ -1,11 +1,11 @@
  <?php
 
 
-    $hostname    = 'localhost'; 
+    $hostname    = '192.168.1.34'; 
     $port        =  5432;
     $database    = 'piat_checklist';
     $username    = 'postgres'; 
-    $password    = '123';
+    $password    = 'Admin123';
  
  
  

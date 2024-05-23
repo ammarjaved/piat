@@ -88,8 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         
         
-
+         
         $stmt->execute();
+		
+		 
 
         if (isset($_REQUEST['id'])) {
             $stmt = $pdo->prepare("UPDATE public.inspection_checklist SET project_no = :sn WHERE ad_service_id = :id");
