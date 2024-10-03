@@ -516,7 +516,12 @@ include './services/connection.php';
 
         $(document).ready(function() {
 
-            from_date
+            $('#myreset').click(function(){
+                localStorage.removeItem('selectedDateType');
+                localStorage.removeItem('selectedFromDate');
+                localStorage.removeItem('selectedToDate');
+                window.reload();
+            })
         const dateTypeSelect = document.getElementById('date_type');
         const fromDateSelect = document.getElementById('from_date');
         const todateSelect = document.getElementById('to_date');
@@ -638,6 +643,8 @@ const savedDateType = localStorage.getItem('selectedDateType');
             return true
         }
 
+
+     
        
 
         function searchFoam() {
