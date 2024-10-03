@@ -170,10 +170,11 @@ include './services/connection.php';
                 </div>
                 <div class="col-md-2 pt-2 text-start" style="display: inline">
 
-                    <button class="btn btn-secondary mt-4 btn-sm" type="submit" name='submitButton'
+                    <button class="btn btn-secondary mt-4 btn-sm" type="submit" id="mysubmit" name='submitButton'
                         value="filter">Filter</button>
-                    <a href="./index.php"> <button class="btn btn-secondary btn-sm mt-4" type="button"
-                            name='submitButton' value="reset">Reset</button></a>
+                    <!-- <a href="./index.php" >--> <button id="myreset" class="btn btn-secondary btn-sm mt-4" type="button" 
+                            name='submitButton' value="reset">Reset</button>
+                        <!-- </a> -->
                 </div>
 
             </div>
@@ -511,7 +512,48 @@ include './services/connection.php';
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.js"></script>
 
     <script>
+
+
         $(document).ready(function() {
+
+            from_date
+        const dateTypeSelect = document.getElementById('date_type');
+        const fromDateSelect = document.getElementById('from_date');
+        const todateSelect = document.getElementById('to_date');
+
+// Load the saved value from localStorage
+const savedDateType = localStorage.getItem('selectedDateType');
+        if (savedDateType) {
+            dateTypeSelect.value = savedDateType;
+        }
+
+        // Save the selected value to localStorage when changed
+        dateTypeSelect.addEventListener('change', function() {
+            localStorage.setItem('selectedDateType', this.value);
+        });
+
+
+        const saveFromDate = localStorage.getItem('selectedFromDate');
+        if (saveFromDate) {
+            fromDateSelect.value = saveFromDate;
+        }
+
+        // Save the selected value to localStorage when changed
+        fromDateSelect.addEventListener('change', function() {
+            localStorage.setItem('selectedFromDate', this.value);
+        });
+
+
+        const saveToDate = localStorage.getItem('selectedToDate');
+        if (saveToDate) {
+            todateSelect.value = saveToDate;
+        }
+
+        // Save the selected value to localStorage when changed
+        todateSelect.addEventListener('change', function() {
+            localStorage.setItem('selectedToDate', this.value);
+        });
+
             
 
             $('#myTable , #snTable').DataTable({
