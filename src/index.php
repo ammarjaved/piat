@@ -122,7 +122,12 @@ include './services/connection.php';
                         type="submit" name="submit-button">Download
                         SN</button>
                 </form>
+                
             </div>  
+            <div class="m-2">
+            <button id="myreset" class="btn btn-secondary " type="button" 
+            name='submitButton' value="reset">Reset</button>
+            </div>    
         </div>
 
         <!-- FOR DOWNLOAD EXCELS END -->
@@ -131,7 +136,7 @@ include './services/connection.php';
         <form action="" method="post" onsubmit=" searchFoam()">
             <div class="text-end mb-3 row">
 
-                <div class="m-2 col-md-2">
+                <div class="m-1 col-md-2">
                     <label for="">Select BA :</label> <br>
                     <select name="searchBA" id="searchBA" class="form-select">
                         <?php if($_SESSION['user_name'] == "admin"){ ?>
@@ -168,12 +173,18 @@ include './services/connection.php';
                     <input type="date" name="to_date" id="to_date" class="form-control"
                         value="<?php echo isset($_POST['to_date']) ? $_POST['to_date'] : ''; ?>">
                 </div>
-                <div class="col-md-2 pt-2 text-start" style="display: inline">
+
+                <div class="m-2 col-md-2">
+                    <label for="">Aging greater than :</label> <br>
+                    <input type="number" name="aging" id="aging" class="form-control"
+                        value="<?php echo isset($_POST['aging']) ? $_POST['aging'] : ''; ?>">
+                </div>
+
+                <div class="col-md-1 pt-2 text-start" style="display: inline">
 
                     <button class="btn btn-secondary mt-4 btn-sm" type="submit" id="mysubmit" name='submitButton'
                         value="filter">Filter</button>
-                    <!-- <a href="./index.php" >--> <button id="myreset" class="btn btn-secondary btn-sm mt-4" type="button" 
-                            name='submitButton' value="reset">Reset</button>
+                    <!-- <a href="./index.php" >--> 
                         <!-- </a> -->
                 </div>
 
@@ -372,8 +383,26 @@ include './services/connection.php';
                             <?php
  
                             $pdo = null;
+
+                        function checkAgging($record){
+                            $agingDateTime = new DateTime($record['csp_paid_date']);
+                            
+                            $todayDateTime = $record['tarikh_siap'] != '' ? new DateTime($record['tarikh_siap']) : new DateTime();
+                    
+                            $interval = $agingDateTime->diff($todayDateTime);
+                            $differenceInDays = $interval->format('%a');
+                            return  $differenceInDays;
+                        }
+
                             
                             foreach ($records as $record) {
+                                $myaging =checkAgging($record);
+                                if(isset($_POST['aging'])){
+                                 if($myaging < $_POST['aging']){
+                                    continue;
+                                 } 
+                                }
+
                                 echo '<tr>';
                                 echo "<td>{$record['ba']}</td>";
                                 echo "<td><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >{$record['no_sn']}</a></td>";
@@ -520,11 +549,15 @@ include './services/connection.php';
                 localStorage.removeItem('selectedDateType');
                 localStorage.removeItem('selectedFromDate');
                 localStorage.removeItem('selectedToDate');
-                window.reload();
+                localStorage.removeItem('selectedAgging');
+                location.reload();
             })
         const dateTypeSelect = document.getElementById('date_type');
         const fromDateSelect = document.getElementById('from_date');
         const todateSelect = document.getElementById('to_date');
+        const agging = document.getElementById('aging');
+        
+
 
 // Load the saved value from localStorage
 const savedDateType = localStorage.getItem('selectedDateType');
@@ -559,6 +592,17 @@ const savedDateType = localStorage.getItem('selectedDateType');
             localStorage.setItem('selectedToDate', this.value);
         });
 
+
+        const saveAgging = localStorage.getItem('selectedAgging');
+        if (saveAgging) {
+            agging.value = saveAgging;
+        }
+
+        // Save the selected value to localStorage when changed
+        agging.addEventListener('change', function() {
+            localStorage.setItem('selectedAgging', this.value);
+        });
+
             
 
             $('#myTable , #snTable').DataTable({
@@ -585,8 +629,17 @@ const savedDateType = localStorage.getItem('selectedDateType');
             //     "page": 10
             // })
 
+        const savedButtonclick = localStorage.getItem('buttonClicked');
+        if(savedButtonclick){
+        if (savedButtonclick=='true') {
+           localStorage.setItem('buttonClicked', 'false');
+        }else{
+            localStorage.setItem('buttonClicked', 'true');
+            const button = document.getElementById('mysubmit');
+            button.click();
+        }
+    }
 
-           
             $('#searchButton').on('click', function() {
                 var searchTerm = $('#searchInput').val();
                 var table = $('#myTable').DataTable();
