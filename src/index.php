@@ -640,6 +640,12 @@ const savedDateType = localStorage.getItem('selectedDateType');
         }
     }
 
+            $('#mysubmit').on('click', function() {
+                if(savedButtonclick!='true'){
+                localStorage.setItem('buttonClicked', 'true');   
+                }    
+            });
+
             $('#searchButton').on('click', function() {
                 var searchTerm = $('#searchInput').val();
                 var table = $('#myTable').DataTable();
