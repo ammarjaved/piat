@@ -61,6 +61,9 @@ include './services/connection.php';
             background: #e9e9e9;
         }
     </style>
+    <script>
+        var username='<?php echo $_SESSION['user_name']?>';
+    </script>    
 </head>
 
 <body>
@@ -550,17 +553,23 @@ include './services/connection.php';
                 localStorage.removeItem('selectedFromDate');
                 localStorage.removeItem('selectedToDate');
                 localStorage.removeItem('selectedAgging');
-                location.reload();
+                localStorage.removeItem('selectedStatus');
+                localStorage.removeItem('selectedBA');
+                window.location.reload(true); 
+                window.location.href = window.location.href;
             })
-        const dateTypeSelect = document.getElementById('date_type');
-        const fromDateSelect = document.getElementById('from_date');
-        const todateSelect = document.getElementById('to_date');
-        const agging = document.getElementById('aging');
+        var dateTypeSelect = document.getElementById('date_type');
+        var fromDateSelect = document.getElementById('from_date');
+        var todateSelect = document.getElementById('to_date');
+        var agging = document.getElementById('aging');
+        var selba = document.getElementById('searchBA');
+
+        
         
 
 
 // Load the saved value from localStorage
-const savedDateType = localStorage.getItem('selectedDateType');
+var savedDateType = localStorage.getItem('selectedDateType');
         if (savedDateType) {
             dateTypeSelect.value = savedDateType;
         }
@@ -571,7 +580,7 @@ const savedDateType = localStorage.getItem('selectedDateType');
         });
 
 
-        const saveFromDate = localStorage.getItem('selectedFromDate');
+        var saveFromDate = localStorage.getItem('selectedFromDate');
         if (saveFromDate) {
             fromDateSelect.value = saveFromDate;
         }
@@ -582,7 +591,7 @@ const savedDateType = localStorage.getItem('selectedDateType');
         });
 
 
-        const saveToDate = localStorage.getItem('selectedToDate');
+        var saveToDate = localStorage.getItem('selectedToDate');
         if (saveToDate) {
             todateSelect.value = saveToDate;
         }
@@ -593,7 +602,7 @@ const savedDateType = localStorage.getItem('selectedDateType');
         });
 
 
-        const saveAgging = localStorage.getItem('selectedAgging');
+        var saveAgging = localStorage.getItem('selectedAgging');
         if (saveAgging) {
             agging.value = saveAgging;
         }
@@ -602,6 +611,19 @@ const savedDateType = localStorage.getItem('selectedDateType');
         agging.addEventListener('change', function() {
             localStorage.setItem('selectedAgging', this.value);
         });
+
+    if(username=='admin'){
+        var saveBa = localStorage.getItem('selectedBA');
+        if (saveBa) {
+            selba.value = saveBa;
+        }
+
+        // Save the selected value to localStorage when changed
+        selba.addEventListener('change', function() {
+            localStorage.setItem('selectedBA', this.value);
+        });
+    }
+
 
             
 
@@ -629,20 +651,40 @@ const savedDateType = localStorage.getItem('selectedDateType');
             //     "page": 10
             // })
 
-        const savedButtonclick = localStorage.getItem('buttonClicked');
+        var savedButtonclick = localStorage.getItem('buttonClicked');
         if(savedButtonclick){
         if (savedButtonclick=='true') {
-           localStorage.setItem('buttonClicked', 'false');
+            //localStorage.removeItem('buttonClicked');
+            localStorage.setItem('buttonClicked', 'false');
+            savedButtonclick = localStorage.getItem('buttonClicked');
+            let dropdown = document.getElementById('searchBA');
+            let selectedbsValue = dropdown.value;
+            if(localStorage.getItem('selectedStatus')!="null"){
+            setTimeout(function(){
+                adminSearch(selectedbsValue,localStorage.getItem('selectedStatus'))   
+            }, 1000);
+        }
+
         }else{
             localStorage.setItem('buttonClicked', 'true');
-            const button = document.getElementById('mysubmit');
+            savedButtonclick = localStorage.getItem('buttonClicked');
+            let button = document.getElementById('mysubmit');
+            let dropdown = document.getElementById('searchBA');
+            let selectedbsValue = dropdown.value;
             button.click();
+            if(localStorage.getItem('selectedStatus')!="null"){
+            setTimeout(function(){
+                adminSearch(selectedbsValue,localStorage.getItem('selectedStatus'))   
+            }, 1000);
+        }
         }
     }
 
             $('#mysubmit').on('click', function() {
                 if(savedButtonclick!='true'){
-                localStorage.setItem('buttonClicked', 'true');   
+                    localStorage.setItem('buttonClicked', 'true');
+                    savedButtonclick = localStorage.getItem('buttonClicked');
+   
                 }    
             });
 
@@ -720,6 +762,8 @@ const savedDateType = localStorage.getItem('selectedDateType');
         var userba = '<?php echo $_SESSION['user_ba'] ?>';
 
         function adminSearch(ba, status) {
+            localStorage.setItem('selectedStatus', status);
+
             var table = $('#myTable').DataTable();
             var table2 = $('#snTable').DataTable();
 
