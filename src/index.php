@@ -98,6 +98,10 @@ include './services/connection.php';
         <h3 class="text-center"><?php echo $_SESSION['user_name']; ?></h3>
 
         <!-- FOR DOWNLOAD EXCELS START -->
+        <div style="display:inline;"> 
+        <div class="m-2">
+        <a href="" class="btn btn-success btn-sm ">OLD DATA</a>
+        </div>
         <div class="text-end mb-3 d-flex justify-content-end">
             <div class="m-2">
 
@@ -132,6 +136,7 @@ include './services/connection.php';
             name='submitButton' value="reset">Reset</button>
             </div>    
         </div>
+    </div>
 
         <!-- FOR DOWNLOAD EXCELS END -->
 
@@ -257,25 +262,26 @@ include './services/connection.php';
                                 $record = '';
                             
                                 if ($col_name == 'both') {
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid OR ba LIKE :ba AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  ORDER BY csp_paid_date DESC');
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid OR ba LIKE :ba AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')  ORDER BY csp_paid_date DESC");
                                     $stmt->bindParam(':from_paid', $from_paid);
                                     $stmt->bindParam(':to_paid', $to_paid);
                                     $stmt->bindParam(':from_siap', $from_siap);
                                     $stmt->bindParam(':to_siap', $to_siap);
                                     $stmt->bindValue(':ba', '%' . $ba . '%', PDO::PARAM_STR);
                                     $stmt->execute();
+                                    
                                 } else {
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ' . $col_name . ' >= :from AND ' . $col_name . ' <= :to  ORDER BY csp_paid_date DESC');
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ' . $col_name . ' >= :from AND ' . $col_name . ' <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') ORDER BY csp_paid_date DESC");
                                     $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
                                 }
                             } else {
                                 // without filter
                                 if ($_SESSION['user_name'] == 'admin') {
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr    ORDER BY id DESC');
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2025-01-01'  ORDER BY id DESC");
                                 } else {
                                     $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : '';
                             
-                                    $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba ORDER BY csp_paid_date DESC, id DESC');
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') ORDER BY csp_paid_date DESC, id DESC");
                             
                                     // $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
                                     $stmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
@@ -284,6 +290,8 @@ include './services/connection.php';
                             }
                             
                             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                            
                             
                             foreach ($records as $record) {
                                 if ($record['jenis_sambungan'] != 'UG') {
