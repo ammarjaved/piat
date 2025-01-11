@@ -165,7 +165,10 @@ include './services/connection.php';
                     <label for="">Date Type :</label> <br>
                     <span class="text-danger " id="date_type_error"></span>
                     <select name="date_type" id="date_type" class="form-select">
-                        <option value="<?php echo isset($_POST['date_type']) && $_POST['date_type'] != '' ? $_POST['date_type'] : 'Both'; ?>" hidden><?php echo isset($_POST['date_type']) && $_POST['date_type'] != '' ? $_POST['date_type'] : 'Selet dateType'; ?></option>
+                        <!-- <option value="<?php echo isset($_POST['date_type']) && $_POST['date_type'] != '' ? $_POST['date_type'] : 'Both'; ?>" hidden><?php echo isset($_POST['date_type']) && $_POST['date_type'] != '' ? $_POST['date_type'] : 'Selet dateType'; ?></option> -->
+                        <option value="<?php echo isset($_POST['date_type']) && $_POST['date_type'] != '' ? $_POST['date_type'] : ''; ?>" hidden>
+                            <?php echo isset($_POST['date_type']) && $_POST['date_type'] != '' ? $_POST['date_type'] : 'Select dateType'; ?>
+                        </option>
                         <option value="Both">Both</option>
                         <option value="CSP">CSP Date</option>
                         <option value="Completion">Completion Date</option>
@@ -260,9 +263,11 @@ include './services/connection.php';
                                 $ba = isset($_POST['searchBA']) ? $_POST['searchBA'] : '';
                             
                                 $record = '';
-                            
+                            //   echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid.'3';
+                             ///  echo json_encode($_POST);
                                 if ($col_name == 'both') {
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid OR ba LIKE :ba AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')  ORDER BY csp_paid_date DESC");
+                                   // echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid;
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid  AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')  ORDER BY csp_paid_date DESC");
                                     $stmt->bindParam(':from_paid', $from_paid);
                                     $stmt->bindParam(':to_paid', $to_paid);
                                     $stmt->bindParam(':from_siap', $from_siap);
@@ -271,14 +276,19 @@ include './services/connection.php';
                                     $stmt->execute();
                                     
                                 } else {
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ' . $col_name . ' >= :from AND ' . $col_name . ' <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') ORDER BY csp_paid_date DESC");
+                                 //   echo  $from.'-'.$to.'-'.$col_name;
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND $col_name >= :from AND  $col_name <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') ORDER BY csp_paid_date DESC");
                                     $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
                                 }
                             } else {
                                 // without filter
                                 if ($_SESSION['user_name'] == 'admin') {
+                                  //  echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid.'1';
+
                                     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2025-01-01'  ORDER BY id DESC");
                                 } else {
+                                    echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid.'2';
+
                                     $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : '';
                             
                                     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') ORDER BY csp_paid_date DESC, id DESC");
@@ -288,13 +298,17 @@ include './services/connection.php';
                                 }
                                 $stmt->execute();
                             }
-                            
-                            $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+                            $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             
+                           
                             
                             foreach ($records as $record) {
-                                if ($record['jenis_sambungan'] != 'UG') {
+                                // echo $record['jenis_sambungan'];
+                                // echo json_encode( $records);
+                                //  exit();
+
+                               // if ($record['jenis_sambungan'] != 'UG') {
                                     # code...
                             
                                     echo '<tr>';
@@ -358,7 +372,7 @@ include './services/connection.php';
                                     echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
                                     echo '</ul></div></td>';
                                     echo '</tr>';
-                                }
+                               // }
                             }
                             ?>
                         </tbody>
@@ -563,6 +577,7 @@ include './services/connection.php';
                 localStorage.removeItem('selectedAgging');
                 localStorage.removeItem('selectedStatus');
                 localStorage.removeItem('selectedBA');
+                localStorage.removeItem('buttonClicked');
                 window.location.reload(true); 
                 window.location.href = window.location.href;
             })
@@ -692,7 +707,7 @@ var savedDateType = localStorage.getItem('selectedDateType');
                 if(savedButtonclick!='true'){
                     localStorage.setItem('buttonClicked', 'true');
                     savedButtonclick = localStorage.getItem('buttonClicked');
-   
+                    window.location.reload(true) ;  
                 }    
             });
 
