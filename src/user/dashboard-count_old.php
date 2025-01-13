@@ -12,11 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
 
     if ($from == '' || $to == '') {
         // if dates are null and only ba is selected then first get min and max date
-        $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) AS max_date, MIN(tarikh_siap) AS min_date FROM public.ad_service_qr where tarikh_siap != '' and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')");
+        $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) AS max_date, MIN(tarikh_siap) AS min_date FROM public.ad_service_qr where tarikh_siap != ''");
         $stmt->execute();
         $comp_date = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $stmt = $pdo->prepare("SELECT MAX(csp_paid_date) AS max_date, MIN(csp_paid_date) AS min_date FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2025-01-01'");
+        $stmt = $pdo->prepare("SELECT MAX(csp_paid_date) AS max_date, MIN(csp_paid_date) AS min_date FROM public.ad_service_qr ");
         $stmt->execute();
         $csp_date = $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -35,8 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
              $to_siap = $to == '' ? $comp_date['max_date'] : $to; 
              $from_paid = $from == '' ? $csp_date['min_date'] : $from;
              $to_paid = $to == '' ? $csp_date['max_date'] : $to;
-            $col_name = 'both';
-           // $col_name = '';
+           $col_name = 'both';
         }
      }
   
@@ -44,33 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
      if ($col_name == 'both') {
 
         $stmt = $pdo->prepare("SELECT
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')) AS count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid  AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap and complete_date>='2025-01-01') AS complete_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid  AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap) AS inprocess_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid  AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap) AS kiv_piat
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid OR ba LIKE :ba AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap) AS count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid OR status = 'Complete'  AND ba LIKE :ba AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap) AS complete_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid OR  status = 'Inprogress'AND  ba LIKE :ba AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap) AS inprocess_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid OR status = 'KIV' AND ba LIKE :ba AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap) AS kiv_piat
     ");
-
-
-// $params = [
-//     ':from_paid' => $from_paid,
-//     ':to_paid' => $to_paid,
-//     ':from_siap' => $from_siap,
-//     ':to_siap' => $to_siap,
-//     ':ba' => '%' . $ba . '%'
-// ];
-
-// // Get the query
-// $query = $stmt->queryString;
-
-// Replace parameters in query
-// foreach ($params as $param => $value) {
-//     $query = str_replace($param, "'$value'", $query);
-// }
-
-// // Print the final query
-// echo $query;
-// exit();
-
      $stmt->bindParam(':from_paid' ,$from_siap);
      $stmt->bindParam(':to_paid',$to_siap);
      $stmt->bindParam(':from_siap' ,$from_paid);
@@ -81,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
      }else{
 
         $stmt = $pdo->prepare("SELECT
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')) AS count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND (status = 'Complete' OR status = '1') AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01') AS complete_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to) AS count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND (status = 'Complete' OR status = '1') AND ".$col_name." >= :from AND ".$col_name." <= :to) AS complete_count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to) AS inprocess_count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to) AS kiv_piat
     ");
@@ -95,8 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
 }
 } else {
     $stmt = $pdo->prepare("SELECT
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')) AS count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') and complete_date>='2025-01-01') AS complete_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba) AS count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1')) AS complete_count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprogress') AS inprocess_count,
         (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV') AS kiv_piat
     ");

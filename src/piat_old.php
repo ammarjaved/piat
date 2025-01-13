@@ -204,9 +204,9 @@ include './services/connection.php';
            
         <!-- include top count and onclick filters -->
         <?php if ($_SESSION['user_name'] == 'admin') {
-            include './admin/dashboard-count.php';
+            include './admin/dashboard-count_old.php';
         } else {
-            include './user/dashboard-count.php';
+            include './user/dashboard-count_old.php';
         } ?>
 
 
