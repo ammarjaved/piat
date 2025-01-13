@@ -60,20 +60,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter')
 
         $stmt = $pdo->prepare("SELECT a.klb_count ,e.total_klb_count, b.klt_count,f.total_klt_count, c.klp_count , g.total_klp_count , d.kls_count , h.total_kls_count, i.kiv_klb_count,
         j.kiv_klt_count , k.kiv_klp_count , l.kiv_kls_count, m.count  FROM 
-    (SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'Inprogress' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)a,
-    (SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'Inprogress' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid )b,
-    (SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'Inprogress' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)c,
-    (SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'Inprogress' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)d,
-    (SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'Complete' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid  and complete_date>='2025-01-01')e,
-    (SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'Complete' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid and complete_date>='2025-01-01')f,
-    (SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'Complete' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid and complete_date>='2025-01-01')g,
-    (SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'Complete' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid and complete_date>='2025-01-01')h,
+    (SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)))a,
+    (SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) )b,
+    (SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) )c,
+    (SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) )d,
+    (SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid))  and complete_date>='2025-01-01')e,
+    (SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2025-01-01')f,
+    (SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2025-01-01')g,
+    (SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2025-01-01')h,
     
-    (SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'KIV' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)i,
-    (SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'KIV' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)j,
-    (SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'KIV' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)k,
-    (SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND status = 'KIV' AND  csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)l,
-    (SELECT count(*) as count FROM ad_service_qr WHERE ba LIKE :ba  AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap  AND csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid and (status in ('Inprogress','KIV') or complete_date>='2025-01-01'))m");
+    (SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)))i,
+    (SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)))j,
+    (SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)))k,
+    (SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)))l,
+    (SELECT count(*) as count FROM ad_service_qr WHERE ba LIKE :ba  AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)  OR (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and (status in ('Inprogress','KIV') or complete_date>='2025-01-01'))m");
+    
+    
+    // $params = [
+    //     ':from_paid' => $from_paid,
+    //     ':to_paid' => $to_paid,
+    //     ':from_siap' => $from_siap,
+    //     ':to_siap' => $to_siap,
+    //     ':ba' => '%' . $ba . '%'
+    // ];
+    
+    // // Get the query
+    // $query = $stmt->queryString;
+    
+    // // Replace parameters in query
+    // foreach ($params as $param => $value) {
+    //     $query = str_replace($param, "'$value'", $query);
+    // }
+    
+    // // Print the final query
+    // echo $query;
+    // exit();
+    
+    
+    
     $stmt->bindParam(':from_paid' ,$from_paid);
     $stmt->bindParam(':to_paid',$to_paid);
     $stmt->bindParam(':from_siap' ,$from_siap);

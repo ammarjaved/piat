@@ -102,8 +102,10 @@ include './services/connection.php';
         <div class="text-end mb-3 d-flex justify-content-end">
 
             <div class="m-2">
-
-                <a href="./sn-monitoring/create.php" class="btn btn-success btn-sm ">ADD SN</a>
+            <a href="./piat_old.php" class="btn btn-success btn-sm ">OLD PIAT</a>
+            </div>
+            <div class="m-2">
+            <a href="./sn-monitoring/create.php" class="btn btn-success btn-sm ">ADD SN</a>
             </div>
             <div class="m-2"><a href="./qr-foams/create.php" class="btn btn-success btn-sm ">ADD QR AND PIAT</a> </div>
             <!-- <div class="m-2"><a href="./qr-foams/create.php" class="btn btn-success btn-sm ">ADD QR AND PIAT</a> </div> -->
@@ -185,8 +187,17 @@ include './services/connection.php';
 
                 <div class="m-2 col-md-2">
                     <label for="">Aging greater than :</label> <br>
-                    <input type="number" name="aging" id="aging" class="form-control"
-                        value="<?php echo isset($_POST['aging']) ? $_POST['aging'] : ''; ?>">
+                        <!-- value="<?php echo isset($_POST['aging']) ? $_POST['aging'] : ''; ?>"> -->
+                        <select name="aging" id="aging" class="form-select">
+                        <option value="<?php echo isset($_POST['aging']) ? $_POST['aging'] : ''; ?>" hidden>
+                            <?php echo isset($_POST['aging']) && $_POST['aging'] != '' ? $_POST['aging'] : 'Select aging'; ?>
+                        </option>
+                        <option value="1,7">1-7 days</option>
+                        <option value="8,14">8-14 days</option>
+                        <option value="14,30">14-30 days</option>
+                        <option value="30,60">30-60 days</option>
+                        <option value=">60">>60 days</option>
+                    </select>    
                 </div>
 
                 <div class="col-md-1 pt-2 text-start" style="display: inline">
@@ -265,7 +276,7 @@ include './services/connection.php';
                              ///  echo json_encode($_POST);
                                 if ($col_name == 'both') {
                                    // echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid;
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid  AND tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')  ORDER BY csp_paid_date DESC");
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ((csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)  OR (tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')  ORDER BY csp_paid_date DESC");
                                     $stmt->bindParam(':from_paid', $from_paid);
                                     $stmt->bindParam(':to_paid', $to_paid);
                                     $stmt->bindParam(':from_siap', $from_siap);
@@ -285,7 +296,7 @@ include './services/connection.php';
 
                                     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2025-01-01'  ORDER BY id DESC");
                                 } else {
-                                    echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid.'2';
+                                 //   echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid.'2';
 
                                     $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : '';
                             
@@ -420,10 +431,30 @@ include './services/connection.php';
                             
                             foreach ($records as $record) {
                                 $myaging =checkAgging($record);
-                                if(isset($_POST['aging'])){
-                                 if($myaging < $_POST['aging']){
-                                    continue;
-                                 } 
+                                // if(isset($_POST['aging'])){
+                                //  if($myaging < $_POST['aging']){
+                                //     continue;
+                                //  } 
+                                // }
+                                
+                                if(isset($_POST['aging']) && $_POST['aging']!='') {
+                                    // echo $_POST['aging'];
+                                    // echo 'hi';
+                                    if($_POST['aging'] === '>60') {
+                                        // Handle greater than 60 days case
+                                        if($myaging <= 60) {
+                                            continue;
+                                        }
+                                    } else {
+                                        // Handle range cases (1,7), (8,14), etc.
+                                        $range = explode(',', $_POST['aging']);
+                                        $min = intval($range[0]);
+                                        $max = intval($range[1]);
+                                        
+                                        if($myaging < $min || $myaging > $max) {
+                                            continue;
+                                        }
+                                    }
                                 }
 
                                 echo '<tr>';

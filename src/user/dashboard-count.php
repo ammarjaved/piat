@@ -44,10 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
      if ($col_name == 'both') {
 
         $stmt = $pdo->prepare("SELECT
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')) AS count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid  AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap and complete_date>='2025-01-01') AS complete_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid  AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap) AS inprocess_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid  AND csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap) AS kiv_piat
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')) AS count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid ) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and complete_date>='2025-01-01') AS complete_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap))) AS inprocess_count,
+        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap))) AS kiv_piat
     ");
 
 
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
 // // Get the query
 // $query = $stmt->queryString;
 
-// Replace parameters in query
+// //Replace parameters in query
 // foreach ($params as $param => $value) {
 //     $query = str_replace($param, "'$value'", $query);
 // }
