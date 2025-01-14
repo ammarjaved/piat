@@ -43,12 +43,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
 
      if ($col_name == 'both') {
 
-        $stmt = $pdo->prepare("SELECT
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')) AS count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid ) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and complete_date>='2025-01-01') AS complete_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap))) AS inprocess_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap))) AS kiv_piat
-    ");
+          $baseQuery ="SELECT";
+          $agingClause = "";
+    if(isset($_POST['aging']) && $_POST['aging'] !== '') {
+        if($_POST['aging'] === '>60') {
+            $agingClause = "AND (CURRENT_DATE - csp_paid_date::date) > 60";
+        } else {
+            $range = explode(',', $_POST['aging']);
+            $min = intval($range[0]);
+            $max = intval($range[1]);
+            $agingClause = "AND (CURRENT_DATE - csp_paid_date::date) BETWEEN :aging_min AND :aging_max";
+        }
+    }
+    $subqueries = [
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') {$agingClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid ) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and complete_date>='2025-01-01' {$agingClause}) AS complete_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) {$agingClause}) AS inprocess_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) {$agingClause}) AS kiv_piat"
+    ];
 
 
 // $params = [
@@ -71,41 +83,125 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
 // echo $query;
 // exit();
 
+   // Combine the query
+   $query = $baseQuery . ' ' . implode(',', $subqueries);
+
+   // Prepare and execute with proper binding
+   $stmt = $pdo->prepare($query);
+
+
      $stmt->bindParam(':from_paid' ,$from_siap);
      $stmt->bindParam(':to_paid',$to_siap);
      $stmt->bindParam(':from_siap' ,$from_paid);
      $stmt->bindParam(':to_siap',$to_paid);
      $stmt->bindValue(':ba', '%' . $ba . '%', PDO::PARAM_STR);
-     $stmt->execute();
+    // $stmt->execute();
+    if (isset($_POST['aging']) && $_POST['aging'] !== '' && $_POST['aging'] !== '>60') {
+        $stmt->bindParam(':aging_min', $min, PDO::PARAM_INT);
+        $stmt->bindParam(':aging_max', $max, PDO::PARAM_INT);
+    }
+
+    try {
+        $stmt->execute();
+        $count = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Handle error appropriately
+        error_log("Query execution failed: " . $e->getMessage());
+        throw $e;
+    }
+
  
      }else{
 
-        $stmt = $pdo->prepare("SELECT
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')) AS count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND (status = 'Complete' OR status = '1') AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01') AS complete_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to) AS inprocess_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to) AS kiv_piat
-    ");
-    
-    
-      $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
+         $baseQuery ="SELECT";
+         $agingClause = "";
+         if(isset($_POST['aging']) && $_POST['aging'] !== '') {
+             if($_POST['aging'] === '>60') {
+                 $agingClause = "AND (CURRENT_DATE - csp_paid_date::date) > 60";
+             } else {
+                 $range = explode(',', $_POST['aging']);
+                 $min = intval($range[0]);
+                 $max = intval($range[1]);
+                 $agingClause = "AND (CURRENT_DATE - csp_paid_date::date) BETWEEN :aging_min AND :aging_max";
+             }
+         }
+
+         $subqueries = [ 
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') {$agingClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND (status = 'Complete' OR status = '1') AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' {$agingClause}) AS complete_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to {$agingClause}) AS inprocess_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to {$agingClause}) AS kiv_piat"
+         ];
+         $query = $baseQuery . ' ' . implode(',', $subqueries);
+
+         // Prepare and execute with proper binding
+         $stmt = $pdo->prepare($query);
+         $stmt->bindParam(':from', $from);
+         $stmt->bindParam(':to', $to);
+         $stmt->bindValue(':ba', '%' . $ba . '%', PDO::PARAM_STR);
+         if (isset($_POST['aging']) && $_POST['aging'] !== '' && $_POST['aging'] !== '>60') {
+            $stmt->bindParam(':aging_min', $min, PDO::PARAM_INT);
+            $stmt->bindParam(':aging_max', $max, PDO::PARAM_INT);
+        }
+        
+         try {
+            //$stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
+           $stmt->execute();
+           $count = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Handle error appropriately
+            error_log("Query execution failed: " . $e->getMessage());
+            throw $e;
+        }
+
+
      }
 
 
 }
 } else {
-    $stmt = $pdo->prepare("SELECT
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')) AS count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') and complete_date>='2025-01-01') AS complete_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprogress') AS inprocess_count,
-        (SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV') AS kiv_piat
-    ");
+    $baseQuery ="SELECT";
+
+    $agingClause = "";
+    if(isset($_POST['aging']) && $_POST['aging'] !== '') {
+        if($_POST['aging'] === '>60') {
+            $agingClause = "AND (CURRENT_DATE - csp_paid_date::date) > 60";
+        } else {
+            $range = explode(',', $_POST['aging']);
+            $min = intval($range[0]);
+            $max = intval($range[1]);
+            $agingClause = "AND (CURRENT_DATE - csp_paid_date::date) BETWEEN :aging_min AND :aging_max";
+        }
+    }
+
+    $subqueries = [ 
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') {$agingClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') and complete_date>='2025-01-01' {$agingClause}) AS complete_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprogress' {$agingClause}) AS inprocess_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV' {$agingClause}) AS kiv_piat"
+    ];
+    $query = $baseQuery . ' ' . implode(',', $subqueries);
+
+    // Prepare and execute with proper binding
+    $stmt = $pdo->prepare($query);
     $stmt->bindParam(':ba', $_SESSION['user_ba']);
-    $stmt->execute();
+    if (isset($_POST['aging']) && $_POST['aging'] !== '' && $_POST['aging'] !== '>60') {
+        $stmt->bindParam(':aging_min', $min, PDO::PARAM_INT);
+        $stmt->bindParam(':aging_max', $max, PDO::PARAM_INT);
+    }
+
+    try {
+        $stmt->execute();    
+        $count = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Handle error appropriately
+        error_log("Query execution failed: " . $e->getMessage());
+        throw $e;
+    }
 }
 
 
-$count = $stmt->fetch(PDO::FETCH_ASSOC);
+// $count = $stmt->fetch(PDO::FETCH_ASSOC);
  
 ?>
 
