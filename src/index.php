@@ -421,7 +421,8 @@ include './services/connection.php';
                         function checkAgging($record){
                             $agingDateTime = new DateTime($record['csp_paid_date']);
                             
-                            $todayDateTime = $record['tarikh_siap'] != '' ? new DateTime($record['tarikh_siap']) : new DateTime();
+                          //  $todayDateTime = $record['tarikh_siap'] != '' ? new DateTime($record['tarikh_siap']) : new DateTime();
+                            $todayDateTime = new DateTime();
                     
                             $interval = $agingDateTime->diff($todayDateTime);
                             $differenceInDays = $interval->format('%a');
