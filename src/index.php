@@ -611,6 +611,7 @@ include './services/connection.php';
                 window.location.reload(true); 
                 window.location.href = window.location.href;
             })
+
         var dateTypeSelect = document.getElementById('date_type');
         var fromDateSelect = document.getElementById('from_date');
         var todateSelect = document.getElementById('to_date');
@@ -816,6 +817,8 @@ var savedDateType = localStorage.getItem('selectedDateType');
 
         function adminSearch(ba, status) {
             localStorage.setItem('selectedStatus', status);
+           // localStorage.setItem('buttonClicked', 'true');
+            localStorage.setItem('selectedBA', ba);
 
             var table = $('#myTable').DataTable();
             var table2 = $('#snTable').DataTable();
