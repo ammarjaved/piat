@@ -199,6 +199,17 @@ include './services/connection.php';
                         <option value=">60">>60 days</option>
                     </select>    
                 </div>
+                <div class="m-2 col-md-2">
+                <label for="">Permit Type :</label> <br>
+                <select name="permit_type" id="permit_type" class="form-select">
+                    <option value="<?php echo isset($_POST['permit_type']) ? $_POST['permit_type'] : ''; ?>" hidden>
+                        <?php echo isset($_POST['permit_type']) && $_POST['permit_type'] != '' ? $_POST['permit_type'] : 'Select Permit'; ?>
+                    </option>
+                    <option value="">Both</option>
+                    <option value="PBT">PBT</option>
+                    <option value="DBKL">DBKL</option>
+                </select>    
+            </div>
 
                 <div class="col-md-1 pt-2 text-start" style="display: inline">
 
@@ -310,7 +321,11 @@ include './services/connection.php';
 
                             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             
-                           
+                           if (isset($_POST['permit_type']) && $_POST['permit_type'] != '') {
+                                $records = array_filter($records, function($record) {
+                                    return $record['permit_sn'] === $_POST['permit_type'];
+                                });
+                            }
                             
                             foreach ($records as $record) {
                                 // echo $record['jenis_sambungan'];
@@ -403,6 +418,7 @@ include './services/connection.php';
                                 <th>BA</th>
                                 <th>SN NO</th>
                                 <th>JENIS SN</th>
+                                <th>Permit Type</th>
                                 <th>JENIS SAMBUNGAN</th>
                                 <th>AGING (days)</th>
                                 <th>CSP DATE</th>
@@ -460,8 +476,9 @@ include './services/connection.php';
 
                                 echo '<tr>';
                                 echo "<td>{$record['ba']}</td>";
-                                echo "<td><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >{$record['no_sn']}</a></td>";
+                                echo "<td><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >{$record['no_sn']}</a></td>";                           
                                 echo "<td>{$record['jenis_sn']}</td>";
+                                 echo "<td>{$record['permit_sn']}</td>";
                                 echo "<td>{$record['jenis_sambungan']}</td>";
                                 if ($record['csp_paid_date'] != '') {
                                     $agingDateTime = new DateTime($record['csp_paid_date']);
@@ -600,6 +617,8 @@ include './services/connection.php';
 
         $(document).ready(function() {
 
+        
+
             $('#myreset').click(function(){
                 localStorage.removeItem('selectedDateType');
                 localStorage.removeItem('selectedFromDate');
@@ -608,10 +627,13 @@ include './services/connection.php';
                 localStorage.removeItem('selectedStatus');
                 localStorage.removeItem('selectedBA');
                 localStorage.removeItem('buttonClicked');
+                    localStorage.removeItem('selectedPermitType');
+
                 window.location.reload(true); 
                 window.location.href = window.location.href;
             })
 
+        var permitSelect = document.getElementById('permit_type');
         var dateTypeSelect = document.getElementById('date_type');
         var fromDateSelect = document.getElementById('from_date');
         var todateSelect = document.getElementById('to_date');
@@ -620,7 +642,15 @@ include './services/connection.php';
 
         
         
+        var savePermitType = localStorage.getItem('selectedPermitType');
+        if (savePermitType) {
+            permitSelect.value = savePermitType;
+        }
 
+        // Save permit type when changed
+        permitSelect.addEventListener('change', function() {
+            localStorage.setItem('selectedPermitType', this.value);
+        });
 
 // Load the saved value from localStorage
 var savedDateType = localStorage.getItem('selectedDateType');
@@ -833,6 +863,8 @@ var savedDateType = localStorage.getItem('selectedDateType');
             
 
             table2.columns(0).search(ba); // Filter Column 1
+                table2.columns(3).search(permitType); // Permit column
+
             table2.columns(7).search(status); //
 
            table.draw();

@@ -75,6 +75,14 @@ if (!$record) {
                         <td><input type="radio" name="jenis_sn" id="jenis_sn_express" value="Express"
                                 <?php echo $record['jenis_sn'] == 'Express' ? 'checked' : ''; ?>> <label for="jenis_sn_express">Express</label></td>
                     </tr>
+
+                     <tr>
+                        <th>Permit <br> <span class="text-danger"></span></th>
+                        <td><input type="radio" name="permit_sn" id="permit_sn_dbkl" value="DBKL" <?php echo $record['permit_sn'] == 'DBKL' ? 'checked' : ''; ?>> 
+                        <label or="jenis_sn_lkkk">DBKL</label></td>
+                        <td><input type="radio" name="permit_sn" id="permit_sn_pbt" value="PBT" <?php echo $record['permit_sn'] == 'PBT' ? 'checked' : ''; ?>> 
+                        <label for="jenis_sn_express">PBT</label></td>
+                    </tr>
                     <tr>
                         <th>Jenis Sambungan *<br> <span class="text-danger"></span></th>
                         <td> <input type="radio" name="jenis_sambungan" id="jenis_sambungan_oh" value="OH"

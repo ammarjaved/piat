@@ -60,6 +60,10 @@ if (!$record) {
                         <th>Jenis SN<br> <span class="text-danger"></span></th>
                         <td><?php echo $record['jenis_sn']; ?></td>
                     </tr>
+                     <tr>
+                        <th>Permit<br> <span class="text-danger"></span></th>
+                        <td><?php echo $record['permit_sn']; ?></td>
+                    </tr>
                     <tr>
                         <th>CSP Paid Date<br> <span class="text-danger"></span></th>
                         <td><?php echo $record['csp_paid_date']; ?></td>

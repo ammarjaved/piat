@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $piat = "no";
             }
        
-            $sql = "INSERT INTO ad_service_qr (ba, alamat, user_status,piat , no_sn, jenis_sn, csp_paid_date, aging_days, jenis_sambungan, pic,  remark, status, created_by , tarikh_siap , qr,erms_status,vendor,work_type)
-            VALUES (:ba, :alamat, :user_status ,:piat,  :sn_number, :jenis_sn, :csp_paid_date, :aging_days, :jenis_sambungan, :pic,  :remark , :status, :created , :tarikh_siap , 'false',:erms,:vendor,:work_type)";
+            $sql = "INSERT INTO ad_service_qr (ba, alamat, user_status,piat , no_sn, jenis_sn,permit_sn, csp_paid_date, aging_days, jenis_sambungan, pic,  remark, status, created_by , tarikh_siap , qr,erms_status,vendor,work_type)
+            VALUES (:ba, :alamat, :user_status ,:piat,  :sn_number, :jenis_sn,:permit_sn, :csp_paid_date, :aging_days, :jenis_sambungan, :pic,  :remark , :status, :created , :tarikh_siap , 'false',:erms,:vendor,:work_type)";
             $stmt = $pdo->prepare($sql);
             
             $stmt->bindParam(':created',$_SESSION['user_id']);
@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             alamat = :alamat,
             user_status = :user_status,
             jenis_sn = :jenis_sn,
+            permit_sn = :permit_sn,
             csp_paid_date = :csp_paid_date,
             aging_days = :aging_days,
             jenis_sambungan = :jenis_sambungan,
@@ -75,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':user_status', $_POST['user_status']);
         $stmt->bindParam(':sn_number', $_POST['sn_number']);
         $stmt->bindParam(':jenis_sn', $_POST['jenis_sn']);
+          $stmt->bindParam(':permit_sn', $_POST['permit_sn']);
         $stmt->bindParam(':csp_paid_date', $_POST['csp_paid_date']);
         $stmt->bindParam(':aging_days', $_POST['aging_days']);//
         $stmt->bindParam(':jenis_sambungan', $_POST['jenis_sambungan']);
@@ -98,6 +100,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':sn',$_POST['sn_number']);
             $stmt->bindParam(':id',$_REQUEST['id']);
             $stmt->execute();
+        } else {
+            // Insert into permit_records only for new records (not updates)
+            try {
+                $permit_hostname = '192.168.1.34';
+                $permit_port = 5432;
+                $permit_database = 'permit_tracking';
+                $permit_username = 'postgres';
+                $permit_password = 'Admin123';
+
+                $permit_pdo = new PDO(
+                    "pgsql:host=$permit_hostname;port=$permit_port;dbname=$permit_database",
+                    $permit_username,
+                    $permit_password,
+                    array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+                );
+
+                // Split BA by '-' and get the last part after trimming
+                $ba_parts = explode('-', $_POST['ba']);
+                $ba_value = trim($ba_parts[count($ba_parts) - 1]);
+                
+                $permit_sql = "INSERT INTO public.permit_records (type, ba, sn, status_permit) 
+                              VALUES (:type, :ba, :sn, :status_permit)";
+                $permit_stmt = $permit_pdo->prepare($permit_sql);
+                
+                $permit_stmt->bindParam(':type', $_POST['permit_sn']);
+                $permit_stmt->bindParam(':ba', $ba_value);
+                $permit_stmt->bindParam(':sn', $_POST['sn_number']);
+                $status_permit = 'MIGRATE';
+                $permit_stmt->bindParam(':status_permit', $status_permit);
+                
+                $permit_stmt->execute();
+                $permit_pdo = null;
+                
+            } catch (PDOException $e) {
+                // Log permit insert error but don't stop the main process
+                error_log("Permit records insert failed: " . $e->getMessage());
+            }
         }
 
        
