@@ -5,6 +5,86 @@ if (!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])) {
 }
 include './services/connection.php';
 ?>
+
+
+<?php
+// Fetch data for dashboard statistics
+$dashboardData = [];
+
+// Query for SN status counts by BA
+$statusQuery = "SELECT ba, 
+                COUNT(CASE WHEN status = 'Complete' THEN 1 END) as completed,
+                COUNT(CASE WHEN status = 'Inprogress' THEN 1 END) as inprogress,
+                COUNT(CASE WHEN status = 'KIV' THEN 1 END) as kiv,
+                COUNT(*) as total
+                FROM public.ad_service_qr 
+                WHERE (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01')
+                GROUP BY ba
+                ORDER BY ba";
+                
+$statusStmt = $pdo->prepare($statusQuery);
+$statusStmt->execute();
+$statusData = $statusStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Query for aging analysis
+// Query for aging analysis - ADD +1 to match display
+$agingQuery = "SELECT ba,
+                COUNT(CASE WHEN age_days >= 1 AND age_days <= 5 THEN 1 END) as age_1_5,
+                COUNT(CASE WHEN age_days >= 6 AND age_days <= 14 THEN 1 END) as age_6_14,
+                COUNT(CASE WHEN age_days >= 15 AND age_days <= 30 THEN 1 END) as age_15_30,
+                COUNT(CASE WHEN age_days >= 31 AND age_days <= 60 THEN 1 END) as age_31_60,
+                COUNT(CASE WHEN age_days > 60 THEN 1 END) as age_gt_60
+                FROM (
+                    SELECT ba,
+                    CASE 
+                        WHEN tarikh_siap != '' AND tarikh_siap IS NOT NULL
+                        THEN DATE_PART('day', tarikh_siap::timestamp - csp_paid_date::timestamp) + 1
+                        ELSE DATE_PART('day', CURRENT_DATE - csp_paid_date::timestamp) + 1
+                    END as age_days
+                    FROM public.ad_service_qr 
+                    WHERE status = 'Inprogress' 
+                    AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01')
+                ) as subquery
+                GROUP BY ba
+                ORDER BY ba";
+                
+$agingStmt = $pdo->prepare($agingQuery);
+$agingStmt->execute();
+$agingData = $agingStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Prepare data for charts
+$chartLabels = [];
+$completedData = [];
+$inprogressData = [];
+$kivData = [];
+$totalData = [];
+
+foreach ($statusData as $row) {
+    $chartLabels[] = $row['ba'];
+    $completedData[] = (int)$row['completed'];
+    $inprogressData[] = (int)$row['inprogress'];
+    $kivData[] = (int)$row['kiv'];
+    $totalData[] = (int)$row['total'];
+}
+
+// Prepare aging chart data
+$agingLabels = [];
+$age1_5Data = [];
+$age6_14Data = [];
+$age15_30Data = [];
+$age31_60Data = [];
+$ageGt60Data = [];
+
+foreach ($agingData as $row) {
+    $agingLabels[] = $row['ba'];
+    $age1_5Data[] = (int)$row['age_1_5'];
+    $age6_14Data[] = (int)$row['age_6_14'];
+    $age15_30Data[] = (int)$row['age_15_30'];
+    $age31_60Data[] = (int)$row['age_31_60'];
+    $ageGt60Data[] = (int)$row['age_gt_60'];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,10 +137,93 @@ include './services/connection.php';
             }
         }
 
+        
+
         body {
             background: #e9e9e9;
         }
+
+        .aging-cell:hover, .aging-cell-total:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+}
+
+.aging-cell:not([data-ba=""]):not(:empty), 
+.aging-cell-total:not([data-ba=""]):not(:empty) {
+    position: relative;
+}
+
+.aging-cell:not([data-ba=""]):not(:empty)::after, 
+.aging-cell-total:not([data-ba=""]):not(:empty)::after {
+    content: "🔍";
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.aging-cell:not([data-ba=""]):not(:empty):hover::after, 
+.aging-cell-total:not([data-ba=""]):not(:empty):hover::after {
+    opacity: 1;
+}
+
+#filteredRecordsTable {
+    font-size: 0.9rem;
+}
     </style>
+
+    <head>
+    <!-- Existing head content... -->
+    
+    <!-- Add Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Add this style for dashboard -->
+    <style>
+        .dashboard-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .stat-card p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+
     <script>
         var username='<?php echo $_SESSION['user_name']?>';
     </script>    
@@ -192,9 +355,9 @@ include './services/connection.php';
                         <option value="<?php echo isset($_POST['aging']) ? $_POST['aging'] : ''; ?>" hidden>
                             <?php echo isset($_POST['aging']) && $_POST['aging'] != '' ? $_POST['aging'] : 'Select aging'; ?>
                         </option>
-                        <option value="1,7">1-7 days</option>
-                        <option value="8,14">8-14 days</option>
-                        <option value="14,30">14-30 days</option>
+                        <option value="1,7">1-5 days</option>
+                        <option value="8,14">6-14 days</option>
+                        <option value="14,30">15-30 days</option>
                         <option value="30,60">30-60 days</option>
                         <option value=">60">>60 days</option>
                     </select>    
@@ -244,6 +407,13 @@ include './services/connection.php';
                 <button class="nav-link " id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
                     role="tab" aria-controls="home" aria-selected="true">QR</button>
             </li>
+
+        <?php if ($_SESSION['user_name'] == 'admin') : ?>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link " id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button"
+                role="tab" aria-controls="dashboard" aria-selected="true">Dashboard</button>
+        </li>
+        <?php endif; ?>
 
         </ul>
 
@@ -297,7 +467,7 @@ include './services/connection.php';
                                     
                                 } else {
                                  //   echo  $from.'-'.$to.'-'.$col_name;
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND $col_name >= :from AND  $col_name <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') ORDER BY csp_paid_date DESC");
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND $col_name >= :from AND  $col_name <= :to and (status in ('Inprogress','KIV') or complete_date>='2026-01-01') ORDER BY csp_paid_date DESC");
                                     $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
                                 }
                             } else {
@@ -399,6 +569,11 @@ include './services/connection.php';
                                 }
                             }
                             ?>
+                            <script>
+                            // Store all records in JavaScript for filtering
+                            const allSNRecords = <?php echo json_encode($records); ?>;
+                            console.log('Total records from PHP:', allSNRecords.length);
+                            </script>
                         </tbody>
                     </table>
 
@@ -501,8 +676,7 @@ include './services/connection.php';
                                         $remark = substr($remark, 0, 15) . '...';
                                     }
                                 }
-                                echo "<td><a type='button' class='dropdown-item' data-bs-toggle='modal' data-remark='{$record['remark']}' data-id='{$record['id']}' data-bs-target='#remarkModal'>{$remark}</a></td>";
-                            
+                                echo "<td><a type='button' class='dropdown-item btn btn-warning btn-sm text-dark' style='display: inline-block; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; background-color: #ffc107; border: 2px solid #ff9800; box-shadow: 0 2px 4px rgba(0,0,0,0.2);' data-bs-toggle='modal' data-remark='{$record['remark']}' data-id='{$record['id']}' data-bs-target='#remarkModal'>{$remark}</a></td>";
                                 echo "<td class='text-center'><div class='dropdown'>
                                                                                       <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
                                                                                       <img src='../images/three-dots-vertical.svg'  >
@@ -526,6 +700,235 @@ include './services/connection.php';
 
             </div>
                 <!-- SN TABLE END -->
+
+         
+<div class="tab-pane fade" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+    <div class="container-fluid">
+        
+        <!-- Summary Statistics Row -->
+        <div class="row mb-4">
+            <?php
+            // Calculate totals
+            $totalCompleted = array_sum($completedData);
+            $totalInprogress = array_sum($inprogressData);
+            $totalKIV = array_sum($kivData);
+            $grandTotal = array_sum($totalData);
+            
+            // Calculate percentages
+            $completedPercent = $grandTotal > 0 ? round(($totalCompleted / $grandTotal) * 100, 1) : 0;
+            $inprogressPercent = $grandTotal > 0 ? round(($totalInprogress / $grandTotal) * 100, 1) : 0;
+            $kivPercent = $grandTotal > 0 ? round(($totalKIV / $grandTotal) * 100, 1) : 0;
+            ?>
+            
+            <!-- <div class="col-md-3">
+                <div class="stat-card" style="background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);">
+                    <h3><?php echo $totalCompleted; ?></h3>
+                    <p>Completed</p>
+                    <small><?php echo $completedPercent; ?>% of total</small>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);">
+                    <h3><?php echo $totalInprogress; ?></h3>
+                    <p>In Progress</p>
+                    <small><?php echo $inprogressPercent; ?>% of total</small>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);">
+                    <h3><?php echo $totalKIV; ?></h3>
+                    <p>KIV</p>
+                    <small><?php echo $kivPercent; ?>% of total</small>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card" style="background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);">
+                    <h3><?php echo $grandTotal; ?></h3>
+                    <p>Total SN</p>
+                    <small>All BA Total</small>
+                </div>
+            </div>
+        </div> -->
+        
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <!-- Status Distribution Chart -->
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5 class="mb-3">SN Status Distribution by BA</h5>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Aging Analysis Chart -->
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5 class="mb-3">In Progress SN Aging Analysis</h5>
+                    <div class="chart-container">
+                        <canvas id="agingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tables Row -->
+        <div class="row">
+            <!-- Status Count Table -->
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5 class="mb-3">SN Monitoring Summary</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>BA</th>
+                                    <th>Completed</th>
+                                    <th>Inprogress</th>
+                                    <th>KIV</th>
+                                    <th>Total</th>
+                                    <th>Completion %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($statusData as $row): ?>
+                                <tr>
+                                    <td><strong><?php echo htmlspecialchars($row['ba']); ?></strong></td>
+                                    <td class="text-success"><?php echo $row['completed']; ?></td>
+                                    <td class="text-primary"><?php echo $row['inprogress']; ?></td>
+                                    <td class="text-warning"><?php echo $row['kiv']; ?></td>
+                                    <td><strong><?php echo $row['total']; ?></strong></td>
+                                    <td>
+                                        <?php 
+                                        $completionPercent = $row['total'] > 0 ? 
+                                            round(($row['completed'] / $row['total']) * 100, 1) : 0;
+                                        echo $completionPercent . '%';
+                                        ?>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <tfoot class="table-secondary">
+                                <tr>
+                                    <td><strong>Total</strong></td>
+                                    <td><strong><?php echo $totalCompleted; ?></strong></td>
+                                    <td><strong><?php echo $totalInprogress; ?></strong></td>
+                                    <td><strong><?php echo $totalKIV; ?></strong></td>
+                                    <td><strong><?php echo $grandTotal; ?></strong></td>
+                                    <td><strong><?php echo $completedPercent; ?>%</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Aging Analysis Table -->
+           <div class="col-md-6">
+    <div class="dashboard-card">
+        <h5 class="mb-3">SN Inprogress Aging Analysis</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>BA</th>
+                        <th>1-5 Days</th>
+                        <th>6-14 Days</th>
+                        <th>15-30 Days</th>
+                        <th>31-60 Days</th>
+                        <th>>60 Days</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($agingData as $row): 
+                        $rowTotal = $row['age_1_5'] + $row['age_6_14'] + $row['age_15_30'] + 
+                                   $row['age_31_60'] + $row['age_gt_60'];
+                    ?>
+                    <tr>
+                        <td><strong><?php echo htmlspecialchars($row['ba']); ?></strong></td>
+                        <td class="<?php echo $row['age_1_5'] > 0 ? 'bg-success text-white' : ''; ?> aging-cell" 
+                            style="cursor: pointer;" 
+                            data-ba="<?php echo htmlspecialchars($row['ba']); ?>" 
+                            data-min="1" 
+                            data-max="5">
+                            <?php echo $row['age_1_5']; ?>
+                        </td>
+                        <td class="<?php echo $row['age_6_14'] > 0 ? 'bg-info text-white' : ''; ?> aging-cell" 
+                            style="cursor: pointer;" 
+                            data-ba="<?php echo htmlspecialchars($row['ba']); ?>" 
+                            data-min="6" 
+                            data-max="14">
+                            <?php echo $row['age_6_14']; ?>
+                        </td>
+                        <td class="<?php echo $row['age_15_30'] > 0 ? 'bg-warning' : ''; ?> aging-cell" 
+                            style="cursor: pointer;" 
+                            data-ba="<?php echo htmlspecialchars($row['ba']); ?>" 
+                            data-min="15" 
+                            data-max="30">
+                            <?php echo $row['age_15_30']; ?>
+                        </td>
+                        <td class="<?php echo $row['age_31_60'] > 0 ? 'bg-orange text-white' : ''; ?> aging-cell" 
+                            style="cursor: pointer;" 
+                            data-ba="<?php echo htmlspecialchars($row['ba']); ?>" 
+                            data-min="31" 
+                            data-max="60">
+                            <?php echo $row['age_31_60']; ?>
+                        </td>
+                        <td class="<?php echo $row['age_gt_60'] > 0 ? 'bg-danger text-white' : ''; ?> aging-cell" 
+                            style="cursor: pointer;" 
+                            data-ba="<?php echo htmlspecialchars($row['ba']); ?>" 
+                            data-min="61" 
+                            data-max="9999">
+                            <?php echo $row['age_gt_60']; ?>
+                        </td>
+                        <td><strong><?php echo $rowTotal; ?></strong></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot class="table-secondary">
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td class="aging-cell-total" style="cursor: pointer;" data-ba="all" data-min="1" data-max="5">
+                            <strong><?php echo array_sum($age1_5Data); ?></strong>
+                        </td>
+                        <td class="aging-cell-total" style="cursor: pointer;" data-ba="all" data-min="6" data-max="14">
+                            <strong><?php echo array_sum($age6_14Data); ?></strong>
+                        </td>
+                        <td class="aging-cell-total" style="cursor: pointer;" data-ba="all" data-min="15" data-max="30">
+                            <strong><?php echo array_sum($age15_30Data); ?></strong>
+                        </td>
+                        <td class="aging-cell-total" style="cursor: pointer;" data-ba="all" data-min="31" data-max="60">
+                            <strong><?php echo array_sum($age31_60Data); ?></strong>
+                        </td>
+                        <td class="aging-cell-total" style="cursor: pointer;" data-ba="all" data-min="61" data-max="9999">
+                            <strong><?php echo array_sum($ageGt60Data); ?></strong>
+                        </td>
+                        <td><strong>
+                            <?php echo array_sum($age1_5Data) + array_sum($age6_14Data) + 
+                                   array_sum($age15_30Data) + array_sum($age31_60Data) + 
+                                   array_sum($ageGt60Data); ?>
+                        </strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+           
+     
                 
         </div>
 
@@ -580,31 +983,102 @@ include './services/connection.php';
 
 
     <!-- MODAL FOR HOW UPDATE REMARKS -->
-    <div class="modal fade" id="remarkModal" tabindex="-1" aria-labelledby="remrkModalLabel" aria-hidden="true">
-        <div class=" modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="remrkModalLabel">Remarks </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+   <div class="modal fade" id="remarkModal" tabindex="-1" aria-labelledby="remrkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="remrkModalLabel">Remarks</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="./services/update-remarks.php" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="update-remarks-id">
+                    
+                    <!-- Date Picker -->
+                    <div class="mb-3">
+                        <label class="form-label" for="remark-date"><strong>Select Date:</strong></label>
+                        <input type="date" id="remark-date" class="form-control">
+                    </div>
+                    
+                    <!-- Remarks Textarea -->
+                    <label class="form-label" for="remark-detail"><strong>Remarks:</strong></label>
+                    <textarea name="remarks" id="remark-detail" cols="30" rows="10" class="form-control"></textarea>
                 </div>
-                <form action="./services/update-remarks.php" method="post">
-                    <div class="modal-body">
-                        <input type="hidden" name="id" id="update-remarks-id">
-                        <label class="form-label" for="remark-detail"><strong> Remarks : </strong> </label>
-                        <textarea name="remarks" id="remark-detail" cols="30" rows="10" class="form-control"></textarea>
-       
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success" >update</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
-                    </div>
-                </form>
+
+<div class="modal fade" id="recordsModal" tabindex="-1" aria-labelledby="recordsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recordsModalLabel">SN Records</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="filteredRecordsTable" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>BA</th>
+                                <th>SN NO</th>
+                                <th>JENIS SN</th>
+                                <th>PERMIT TYPE</th>
+                                <th>JENIS SAMBUNGAN</th>
+                                <th>AGING (days)</th>
+                                <th>CSP DATE</th>
+                                <th>COMPLETION DATE</th>
+                                <th>STATUS</th>
+                                <th>REMARKS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filteredRecordsBody">
+                            <!-- Records will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('remark-date');
+    const textarea = document.getElementById('remark-detail');
+    
+    // Add selected date to textarea when date changes
+    dateInput.addEventListener('change', function() {
+        if (this.value) {
+            const selectedDate = this.value; // Format: YYYY-MM-DD
+            const formattedDate = new Date(selectedDate).toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
+            
+            // Add date to textarea (you can customize the format)
+            const currentText = textarea.value;
+            const dateText = `[${formattedDate}] `;
+            
+            // Add date at the beginning or end (choose one)
+            textarea.value = dateText + currentText; // Add at beginning
+            // OR
+            // textarea.value = currentText + '\n' + dateText; // Add at end
+            
+            // Focus on textarea
+            textarea.focus();
+        }
+    });
+});
+</script>
 
 
 
@@ -617,7 +1091,32 @@ include './services/connection.php';
 
         $(document).ready(function() {
 
+        $('button[data-bs-toggle="tab"]').on('click', function() {
+        const activeTab = $(this).attr('id');
+        localStorage.setItem('activeTab', activeTab);
+    });
+
+    // Retrieve and set active tab on page load
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab) {
+        // Remove 'active' class from all tabs
+        $('.nav-link').removeClass('active');
+        $('.tab-pane').removeClass('show active');
         
+        // Add 'active' class to saved tab
+        $(`#${savedTab}`).addClass('active');
+        $(`#${savedTab.replace('-tab', '')}`).addClass('show active');
+    }
+
+    // When modal is closed, reload page and preserve tab
+    $('#recordsModal').on('hidden.bs.modal', function () {
+        const currentTab = $('.nav-link.active').attr('id') || 'profile-tab';
+        localStorage.setItem('activeTab', currentTab);
+        
+        setTimeout(function() {
+            window.location.reload();
+        }, 100);
+    });
 
             $('#myreset').click(function(){
                 localStorage.removeItem('selectedDateType');
@@ -724,6 +1223,212 @@ var savedDateType = localStorage.getItem('selectedDateType');
                 // }
 
             });
+
+
+    // Initialize dashboard DataTables
+    $('#dashboardTable').DataTable({
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+    });
+    
+    // Chart instances
+    let statusChart = null;
+    let agingChart = null;
+    
+    // Function to initialize charts
+    function initializeCharts() {
+        // Destroy existing charts if they exist
+        if (statusChart) {
+            statusChart.destroy();
+        }
+        if (agingChart) {
+            agingChart.destroy();
+        }
+        
+        // Status Distribution Chart
+        const statusCtx = document.getElementById('statusChart');
+        if (statusCtx) {
+            statusChart = new Chart(statusCtx, {
+                type: 'bar',
+                data: {
+                    labels: <?php echo json_encode($chartLabels); ?>,
+                    datasets: [
+                        {
+                            label: 'Completed',
+                            data: <?php echo json_encode($completedData); ?>,
+                            backgroundColor: '#4CAF50',
+                            borderColor: '#388E3C',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'In Progress',
+                            data: <?php echo json_encode($inprogressData); ?>,
+                            backgroundColor: '#2196F3',
+                            borderColor: '#1976D2',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'KIV',
+                            data: <?php echo json_encode($kivData); ?>,
+                            backgroundColor: '#FF9800',
+                            borderColor: '#F57C00',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of SN'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'BA'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Aging Analysis Chart (Stacked Bar)
+        const agingCtx = document.getElementById('agingChart');
+        if (agingCtx) {
+            agingChart = new Chart(agingCtx, {
+                type: 'bar',
+                data: {
+                    labels: <?php echo json_encode($agingLabels); ?>,
+                    datasets: [
+                        {
+                            label: '1-5 Days',
+                            data: <?php echo json_encode($age1_5Data); ?>,
+                            backgroundColor: '#4CAF50',
+                            borderColor: '#388E3C',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '6-14 Days',
+                            data: <?php echo json_encode($age6_14Data); ?>,
+                            backgroundColor: '#2196F3',
+                            borderColor: '#1976D2',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '15-30 Days',
+                            data: <?php echo json_encode($age15_30Data); ?>,
+                            backgroundColor: '#FF9800',
+                            borderColor: '#F57C00',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '31-60 Days',
+                            data: <?php echo json_encode($age31_60Data); ?>,
+                            backgroundColor: '#ff22ed',
+                            borderColor: '#d815be',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '>60 Days',
+                            data: <?php echo json_encode($ageGt60Data); ?>,
+                            backgroundColor: '#F44336',
+                            borderColor: '#D32F2F',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'BA'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of SN'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
+    // Initialize charts when dashboard tab is shown
+    $('#dashboard-tab').on('shown.bs.tab', function() {
+        initializeCharts();
+    });
+    
+    // Initialize charts if dashboard tab is active on page load
+    if ($('#dashboard-tab').hasClass('active')) {
+        setTimeout(function() {
+            initializeCharts();
+        }, 100);
+    }
+
+
             // $("").DataTable({
             //     aaSorting: [
             //         [5, 'desc']
@@ -811,6 +1516,221 @@ var savedDateType = localStorage.getItem('selectedDateType');
             console.log(currentPage);
             localStorage.setItem('savedPage', currentPage);
         });
+
+
+
+
+
+         function calculateAging(cspDate, completionDate) {
+        if (!cspDate) return 0;
+        
+        const startDate = new Date(cspDate);
+        const endDate = completionDate ? new Date(completionDate) : new Date();
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    }
+
+    // Handle click on aging cells
+  // Handle click on aging cells
+// Handle click on aging cells
+// Handle click on aging cells
+// Handle click on aging cells  
+// Handle click on aging cells - NEW APPROACH using PHP data
+$('.aging-cell, .aging-cell-total').on('click', function() {
+    const ba = $(this).data('ba');
+    const minDays = parseInt($(this).data('min'));
+    const maxDays = parseInt($(this).data('max'));
+    const cellValue = parseInt($(this).text().trim());
+
+    if (!cellValue || cellValue === 0) return;
+
+    console.log('=== FILTERING ===');
+    console.log('BA:', ba, '| Range:', minDays, '-', maxDays, '| Expected:', cellValue);
+    console.log('Total records available:', allSNRecords.length);
+
+    // Filter records using PHP data
+    const filteredRecords = allSNRecords.filter(record => {
+        // Calculate aging the same way PHP does
+        let aging = 0;
+        if (record.csp_paid_date) {
+            const cspDate = new Date(record.csp_paid_date);
+            const endDate = record.tarikh_siap ? new Date(record.tarikh_siap) : new Date();
+            const diffTime = Math.abs(endDate - cspDate);
+            aging = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to match PHP
+        }
+
+        // Check filters
+        const matchBA = (ba === 'all' || record.ba === ba);
+        const matchAge = (aging >= minDays && aging <= maxDays);
+        const matchStatus = record.status.toLowerCase().replace(/\s/g, '') === 'inprogress';
+
+        if (matchBA && matchAge && matchStatus) {
+            console.log('✓ Match:', record.no_sn, 'Aging:', aging);
+        }
+
+        return matchBA && matchAge && matchStatus;
+    });
+
+    console.log('Filtered count:', filteredRecords.length);
+    console.log('Expected count:', cellValue);
+
+    if (filteredRecords.length !== cellValue) {
+        console.warn('⚠️ MISMATCH! Check aging calculation');
+    }
+
+    // Show modal
+    showRecordsModal(ba, minDays, maxDays, filteredRecords, allSNRecords.length, cellValue);
+});
+
+function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected) {
+    const ageRangeText = maxDays > 1000 ? `>${minDays-1} days` : `${minDays}-${maxDays} days`;
+    const baText = ba === 'all' ? 'All BA' : ba;
+    $('#recordsModalLabel').text(`${baText} - ${ageRangeText} (${records.length} records)`);
+
+    const tbody = $('#filteredRecordsBody');
+    tbody.empty();
+
+    if (records.length === 0) {
+        tbody.append(`
+            <tr>
+                <td colspan="10" class="text-center text-warning">
+                    No matches found<br>
+                    <small>Searched: ${totalSearched} records | Expected: ${expected}</small>
+                </td>
+            </tr>
+        `);
+    } else {
+        records.forEach(record => {
+            // Calculate aging for display
+            let aging = 0;
+            if (record.csp_paid_date) {
+                const cspDate = new Date(record.csp_paid_date);
+                const endDate = record.tarikh_siap ? new Date(record.tarikh_siap) : new Date();
+                const diffTime = Math.abs(endDate - cspDate);
+                aging = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            }
+
+            const remarkText = record.remark && record.remark.length > 20 
+                ? record.remark.substring(0, 20) + '...' 
+                : (record.remark || '');
+            
+            tbody.append(`
+                <tr>
+                    <td>${record.ba}</td>
+                    <td><a href="./sn-monitoring/edit.php?no_sn=${record.no_sn}" class="text-decoration-none">${record.no_sn}</a></td>
+                    <td>${record.jenis_sn}</td>
+                    <td>${record.permit_sn || ''}</td>
+                    <td>${record.jenis_sambungan}</td>
+                    <td><strong>${aging}</strong></td>
+                    <td>${record.csp_paid_date || ''}</td>
+                    <td>${record.tarikh_siap || ''}</td>
+                    <td>${record.status}</td>
+                    <td title="${record.remark || ''}">${remarkText}</td>
+                </tr>
+            `);
+        });
+    }
+
+    // Destroy and reinitialize DataTable
+    if ($.fn.DataTable.isDataTable('#filteredRecordsTable')) {
+        $('#filteredRecordsTable').DataTable().destroy();
+    }
+    
+    $('#filteredRecordsTable').DataTable({
+        "pageLength": 25,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "order": [[5, 'desc']]
+    });
+
+    $('#recordsModal').modal('show');
+}
+
+function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected) {
+    const ageRangeText = maxDays > 1000 ? `>${minDays-1} days` : `${minDays}-${maxDays} days`;
+    const baText = ba === 'all' ? 'All BA' : ba;
+    $('#recordsModalLabel').text(`${baText} - ${ageRangeText} (${records.length} records)`);
+
+    const tbody = $('#filteredRecordsBody');
+    tbody.empty();
+
+    if (records.length === 0) {
+        tbody.append(`
+            <tr>
+                <td colspan="10" class="text-center text-warning">
+                    No matches found<br>
+                    <small>Searched: ${totalSearched} records | Expected: ${expected}</small>
+                </td>
+            </tr>
+        `);
+    } else {
+        records.forEach(record => {
+            // Calculate aging for display
+            let aging = 0;
+            if (record.csp_paid_date) {
+                const cspDate = new Date(record.csp_paid_date);
+                const endDate = record.tarikh_siap ? new Date(record.tarikh_siap) : new Date();
+                const diffTime = Math.abs(endDate - cspDate);
+                aging = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            }
+
+            // Handle remark text safely
+            let remarkText = '';
+            if (record.remark) {
+                const remarkStr = String(record.remark); // Convert to string
+                remarkText = remarkStr.length > 20 ? remarkStr.substring(0, 20) + '...' : remarkStr;
+            }
+            
+            // Safely get values with fallbacks
+            const ba = record.ba || '';
+            const sn_no = record.no_sn || '';
+            const jenis_sn = record.jenis_sn || '';
+            const permit_sn = record.permit_sn || '';
+            const jenis_sambungan = record.jenis_sambungan || '';
+            const csp_date = record.csp_paid_date || '';
+            const tarikh_siap = record.tarikh_siap || '';
+            const status = record.status || '';
+            const remarkFull = record.remark || '';
+            
+            tbody.append(`
+                <tr>
+                    <td>${ba}</td>
+                    <td><a href="./sn-monitoring/edit.php?no_sn=${sn_no}" class="text-decoration-none">${sn_no}</a></td>
+                    <td>${jenis_sn}</td>
+                    <td>${permit_sn}</td>
+                    <td>${jenis_sambungan}</td>
+                    <td><strong>${aging}</strong></td>
+                    <td>${csp_date}</td>
+                    <td>${tarikh_siap}</td>
+                    <td>${status}</td>
+                    <td title="${remarkFull}">${remarkText}</td>
+                </tr>
+            `);
+        });
+    }
+
+    // Destroy and reinitialize DataTable
+    if ($.fn.DataTable.isDataTable('#filteredRecordsTable')) {
+        try {
+            $('#filteredRecordsTable').DataTable().destroy();
+        } catch(e) {
+            console.log('Error destroying table:', e);
+        }
+    }
+    
+    try {
+        $('#filteredRecordsTable').DataTable({
+            "pageLength": 25,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "order": [[5, 'desc']]
+        });
+    } catch(e) {
+        console.log('Error initializing DataTable:', e);
+    }
+
+    $('#recordsModal').modal('show');
+}
+
             
         });
 

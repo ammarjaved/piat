@@ -102,7 +102,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
         } else {
             // Insert into permit_records only for new records (not updates)
+        if (isset($_POST['permit_sn']) && ($_POST['permit_sn'] === 'DBKL' || $_POST['permit_sn'] === 'PBT')) {
+
             try {
+                
                 $permit_hostname = '192.168.1.34';
                 $permit_port = 5432;
                 $permit_database = 'permit_tracking';
@@ -137,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Log permit insert error but don't stop the main process
                 error_log("Permit records insert failed: " . $e->getMessage());
             }
+        }
         }
 
        
