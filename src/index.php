@@ -497,7 +497,26 @@ foreach ($agingData as $row) {
                                 });
                             }
                             
-                            foreach ($records as $record) {
+                            // Get ALL in-progress records for aging analysis
+                                if ($_SESSION['user_name'] == 'admin') {
+                                    $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01') ORDER BY csp_paid_date DESC");
+                                    $agingStmt->execute();
+                                } else {
+                                    $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01') ORDER BY csp_paid_date DESC");
+                                    $agingStmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
+                                    $agingStmt->execute();
+                                }
+                                $allAgingRecords = $agingStmt->fetchAll(PDO::FETCH_ASSOC);
+                                ?>
+                                <script>
+                                const allSNRecords = <?php echo json_encode($records); ?>;
+                                const allAgingRecords = <?php echo json_encode($allAgingRecords); ?>;
+                                console.log('Total SN records from PHP:', allSNRecords.length);
+                                console.log('Total aging records from PHP:', allAgingRecords.length);
+                                </script>
+                                <?php
+
+                                foreach ($records as $record) {
                                 // echo $record['jenis_sambungan'];
                                 // echo json_encode( $records);
                                 //  exit();
@@ -567,12 +586,15 @@ foreach ($agingData as $row) {
                                     echo '</ul></div></td>';
                                     echo '</tr>';
                                 }
-                            }
+                           }
+            
+                            
                             ?>
                             <script>
-                            // Store all records in JavaScript for filtering
-                            const allSNRecords = <?php echo json_encode($records); ?>;
-                            console.log('Total records from PHP:', allSNRecords.length);
+                            const allSNRecords = <?php echo json_encode($displayRecords); ?>;
+                            const allAgingRecords = <?php echo json_encode($allAgingRecords); ?>;
+                            console.log('Total SN records from PHP:', allSNRecords.length);
+                            console.log('Total aging records from PHP:', allAgingRecords.length);
                             </script>
                         </tbody>
                     </table>
@@ -607,7 +629,7 @@ foreach ($agingData as $row) {
 
                             <?php
  
-                            $pdo = null;
+                         
 
                         function checkAgging($record){
                             $agingDateTime = new DateTime($record['csp_paid_date']);
@@ -872,7 +894,7 @@ foreach ($agingData as $row) {
                             data-max="30">
                             <?php echo $row['age_15_30']; ?>
                         </td>
-                        <td class="<?php echo $row['age_31_60'] > 0 ? 'bg-orange text-white' : ''; ?> aging-cell" 
+                        <td class="<?php echo $row['age_31_60'] > 0 ? 'bg-danger text-white' : ''; ?> aging-cell" 
                             style="cursor: pointer;" 
                             data-ba="<?php echo htmlspecialchars($row['ba']); ?>" 
                             data-min="31" 
@@ -1537,6 +1559,7 @@ var savedDateType = localStorage.getItem('selectedDateType');
 // Handle click on aging cells
 // Handle click on aging cells  
 // Handle click on aging cells - NEW APPROACH using PHP data
+// Handle click on aging cells - FIXED aging calculation
 $('.aging-cell, .aging-cell-total').on('click', function() {
     const ba = $(this).data('ba');
     const minDays = parseInt($(this).data('min'));
@@ -1547,26 +1570,40 @@ $('.aging-cell, .aging-cell-total').on('click', function() {
 
     console.log('=== FILTERING ===');
     console.log('BA:', ba, '| Range:', minDays, '-', maxDays, '| Expected:', cellValue);
-    console.log('Total records available:', allSNRecords.length);
+   console.log('Total aging records available:', allAgingRecords.length);
 
-    // Filter records using PHP data
-    const filteredRecords = allSNRecords.filter(record => {
-        // Calculate aging the same way PHP does
+// Filter records using the aging-specific dataset
+const filteredRecords = allAgingRecords.filter(record => {
+        // Calculate aging EXACTLY like PHP does
         let aging = 0;
         if (record.csp_paid_date) {
             const cspDate = new Date(record.csp_paid_date);
-            const endDate = record.tarikh_siap ? new Date(record.tarikh_siap) : new Date();
-            const diffTime = Math.abs(endDate - cspDate);
-            aging = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to match PHP
+            // For aging table, ALWAYS use tarikh_siap if available (even if empty string), otherwise use today
+            // Match PHP logic exactly: check for both null and empty string
+          let endDate;
+            if (record.tarikh_siap && record.tarikh_siap !== '' && record.tarikh_siap !== null) {
+                endDate = new Date(record.tarikh_siap);
+            } else {
+                // Use today's date at midnight for consistent comparison
+                endDate = new Date();
+                endDate.setHours(0, 0, 0, 0);
+            }
+
+            // cspDate already declared above, just set hours
+            cspDate.setHours(0, 0, 0, 0);
+            
+            // Calculate days difference and add 1 (matching PHP's DATE_PART + 1)
+            const timeDiff = endDate.getTime() - cspDate.getTime();
+            aging = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1;
         }
 
-        // Check filters
+        // Check filters - aging table only shows "Inprogress" status
         const matchBA = (ba === 'all' || record.ba === ba);
         const matchAge = (aging >= minDays && aging <= maxDays);
         const matchStatus = record.status.toLowerCase().replace(/\s/g, '') === 'inprogress';
 
         if (matchBA && matchAge && matchStatus) {
-            console.log('✓ Match:', record.no_sn, 'Aging:', aging);
+            console.log('✓ Match:', record.no_sn, 'Aging:', aging, 'Status:', record.status);
         }
 
         return matchBA && matchAge && matchStatus;
@@ -1580,7 +1617,7 @@ $('.aging-cell, .aging-cell-total').on('click', function() {
     }
 
     // Show modal
-    showRecordsModal(ba, minDays, maxDays, filteredRecords, allSNRecords.length, cellValue);
+showRecordsModal(ba, minDays, maxDays, filteredRecords, allAgingRecords.length, cellValue);
 });
 
 function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected) {
@@ -1606,9 +1643,18 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
             let aging = 0;
             if (record.csp_paid_date) {
                 const cspDate = new Date(record.csp_paid_date);
-                const endDate = record.tarikh_siap ? new Date(record.tarikh_siap) : new Date();
-                const diffTime = Math.abs(endDate - cspDate);
-                aging = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                // Match PHP aging calculation exactly
+                let endDate;
+                if (record.tarikh_siap && record.tarikh_siap !== '' && record.tarikh_siap !== null) {
+                    endDate = new Date(record.tarikh_siap);
+                } else {
+                    endDate = new Date();
+                    endDate.setHours(0, 0, 0, 0);
+                }
+                cspDate.setHours(0, 0, 0, 0);
+
+                const timeDiff = endDate.getTime() - cspDate.getTime();
+                aging = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1;
             }
 
             const remarkText = record.remark && record.remark.length > 20 
@@ -1646,90 +1692,6 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
     $('#recordsModal').modal('show');
 }
 
-function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected) {
-    const ageRangeText = maxDays > 1000 ? `>${minDays-1} days` : `${minDays}-${maxDays} days`;
-    const baText = ba === 'all' ? 'All BA' : ba;
-    $('#recordsModalLabel').text(`${baText} - ${ageRangeText} (${records.length} records)`);
-
-    const tbody = $('#filteredRecordsBody');
-    tbody.empty();
-
-    if (records.length === 0) {
-        tbody.append(`
-            <tr>
-                <td colspan="10" class="text-center text-warning">
-                    No matches found<br>
-                    <small>Searched: ${totalSearched} records | Expected: ${expected}</small>
-                </td>
-            </tr>
-        `);
-    } else {
-        records.forEach(record => {
-            // Calculate aging for display
-            let aging = 0;
-            if (record.csp_paid_date) {
-                const cspDate = new Date(record.csp_paid_date);
-                const endDate = record.tarikh_siap ? new Date(record.tarikh_siap) : new Date();
-                const diffTime = Math.abs(endDate - cspDate);
-                aging = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-            }
-
-            // Handle remark text safely
-            let remarkText = '';
-            if (record.remark) {
-                const remarkStr = String(record.remark); // Convert to string
-                remarkText = remarkStr.length > 20 ? remarkStr.substring(0, 20) + '...' : remarkStr;
-            }
-            
-            // Safely get values with fallbacks
-            const ba = record.ba || '';
-            const sn_no = record.no_sn || '';
-            const jenis_sn = record.jenis_sn || '';
-            const permit_sn = record.permit_sn || '';
-            const jenis_sambungan = record.jenis_sambungan || '';
-            const csp_date = record.csp_paid_date || '';
-            const tarikh_siap = record.tarikh_siap || '';
-            const status = record.status || '';
-            const remarkFull = record.remark || '';
-            
-            tbody.append(`
-                <tr>
-                    <td>${ba}</td>
-                    <td><a href="./sn-monitoring/edit.php?no_sn=${sn_no}" class="text-decoration-none">${sn_no}</a></td>
-                    <td>${jenis_sn}</td>
-                    <td>${permit_sn}</td>
-                    <td>${jenis_sambungan}</td>
-                    <td><strong>${aging}</strong></td>
-                    <td>${csp_date}</td>
-                    <td>${tarikh_siap}</td>
-                    <td>${status}</td>
-                    <td title="${remarkFull}">${remarkText}</td>
-                </tr>
-            `);
-        });
-    }
-
-    // Destroy and reinitialize DataTable
-    if ($.fn.DataTable.isDataTable('#filteredRecordsTable')) {
-        try {
-            $('#filteredRecordsTable').DataTable().destroy();
-        } catch(e) {
-            console.log('Error destroying table:', e);
-        }
-    }
-    
-    try {
-        $('#filteredRecordsTable').DataTable({
-            "pageLength": 25,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "order": [[5, 'desc']]
-        });
-    } catch(e) {
-        console.log('Error initializing DataTable:', e);
-    }
-
-    $('#recordsModal').modal('show');
-}
 
             
         });
