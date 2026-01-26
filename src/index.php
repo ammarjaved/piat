@@ -174,6 +174,23 @@ foreach ($agingData as $row) {
 #filteredRecordsTable {
     font-size: 0.9rem;
 }
+
+/* Ensure remark modal appears above the records modal */
+#remarkModal {
+    z-index: 1060 !important;
+}
+
+#remarkModal .modal-backdrop {
+    z-index: 1055 !important;
+}
+
+#recordsModal {
+    z-index: 1050 !important;
+}
+
+#recordsModal .modal-backdrop {
+    z-index: 1045 !important;
+}
     </style>
 
     <head>
@@ -692,13 +709,15 @@ foreach ($agingData as $row) {
                                 echo "<td>{$record['csp_paid_date']}</td>";
                                 echo "<td>{$record['tarikh_siap']}</td>";
                                 echo "<td>{$record['status']}</td>";
-                                $remark = $record['remark'];
-                                if ($remark) {
-                                    if (strlen($remark) > 15) {
-                                        $remark = substr($remark, 0, 15) . '...';
-                                    }
+                               // Properly escape remark for HTML attribute
+                                $escapedRemark = htmlspecialchars($record['remark'], ENT_QUOTES, 'UTF-8');
+                                $displayRemark = $record['remark'];
+                                if ($displayRemark && strlen($displayRemark) > 15) {
+                                    $displayRemark = substr($displayRemark, 0, 15) . '...';
                                 }
-                                echo "<td><a type='button' class='dropdown-item btn btn-warning btn-sm text-dark' style='display: inline-block; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; background-color: #ffc107; border: 2px solid #ff9800; box-shadow: 0 2px 4px rgba(0,0,0,0.2);' data-bs-toggle='modal' data-remark='{$record['remark']}' data-id='{$record['id']}' data-bs-target='#remarkModal'>{$remark}</a></td>";
+
+                                echo "<td><a type='button' class='dropdown-item btn btn-warning btn-sm text-dark' style='display: inline-block; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; background-color: #ffc107; border: 2px solid #ff9800; box-shadow: 0 2px 4px rgba(0,0,0,0.2);' data-bs-toggle='modal' data-remark=\"{$escapedRemark}\" data-id=\"{$record['id']}\" data-sn=\"{$record['no_sn']}\" data-address=\"" . htmlspecialchars($record['alamat'] ?? '', ENT_QUOTES, 'UTF-8') . "\" data-bs-target='#remarkModal'>{$displayRemark}</a></td>";
+
                                 echo "<td class='text-center'><div class='dropdown'>
                                                                                       <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
                                                                                       <img src='../images/three-dots-vertical.svg'  >
@@ -1012,9 +1031,20 @@ foreach ($agingData as $row) {
                 <h5 class="modal-title" id="remrkModalLabel">Remarks</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="./services/update-remarks.php" method="post">
+            <form action="" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="id" id="update-remarks-id">
+
+                    <div class="row mb-3 bg-light p-3 rounded border">
+                        <div class="col-md-6">
+                            <strong>SN No:</strong>
+                            <div id="view-sn-no" class="text-muted">—</div>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Address:</strong>
+                            <div id="view-address" class="text-muted">—</div>
+                        </div>
+                    </div>
                     
                     <!-- Date Picker -->
                     <div class="mb-3">
@@ -1112,6 +1142,200 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
         $(document).ready(function() {
+
+        // Handle remark form submission via AJAX
+// ===== FIXED: Handle opening remark modal from static table =====
+$('#remarkModal').on('show.bs.modal', function(event) {
+    var button = $(event.relatedTarget);
+    
+    var detail = button.data('remark') || '';
+    var id = button.data('id') || button.data('data-id');
+    var snNo = button.data('sn') || '—';
+    var address = button.data('address') || '—';
+    
+    console.log('Opening remark modal (static) - ID:', id, 'SN:', snNo, 'Address:', address);
+    
+    $('#remark-detail').val(detail);
+    $('#update-remarks-id').val(id);
+    $('#view-sn-no').html(snNo);
+    $('#view-address').html(address);
+    $('#remark-date').val('');
+});
+
+// ===== FIXED: Handle opening remark modal from dynamic/filtered table =====
+$(document).on('click', '.modal-remark-link', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var detail = $(this).data('remark') || $(this).data('data-remark') || '';
+    var id = $(this).data('id') || $(this).data('data-id');
+    var snNo = $(this).data('sn') || '—';
+    var address = $(this).data('address') || '—';
+    
+    console.log('Opening remark modal (dynamic) - ID:', id, 'SN:', snNo, 'Address:', address);
+    
+    $('#remark-detail').val(detail);
+    $('#update-remarks-id').val(id);
+    $('#view-sn-no').html(snNo);
+    $('#view-address').html(address);
+    $('#remark-date').val('');
+    
+    // Show the remark modal
+    $('#remarkModal').modal('show');
+    
+    // Ensure proper z-index when opened from another modal
+    if ($('#recordsModal').hasClass('show')) {
+        $('#remarkModal').css('z-index', parseInt($('#recordsModal').css('z-index')) + 10);
+    }
+});
+// Handle remark form submission via AJAX
+$(document).on('submit', '#remarkModal form', function(e) {
+    e.preventDefault();
+    
+    var remarkId = $('#update-remarks-id').val();
+   
+    var remarkText = $('#remark-detail').val();
+    
+    console.log('Submitting - ID:', remarkId, 'Remark:', remarkText);
+    
+    if (!remarkId || remarkId === '') {
+        alert('Error: No record ID found. Please try again.');
+        return false;
+    }
+    
+    var formData = {
+        id: remarkId,
+        remarks: remarkText
+    };
+    
+    var submitButton = $(this).find('button[type="submit"]');
+    submitButton.prop('disabled', true).text('Updating...');
+    
+    $.ajax({
+        url: './services/update-remarks.php',
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        success: function(response) {
+            console.log('Response:', response);
+            
+            if (response.success) {
+                var recordId = response.id;
+                var newRemark = response.remark;
+                
+                // Update in allSNRecords array
+                var recordIndex = allSNRecords.findIndex(r => r.id == recordId);
+                if (recordIndex !== -1) {
+                    allSNRecords[recordIndex].remark = newRemark;
+                }
+                
+                // Update in allAgingRecords array
+                var agingIndex = allAgingRecords.findIndex(r => r.id == recordId);
+                if (agingIndex !== -1) {
+                    allAgingRecords[agingIndex].remark = newRemark;
+                }
+                
+                // Update the display in DataTables
+                updateRemarkInDataTables(recordId, newRemark);
+                
+                // Close the remark modal
+                $('#remarkModal').modal('hide');
+                
+                // Show success message
+                showSuccessMessage(response.message);
+                
+            } else {
+                alert('Error: ' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', error);
+            console.error('Response:', xhr.responseText);
+            alert('Error updating remark. Please try again.');
+        },
+        complete: function() {
+            submitButton.prop('disabled', false).text('Update');
+        }
+    });
+    
+    return false;
+});
+
+function updateRemarkInDataTables(recordId, newRemark) {
+    var escapedRemark = $('<div>').text(newRemark).html();
+
+    var displayRemark = newRemark;
+    if (displayRemark && displayRemark.length > 15) {
+        displayRemark = displayRemark.substring(0, 15) + '...';
+    }
+    
+    // Update SN Table (snTable)
+    var snTable = $('#snTable').DataTable();
+    snTable.rows().every(function() {
+        var data = this.data();
+        var $row = $(this.node());
+        var $remarkBtn = $row.find('a[data-id="' + recordId + '"]');
+        
+        if ($remarkBtn.length) {
+            // Update the button text and ALL data attributes
+            $remarkBtn.text(displayRemark || '');
+            $remarkBtn.attr('data-remark', newRemark);
+            // Also update the data() object directly for jQuery
+            $remarkBtn.data('remark', newRemark);
+            
+            // Force DataTable to recognize the change
+            this.invalidate();
+        }
+    });
+    
+    // Update QR Table (myTable)
+    var qrTable = $('#myTable').DataTable();
+    qrTable.rows().every(function() {
+        var data = this.data();
+        var $row = $(this.node());
+        var $remarkBtn = $row.find('a[data-id="' + recordId + '"]');
+        
+        if ($remarkBtn.length) {
+            $remarkBtn.text(displayRemark || '');
+            $remarkBtn.attr('data-remark', newRemark);
+            // Also update the data() object directly for jQuery
+            $remarkBtn.data('remark', newRemark);
+            this.invalidate();
+        }
+    });
+    
+    // Update filtered records modal table if visible
+    $('#filteredRecordsTable tbody tr').each(function() {
+        var $remarkBtn = $(this).find('a[data-id="' + recordId + '"]');
+        if ($remarkBtn.length) {
+            $remarkBtn.text(displayRemark || '');
+            $remarkBtn.attr('data-remark', newRemark);
+            // Also update the data() object directly for jQuery
+            $remarkBtn.data('remark', newRemark);
+        }
+    });
+    
+    // Redraw the tables to show changes
+    snTable.draw(false); // false = stay on current page
+    qrTable.draw(false);
+}
+
+// Function to show success message
+function showSuccessMessage(message) {
+    var alertHtml = '<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 70px; right: 20px; z-index: 9999; min-width: 300px;">' +
+                    message +
+                    '<button type="button" class="btn-close" onclick="this.parentNode.remove()"></button>' +
+                    '</div>';
+    
+    $('body').append(alertHtml);
+    
+    // Auto-hide after 3 seconds
+    setTimeout(function() {
+        $('.alert-success').fadeOut('slow', function() {
+            $(this).remove();
+        });
+    }, 3000);
+}
 
         $('button[data-bs-toggle="tab"]').on('click', function() {
         const activeTab = $(this).attr('id');
@@ -1517,14 +1741,40 @@ var savedDateType = localStorage.getItem('selectedDateType');
             });
 
                 //on diaplay remarks modal
-            $('#remarkModal').on('show.bs.modal', function(event) {
-                var button = $(event.relatedTarget);
-                var detail = button.data('remark');
-                var modal = $(this);
-                $('#remark-detail').html(detail)
-                $('#update-remarks-id').val(button.data('id'))
+           //on display remarks modal - using event delegation for dynamic elements
+           //on display remarks modal - using event delegation for dynamic elements
+          $(document).on('click', '.modal-remark-link', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    var detail = $(this).data('remark');
+    var id = $(this).data('id');
+    var snNo = $(this).data('sn') || '—';
+    var address = $(this).data('address') || '—';
+    
+    console.log('Opening remark modal - ID:', id, 'SN:', snNo, 'Address:', address);
+    
+    $('#remark-detail').val(detail);
+    $('#update-remarks-id').val(id);
+    $('#view-sn-no').html(snNo);
+    $('#view-address').html(address);
+    $('#remark-date').val('');
+    
+    // Show the remark modal
+    $('#remarkModal').modal('show');
+    
+    // Ensure proper z-index when opened from another modal
+    if ($('#recordsModal').hasClass('show')) {
+        $('#remarkModal').css('z-index', parseInt($('#recordsModal').css('z-index')) + 10);
+    }
+});
+
+            // When remark modal closes, ensure records modal is still visible
+            $('#remarkModal').on('hidden.bs.modal', function () {
+                if ($('#recordsModal').hasClass('show')) {
+                    $('body').addClass('modal-open');
+                }
             });
-   
 
             var savedPage = localStorage.getItem('savedPage');
             console.log(savedPage);
@@ -1643,7 +1893,6 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
             let aging = 0;
             if (record.csp_paid_date) {
                 const cspDate = new Date(record.csp_paid_date);
-                // Match PHP aging calculation exactly
                 let endDate;
                 if (record.tarikh_siap && record.tarikh_siap !== '' && record.tarikh_siap !== null) {
                     endDate = new Date(record.tarikh_siap);
@@ -1652,14 +1901,24 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
                     endDate.setHours(0, 0, 0, 0);
                 }
                 cspDate.setHours(0, 0, 0, 0);
-
                 const timeDiff = endDate.getTime() - cspDate.getTime();
                 aging = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1;
             }
 
-            const remarkText = record.remark && record.remark.length > 20 
-                ? record.remark.substring(0, 20) + '...' 
+            const remarkText = record.remark && record.remark.length > 15 
+                ? record.remark.substring(0, 15) + '...' 
                 : (record.remark || '');
+            
+            // CRITICAL FIX: Properly escape for HTML attribute using JavaScript
+            // This handles quotes, newlines, and special characters
+            const escapedRemarkForAttr = (record.remark || '')
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\n/g, '&#10;')
+                .replace(/\r/g, '');
             
             tbody.append(`
                 <tr>
@@ -1672,12 +1931,13 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
                     <td>${record.csp_paid_date || ''}</td>
                     <td>${record.tarikh_siap || ''}</td>
                     <td>${record.status}</td>
-                    <td title="${record.remark || ''}">${remarkText}</td>
+                    <td><a type='button' class='dropdown-item btn btn-warning btn-sm text-dark modal-remark-link' style='display: inline-block; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; background-color: #ffc107; border: 2px solid #ff9800; box-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: pointer;' data-remark="${escapedRemarkForAttr}" data-id="${record.id}" data-sn="${record.no_sn}" data-address="${(record.alamat || '').replace(/"/g, '&quot;')}">${remarkText}</a></td>
+
                 </tr>
             `);
         });
     }
-
+    
     // Destroy and reinitialize DataTable
     if ($.fn.DataTable.isDataTable('#filteredRecordsTable')) {
         $('#filteredRecordsTable').DataTable().destroy();
@@ -1691,8 +1951,6 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
 
     $('#recordsModal').modal('show');
 }
-
-
             
         });
 

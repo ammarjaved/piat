@@ -1,31 +1,65 @@
 <?php
-session_start();
+// Start output buffering first to prevent header issues
 ob_start();
+session_start();
 include 'connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) ) {
+// Clear any output that might have been generated
+ob_end_clean();
+
+// Set header for JSON response
+header('Content-Type: application/json');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && $_POST['id'] !== '') {
     try {
-        $id = $_POST['id'];
-        $remarks = $_POST['remarks'];
-
-
+        $id = intval($_POST['id']); // Convert to integer
+        $remarks = isset($_POST['remarks']) ? $_POST['remarks'] : '';
  
+        // Validate ID
+        if ($id <= 0) {
+            throw new Exception('Invalid ID provided');
+        }
+        
         $stmt = $pdo->prepare('UPDATE public.ad_service_qr SET remark = :remark WHERE id = :id');
-        $stmt->bindParam( ':remark' , $remarks );
-        $stmt->bindParam( ':id'     , $id      );
-        $stmt->execute();
-
-        $_SESSION['alert'] = 'alert-success';
-        $_SESSION['message'] = 'Update Successfully';
+        $stmt->bindParam(':remark', $remarks, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        
+        if ($stmt->execute()) {
+            // Return success response
+            echo json_encode([
+                'success' => true,
+                'message' => 'Update Successfully',
+                'id' => $id,
+                'remark' => $remarks
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Update Failed'
+            ]);
+        }
+        
     } catch (PDOException $e) {
-        // echo  $e->getMessage();
-        // exit();
-        // session_start();
-        $_SESSION['message'] = 'Request Failed';
-        $_SESSION['alert'] = 'alert-danger';
+        // Return error response
+        echo json_encode([
+            'success' => false,
+            'message' => 'Request Failed: ' . $e->getMessage()
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
     }
-
+    
     $pdo = null;
-    header('Location: ../index.php');
+    exit();
+} else {
+    // Invalid request
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid request - ID is required'
+    ]);
     exit();
 }
+?>
