@@ -119,8 +119,8 @@ function bindEvents() {
                 const selectedDate = this.value;
                 const formattedDate = new Date(selectedDate).toLocaleDateString('en-GB');
                 const currentText = textarea.value;
-                const dateText = `[${formattedDate}] `;
-                textarea.value = dateText + currentText;
+                const dateText = `[${formattedDate}]`;
+                textarea.value = currentText.trim() ? currentText.trimEnd() + '\n' + dateText + ' ' : dateText + ' ';
                 textarea.focus();
             }
         });

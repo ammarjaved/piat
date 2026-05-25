@@ -236,8 +236,7 @@ foreach ($agingData as $row) {
         }
         
         .table-responsive {
-            max-height: 400px;
-            overflow-y: auto;
+            overflow-y: visible;
         }
     </style>
 
@@ -443,7 +442,7 @@ foreach ($agingData as $row) {
             
                 <!-- QR TABLE START -->
             <div class="tab-pane fade  " id="home" role="tabpanel" aria-labelledby="home-tab">
-                <div class="table-responsive table-bordered py-3" style="overflow-y:auto ; ">
+                <div class="table-responsive table-bordered py-3">
                     <table id="myTable" class="table table-striped table-responsive table-bordered" data-table>
                         <thead>
                             <tr>
@@ -625,7 +624,7 @@ foreach ($agingData as $row) {
 
                 <!-- SN TABLE START -->
             <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="table-responsive table-bordered py-3" style="overflow-y:auto ; ">
+                <div class="table-responsive table-bordered py-3">
                     <table id="snTable" class="table table-striped table-responsive table-bordered ">
                         <thead>
                             <tr>
@@ -1116,14 +1115,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedDate = this.value; // Format: YYYY-MM-DD
             const formattedDate = new Date(selectedDate).toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
             
-            // Add date to textarea (you can customize the format)
             const currentText = textarea.value;
-            const dateText = `[${formattedDate}] `;
-            
-            // Add date at the beginning or end (choose one)
-            textarea.value = dateText + currentText; // Add at beginning
-            // OR
-            // textarea.value = currentText + '\n' + dateText; // Add at end
+            const dateText = `[${formattedDate}]`;
+
+            textarea.value = currentText.trim() ? currentText.trimEnd() + '\n' + dateText + ' ' : dateText + ' ';
             
             // Focus on textarea
             textarea.focus();
@@ -1460,6 +1455,7 @@ var savedDateType = localStorage.getItem('selectedDateType');
                 aaSorting: [
                     [3, 'desc']
                 ],
+                "pageLength": 10,
                 "lengthMenu": [
                     [10, 25, 50, -1],
                     [10, 25, 50, "All"]
@@ -2002,10 +1998,8 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
  
             
 
-            table2.columns(0).search(ba); // Filter Column 1
-                table2.columns(3).search(permitType); // Permit column
-
-            table2.columns(7).search(status); //
+            table2.columns(0).search(ba);
+            table2.columns(8).search(status);
 
            table.draw();
             table2.draw();
