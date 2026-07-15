@@ -18,7 +18,7 @@ $statusQuery = "SELECT ba,
                 COUNT(CASE WHEN status = 'KIV' THEN 1 END) as kiv,
                 COUNT(*) as total
                 FROM public.ad_service_qr 
-                WHERE (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01')
+                WHERE (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')
                 GROUP BY ba
                 ORDER BY ba";
                 
@@ -43,7 +43,7 @@ $agingQuery = "SELECT ba,
                     END as age_days
                     FROM public.ad_service_qr 
                     WHERE status = 'Inprogress' 
-                    AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01')
+                    AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')
                 ) as subquery
                 GROUP BY ba
                 ORDER BY ba";
@@ -387,7 +387,19 @@ foreach ($agingData as $row) {
                     <option value="">Both</option>
                     <option value="PBT">PBT</option>
                     <option value="DBKL">DBKL</option>
-                </select>    
+                </select>
+            </div>
+
+                <div class="m-2 col-md-2">
+                <label for="">Jenis Sambungan :</label> <br>
+                <select name="jenis_sambungan_filter" id="jenis_sambungan_filter" class="form-select">
+                    <option value="<?php echo isset($_POST['jenis_sambungan_filter']) ? $_POST['jenis_sambungan_filter'] : ''; ?>" hidden>
+                        <?php echo isset($_POST['jenis_sambungan_filter']) && $_POST['jenis_sambungan_filter'] != '' ? $_POST['jenis_sambungan_filter'] : 'All'; ?>
+                    </option>
+                    <option value="">All</option>
+                    <option value="OH">OH</option>
+                    <option value="UG">UG</option>
+                </select>
             </div>
 
                 <div class="col-md-1 pt-2 text-start" style="display: inline">
@@ -473,7 +485,7 @@ foreach ($agingData as $row) {
                              ///  echo json_encode($_POST);
                                 if ($col_name == 'both') {
                                    // echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid;
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ((csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)  OR (tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2025-01-01')  ORDER BY csp_paid_date DESC");
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND ((csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)  OR (tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01')  ORDER BY csp_paid_date DESC");
                                     $stmt->bindParam(':from_paid', $from_paid);
                                     $stmt->bindParam(':to_paid', $to_paid);
                                     $stmt->bindParam(':from_siap', $from_siap);
@@ -483,7 +495,7 @@ foreach ($agingData as $row) {
                                     
                                 } else {
                                  //   echo  $from.'-'.$to.'-'.$col_name;
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND $col_name >= :from AND  $col_name <= :to and (status in ('Inprogress','KIV') or complete_date>='2026-01-01') ORDER BY csp_paid_date DESC");
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND $col_name >= :from AND  $col_name <= :to and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') ORDER BY csp_paid_date DESC");
                                     $stmt->execute([':ba' => "%$ba%", ':from' => $from, ':to' => $to]);
                                 }
                             } else {
@@ -491,13 +503,13 @@ foreach ($agingData as $row) {
                                 if ($_SESSION['user_name'] == 'admin') {
                                   //  echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid.'1';
 
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2025-01-01'  ORDER BY id DESC");
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01'  ORDER BY id DESC");
                                 } else {
                                  //   echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid.'2';
 
                                     $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : '';
                             
-                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba and (status in ('Inprogress','KIV') or complete_date>='2025-01-01') ORDER BY csp_paid_date DESC, id DESC");
+                                    $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') ORDER BY csp_paid_date DESC, id DESC");
                             
                                     // $stmt->bindValue(':created', '%' . $_SESSION['user_id'] . '%', PDO::PARAM_STR);
                                     $stmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
@@ -512,13 +524,20 @@ foreach ($agingData as $row) {
                                     return $record['permit_sn'] === $_POST['permit_type'];
                                 });
                             }
+
+                            if (isset($_POST['jenis_sambungan_filter']) && $_POST['jenis_sambungan_filter'] != '') {
+                                $jsFilter = $_POST['jenis_sambungan_filter'];
+                                $records = array_filter($records, function($record) use ($jsFilter) {
+                                    return $record['jenis_sambungan'] === $jsFilter;
+                                });
+                            }
                             
                             // Get ALL in-progress records for aging analysis
                                 if ($_SESSION['user_name'] == 'admin') {
-                                    $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01') ORDER BY csp_paid_date DESC");
+                                    $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01') ORDER BY csp_paid_date DESC");
                                     $agingStmt->execute();
                                 } else {
-                                    $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01') ORDER BY csp_paid_date DESC");
+                                    $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01') ORDER BY csp_paid_date DESC");
                                     $agingStmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
                                     $agingStmt->execute();
                                 }
@@ -558,25 +577,23 @@ foreach ($agingData as $row) {
                             
                                     echo "<td class='text-center'>";
                                     if ($record['tarikh_siap'] != '') {
-                                        echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
+                                        echo '<span class="d-none">qr_done</span><span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
-                                        echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
+                                        echo '<span class="d-none">qr_pending</span><span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                                     }
-                            
                                     echo '</td>';
                                     echo '<td class="algin-middle text-center">';
-                            
                                     if ($record['piat_status'] == 'true') {
-                                        echo '<span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
+                                        echo '<span class="d-none">piat_done</span><span class="check " style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
-                                        echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
+                                        echo '<span class="d-none">piat_pending</span><span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                                     }
                                     echo '</td>';
                                     echo "<td class='text-center'>";
                                     if ($record['erms_status'] == 'done') {
-                                        echo ' <span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
+                                        echo '<span class="d-none">erms_done</span><span class="check" style="font-weight: 600; color: green;">&#x2713;</span>';
                                     } else {
-                                        echo '<span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
+                                        echo '<span class="d-none">erms_pending</span><span class="check" style="font-weight: 600; color: red;">&#x2715;</span>';
                                     }
                                     echo '</td>';
                             
@@ -1118,8 +1135,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentText = textarea.value;
             const dateText = `[${formattedDate}]`;
 
-            textarea.value = currentText.trim() ? currentText.trimEnd() + '\n' + dateText + ' ' : dateText + ' ';
-            
+            textarea.value = currentText.trim() ? dateText + ' \n' + currentText.trim() : dateText + ' ';
+
             // Focus on textarea
             textarea.focus();
         }
@@ -1992,17 +2009,68 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
             if (userba == '') {
                 table.columns(0).search(ba)
                 table.columns(6).search(status); // Filter Column 2
-            }else{ 
+            }else{
                 table.columns(5).search(status);
             }
- 
-            
+
+
 
             table2.columns(0).search(ba);
             table2.columns(8).search(status);
 
            table.draw();
             table2.draw();
+        }
+
+        // Filter tables for OH pending stats (user boxes + admin table cells)
+        // Admin QR table cols (has BA col): 0=BA, 3=JENIS SAMBUNGAN, 7=QR, 8=PIAT, 9=ERMS
+        // User  QR table cols (no BA col):  2=JENIS SAMBUNGAN, 6=QR, 7=PIAT, 8=ERMS
+        // SN table cols (both):             0=BA, 4=JENIS SAMBUNGAN
+        function filterOHPending(type, ba) {
+            var qrTable = $('#myTable').DataTable();
+            var snTable = $('#snTable').DataTable();
+            var isAdmin = (username === 'admin');
+
+            // Admin QR table has BA col at 0, shifting all others by 1
+            var qrSambunganCol = isAdmin ? 3 : 2;
+            var qrCol          = isAdmin ? 7 : 6;
+            var piatCol        = isAdmin ? 8 : 7;
+            var ermsCol        = isAdmin ? 9 : 8;
+
+            // Clear all filters first
+            qrTable.columns().search('');
+            snTable.columns().search('');
+            qrTable.search('');
+            snTable.search('');
+
+            // Apply BA filter when admin clicks a specific row
+            if (isAdmin && ba) {
+                qrTable.columns(0).search(ba, false, false, true);
+                snTable.columns(0).search(ba, false, false, true);
+            }
+
+            if (type === 'total') {
+                snTable.columns(4).search('^OH$', true, false, true);
+                snTable.draw();
+                document.getElementById('profile-tab').click();
+                localStorage.setItem('activeTab', 'profile-tab');
+            } else {
+                // Filter to OH records only
+                qrTable.columns(qrSambunganCol).search('^OH$', true, false, true);
+
+                // Search hidden text labels added to each cell (reliable vs unicode chars)
+                if (type === 'no_qr') {
+                    qrTable.columns(qrCol).search('qr_pending', false, false, false);
+                } else if (type === 'no_piat') {
+                    qrTable.columns(piatCol).search('piat_pending', false, false, false);
+                } else if (type === 'no_erms') {
+                    qrTable.columns(ermsCol).search('erms_pending', false, false, false);
+                }
+
+                qrTable.draw();
+                document.getElementById('home-tab').click();
+                localStorage.setItem('activeTab', 'home-tab');
+            }
         }
     </script>
 </body>

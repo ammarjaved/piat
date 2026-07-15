@@ -30,39 +30,45 @@ function initLocalStorage() {
     var toDateSelect = document.getElementById('to_date');
     var agingSelect = document.getElementById('aging');
     var baSelect = document.getElementById('searchBA');
-    
+    var jenisSambunganSelect = document.getElementById('jenis_sambungan_filter');
+
     // Load saved values
     loadSavedValue(permitSelect, 'selectedPermitType');
     loadSavedValue(dateTypeSelect, 'selectedDateType');
     loadSavedValue(fromDateSelect, 'selectedFromDate');
     loadSavedValue(toDateSelect, 'selectedToDate');
     loadSavedValue(agingSelect, 'selectedAgging');
-    
+    loadSavedValue(jenisSambunganSelect, 'selectedJenisSambungan');
+
     if (username === 'admin') {
         loadSavedValue(baSelect, 'selectedBA');
     }
-    
+
     // Save values on change
     permitSelect.addEventListener('change', function() {
         localStorage.setItem('selectedPermitType', this.value);
     });
-    
+
     dateTypeSelect.addEventListener('change', function() {
         localStorage.setItem('selectedDateType', this.value);
     });
-    
+
     fromDateSelect.addEventListener('change', function() {
         localStorage.setItem('selectedFromDate', this.value);
     });
-    
+
     toDateSelect.addEventListener('change', function() {
         localStorage.setItem('selectedToDate', this.value);
     });
-    
+
     agingSelect.addEventListener('change', function() {
         localStorage.setItem('selectedAgging', this.value);
     });
-    
+
+    jenisSambunganSelect.addEventListener('change', function() {
+        localStorage.setItem('selectedJenisSambungan', this.value);
+    });
+
     if (username === 'admin') {
         baSelect.addEventListener('change', function() {
             localStorage.setItem('selectedBA', this.value);
@@ -120,7 +126,7 @@ function bindEvents() {
                 const formattedDate = new Date(selectedDate).toLocaleDateString('en-GB');
                 const currentText = textarea.value;
                 const dateText = `[${formattedDate}]`;
-                textarea.value = currentText.trim() ? currentText.trimEnd() + '\n' + dateText + ' ' : dateText + ' ';
+                textarea.value = currentText.trim() ? dateText + ' \n' + currentText.trim() : dateText + ' ';
                 textarea.focus();
             }
         });
@@ -150,7 +156,8 @@ function clearLocalStorage() {
         'selectedStatus',
         'selectedBA',
         'buttonClicked',
-        'selectedPermitType'
+        'selectedPermitType',
+        'selectedJenisSambungan'
     ];
     
     keysToRemove.forEach(key => localStorage.removeItem(key));

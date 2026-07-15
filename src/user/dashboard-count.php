@@ -12,11 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
 
     if ($from == '' || $to == '') {
         // if dates are null and only ba is selected then first get min and max date
-        $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) AS max_date, MIN(tarikh_siap) AS min_date FROM public.ad_service_qr where tarikh_siap != '' and (status in ('Inprogress','KIV') or complete_date>='2026-01-01')");
+        $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) AS max_date, MIN(tarikh_siap) AS min_date FROM public.ad_service_qr where tarikh_siap != '' and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01')");
         $stmt->execute();
         $comp_date = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $stmt = $pdo->prepare("SELECT MAX(csp_paid_date) AS max_date, MIN(csp_paid_date) AS min_date FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2026-01-01'");
+        $stmt = $pdo->prepare("SELECT MAX(csp_paid_date) AS max_date, MIN(csp_paid_date) AS min_date FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01'");
         $stmt->execute();
         $csp_date = $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
         }
     }
     $subqueries = [
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2026-01-01') {$agingClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause}) AS count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid ) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and complete_date>='2026-01-01' {$agingClause}) AS complete_count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) {$agingClause}) AS inprocess_count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) {$agingClause}) AS kiv_piat"
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
          }
 
          $subqueries = [ 
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2026-01-01') {$agingClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause}) AS count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND (status = 'Complete' OR status = '1') AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2026-01-01' {$agingClause}) AS complete_count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to {$agingClause}) AS inprocess_count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to {$agingClause}) AS kiv_piat"
@@ -175,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
     }
 
     $subqueries = [ 
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba and (status in ('Inprogress','KIV') or complete_date>='2026-01-01') {$agingClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause}) AS count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') and complete_date>='2026-01-01' {$agingClause}) AS complete_count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprogress' {$agingClause}) AS inprocess_count",
         "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV' {$agingClause}) AS kiv_piat"
@@ -202,10 +202,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
 
 
 // $count = $stmt->fetch(PDO::FETCH_ASSOC);
- 
+
+// OH pending stats for this user's BA
+$ohPendingStmt = $pdo->prepare("
+    SELECT
+        COUNT(CASE WHEN (tarikh_siap IS NULL OR tarikh_siap = '') THEN 1 END) as no_qr,
+        COUNT(CASE WHEN (piat_status IS NULL OR piat_status != 'true') THEN 1 END) as no_piat,
+        COUNT(CASE WHEN (erms_status IS NULL OR erms_status != 'done') THEN 1 END) as no_erms,
+        COUNT(*) as total_oh
+    FROM public.ad_service_qr
+    WHERE jenis_sambungan = 'OH'
+    AND ba = :ba
+    AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')
+");
+$ohPendingStmt->bindParam(':ba', $ba);
+$ohPendingStmt->execute();
+$ohPending = $ohPendingStmt->fetch(PDO::FETCH_ASSOC);
+
 ?>
 
- 
+
 
 
 <div class="row text-center m-4">
@@ -235,13 +251,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
  
     </div>
     <div class="col-md-4 " onclick="adminSearch('<?php echo $_SESSION['user_ba'] ?>','KIV')" style="cursor: pointer;">
- 
+
         <div class="ml-0 m-2  p-1" style="background-color:  #14DFE4 !important;">
             <p style="font-weight: 600;">Total KIV </p>
             <div class="text-center"><?php echo $count['kiv_piat']; ?></div>
         </div>
-    
+
     </div>
 
+</div>
 
+<!-- OH Pending Completion Stats -->
+<div class="row mt-2 mb-2 mx-4">
+    <div class="col-12">
+        <div style="background-color: #fff8e1; border: 1px solid #ffc107; border-radius: 6px; padding: 10px;">
+            <p class="text-center mb-2" style="font-weight: 700; font-size: 0.9rem; color: #6d4c00;">OH — Pending QR / PIAT / ERMS (Active Records)</p>
+            <div class="row text-center">
+                <div class="col-3" onclick="filterOHPending('total')" style="cursor: pointer;">
+                    <div class="p-2" style="background-color: #e9ecef; border-radius: 4px;">
+                        <small style="font-weight: 600;">Total OH</small><br>
+                        <strong><?php echo $ohPending['total_oh']; ?></strong>
+                    </div>
+                </div>
+                <div class="col-3" onclick="filterOHPending('no_qr')" style="cursor: pointer;">
+                    <div class="p-2" style="background-color: <?php echo $ohPending['no_qr'] > 0 ? '#f8d7da' : '#d4edda'; ?>; border-radius: 4px;">
+                        <small style="font-weight: 600;">No QR</small><br>
+                        <strong class="<?php echo $ohPending['no_qr'] > 0 ? 'text-danger' : 'text-success'; ?>"><?php echo $ohPending['no_qr']; ?></strong>
+                    </div>
+                </div>
+                <div class="col-3" onclick="filterOHPending('no_piat')" style="cursor: pointer;">
+                    <div class="p-2" style="background-color: <?php echo $ohPending['no_piat'] > 0 ? '#f8d7da' : '#d4edda'; ?>; border-radius: 4px;">
+                        <small style="font-weight: 600;">No PIAT</small><br>
+                        <strong class="<?php echo $ohPending['no_piat'] > 0 ? 'text-danger' : 'text-success'; ?>"><?php echo $ohPending['no_piat']; ?></strong>
+                    </div>
+                </div>
+                <div class="col-3" onclick="filterOHPending('no_erms')" style="cursor: pointer;">
+                    <div class="p-2" style="background-color: <?php echo $ohPending['no_erms'] > 0 ? '#f8d7da' : '#d4edda'; ?>; border-radius: 4px;">
+                        <small style="font-weight: 600;">No ERMS</small><br>
+                        <strong class="<?php echo $ohPending['no_erms'] > 0 ? 'text-danger' : 'text-success'; ?>"><?php echo $ohPending['no_erms']; ?></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
