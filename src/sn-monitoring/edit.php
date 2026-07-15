@@ -1,5 +1,7 @@
 <?php
 include '../partials/header.php';
+require_once __DIR__ . '/../services/access.php';
+deny_if_viewer();
 include '../services/connection.php';
 
 $stmt = $pdo->prepare('SELECT * FROM public.ad_service_qr WHERE no_sn = :sn');

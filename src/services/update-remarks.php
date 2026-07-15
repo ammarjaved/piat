@@ -3,9 +3,18 @@
 ob_start();
 session_start();
 include 'connection.php';
+require_once __DIR__ . '/access.php';
 
 // Clear any output that might have been generated
 ob_end_clean();
+
+// Block view-only accounts from editing remarks
+if (is_viewer()) {
+    header('Content-Type: application/json');
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Access denied: view-only account.']);
+    exit;
+}
 
 // Set header for JSON response
 header('Content-Type: application/json');

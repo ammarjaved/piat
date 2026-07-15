@@ -1,5 +1,7 @@
 <?php
 include '../partials/header.php';
+require_once __DIR__ . '/../services/access.php';
+deny_if_viewer();
 
 if (!isset($_SESSION['no_sn'])) {
     header('location: ../qr-foams/create.php');

@@ -1,5 +1,8 @@
-<?php include '../partials/header.php'; ?>
- 
+<?php include '../partials/header.php';
+require_once __DIR__ . '/../services/access.php';
+deny_if_viewer();
+?>
+
 <div class="d-flex justify-content-end">
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">

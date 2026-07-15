@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_name'] = $record['name'];
         $_SESSION['user_id'] = $record['id'];
         $_SESSION['user_ba'] = $record['ba'];
+        $_SESSION['user_role'] = isset($record['role']) ? $record['role'] : 'user';
         header("Location: ../index.php");
         exit();
     } else {

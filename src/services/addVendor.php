@@ -2,6 +2,8 @@
 ob_start();
 session_start();
 include("connection.php");
+require_once __DIR__ . '/access.php';
+deny_if_viewer();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     

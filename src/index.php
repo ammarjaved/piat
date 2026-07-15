@@ -4,6 +4,12 @@ if (!isset($_SESSION['user_name']) && !isset($_SESSION['user_id'])) {
     header('location:./auth/login.php');
 }
 include './services/connection.php';
+include './services/access.php';
+
+// View-only accounts (role = viewer) see everything an admin sees (all BAs,
+// dashboard) but must not get any add / edit / delete controls.
+$isViewer    = is_viewer();
+$isAdminView = is_admin_view();
 ?>
 
 
@@ -242,7 +248,9 @@ foreach ($agingData as $row) {
 
     <script>
         var username='<?php echo $_SESSION['user_name']?>';
-    </script>    
+        // Viewer sees the same columns/tables as admin (read-only)
+        var isAdminView = <?php echo $isAdminView ? 'true' : 'false'; ?>;
+    </script>
 </head>
 
 <body>
@@ -283,6 +291,7 @@ foreach ($agingData as $row) {
             <div class="m-2">
             <a href="./piat_old.php" class="btn btn-success btn-sm ">OLD PIAT</a>
             </div>
+            <?php if (!$isViewer): ?>
             <div class="m-2">
             <a href="./sn-monitoring/create.php" class="btn btn-success btn-sm ">ADD SN</a>
             </div>
@@ -293,6 +302,7 @@ foreach ($agingData as $row) {
                     Add Vendor
                 </button>
             </div>
+            <?php endif; ?>
 
             <div class="m-2">
                 <form action="./services/generateExcel.php" method="POST">
@@ -308,8 +318,8 @@ foreach ($agingData as $row) {
                         type="submit" name="submit-button">Download
                         SN</button>
                 </form>
-                
-            </div>  
+
+            </div>
             <div class="m-2">
             <button id="myreset" class="btn btn-secondary " type="button" 
             name='submitButton' value="reset">Reset</button>
@@ -326,7 +336,7 @@ foreach ($agingData as $row) {
                 <div class="m-1 col-md-2">
                     <label for="">Select BA :</label> <br>
                     <select name="searchBA" id="searchBA" class="form-select">
-                        <?php if($_SESSION['user_name'] == "admin"){ ?>
+                        <?php if($isAdminView){ ?>
                         <option value="<?php echo isset($_POST['searchBA']) ? $_POST['searchBA'] : ''; ?>" hidden><?php echo isset($_POST['searchBA']) && $_POST['searchBA'] != '' ? $_POST['searchBA'] : 'All Ba'; ?></option>
                         <option value="KLB - 6121">KLB - 6121</option>
                         <option value="KLT - 6122">KLT - 6122</option>
@@ -416,7 +426,7 @@ foreach ($agingData as $row) {
         <!-- Top FILTER SECTION  END -->
            
         <!-- include top count and onclick filters -->
-        <?php if ($_SESSION['user_name'] == 'admin') {
+        <?php if ($isAdminView) {
             include './admin/dashboard-count.php';
         } else {
             include './user/dashboard-count.php';
@@ -436,7 +446,7 @@ foreach ($agingData as $row) {
                     role="tab" aria-controls="home" aria-selected="true">QR</button>
             </li>
 
-        <?php if ($_SESSION['user_name'] == 'admin') : ?>
+        <?php if ($isAdminView) : ?>
         <li class="nav-item" role="presentation">
             <button class="nav-link " id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button"
                 role="tab" aria-controls="dashboard" aria-selected="true">Dashboard</button>
@@ -459,7 +469,7 @@ foreach ($agingData as $row) {
                         <thead>
                             <tr>
                                 <?php
-                            if ($_SESSION['user_name'] == "admin") { ?>
+                            if ($isAdminView) { ?>
                                 <th>BA</th>
                                 <?php   } ?>
                                 <th>SN NO</th>
@@ -500,7 +510,7 @@ foreach ($agingData as $row) {
                                 }
                             } else {
                                 // without filter
-                                if ($_SESSION['user_name'] == 'admin') {
+                                if ($isAdminView) {
                                   //  echo  $from_siap.'-'.$to_siap.'-'.$from_paid.'-'.$to_paid.'1';
 
                                     $stmt = $pdo->prepare("SELECT * FROM public.ad_service_qr where status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01'  ORDER BY id DESC");
@@ -533,7 +543,7 @@ foreach ($agingData as $row) {
                             }
                             
                             // Get ALL in-progress records for aging analysis
-                                if ($_SESSION['user_name'] == 'admin') {
+                                if ($isAdminView) {
                                     $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01') ORDER BY csp_paid_date DESC");
                                     $agingStmt->execute();
                                 } else {
@@ -560,11 +570,12 @@ foreach ($agingData as $row) {
                                     # code...
                             
                                     echo '<tr>';
-                                    if ($_SESSION['user_name'] == 'admin') {
+                                    if ($isAdminView) {
                                         echo "<td>{$record['ba']}</td>";
                                     }
                             
-                                    echo "<td><a class='text-decoration-none text-dark' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
+                                    $qrSnLink = $isViewer ? "./piat-foam/detail.php?no_sn={$record['no_sn']}" : "./qr-foams/edit.php?no_sn={$record['no_sn']}";
+                                    echo "<td><a class='text-decoration-none text-dark' href='{$qrSnLink}'>";
                                     echo $record['no_sn'];
                                     echo '</a></td>';
                             
@@ -603,19 +614,23 @@ foreach ($agingData as $row) {
                                                                                         </button>
                                                                                         <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
                                                                                           <li><a class='dropdown-item' href='./services/generateExcel.php?id={$record['id']}'>Download Excel</a></li>";
-                            
-                                    echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
-                                    echo $record['tarikh_siap'] != '' ? 'Edit QR' : 'Add QR';
-                                    echo '</a></li>';
+
+                                    if (!$isViewer) {
+                                        echo "<li><a class='dropdown-item' href='./qr-foams/edit.php?no_sn={$record['no_sn']}'>";
+                                        echo $record['tarikh_siap'] != '' ? 'Edit QR' : 'Add QR';
+                                        echo '</a></li>';
+                                    }
                                     if ($record['piat_status'] == 'true') {
                                         echo "  <li><a class='dropdown-item' href='./generate-pdf/previewPDF.php?no_sn={$record['no_sn']}' target='_blank'>Preview PDF</a></li>";
-                                    } elseif ($record['qr'] == 'true') {
+                                    } elseif ($record['qr'] == 'true' && !$isViewer) {
                                         echo "  <li><a class='dropdown-item' href='./services/foamRedirect.php?sn={$record['no_sn']}'>Fill Checklist</a></li>";
                                     }
                                     echo "  <li><a class='dropdown-item' href='./piat-foam/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
-                            
-                                    echo "  <li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}' >Edit SN</a></li>";
-                                    echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
+
+                                    if (!$isViewer) {
+                                        echo "  <li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}' >Edit SN</a></li>";
+                                        echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
+                                    }
                                     echo '</ul></div></td>';
                                     echo '</tr>';
                                 }
@@ -732,7 +747,12 @@ foreach ($agingData as $row) {
                                     $displayRemark = substr($displayRemark, 0, 15) . '...';
                                 }
 
-                                echo "<td><a type='button' class='dropdown-item btn btn-warning btn-sm text-dark' style='display: inline-block; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; background-color: #ffc107; border: 2px solid #ff9800; box-shadow: 0 2px 4px rgba(0,0,0,0.2);' data-bs-toggle='modal' data-remark=\"{$escapedRemark}\" data-id=\"{$record['id']}\" data-sn=\"{$record['no_sn']}\" data-address=\"" . htmlspecialchars($record['alamat'] ?? '', ENT_QUOTES, 'UTF-8') . "\" data-bs-target='#remarkModal'>{$displayRemark}</a></td>";
+                                if ($isViewer) {
+                                    // Read-only: show the remark text without the edit modal trigger
+                                    echo "<td>" . htmlspecialchars($displayRemark ?? '', ENT_QUOTES, 'UTF-8') . "</td>";
+                                } else {
+                                    echo "<td><a type='button' class='dropdown-item btn btn-warning btn-sm text-dark' style='display: inline-block; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; background-color: #ffc107; border: 2px solid #ff9800; box-shadow: 0 2px 4px rgba(0,0,0,0.2);' data-bs-toggle='modal' data-remark=\"{$escapedRemark}\" data-id=\"{$record['id']}\" data-sn=\"{$record['no_sn']}\" data-address=\"" . htmlspecialchars($record['alamat'] ?? '', ENT_QUOTES, 'UTF-8') . "\" data-bs-target='#remarkModal'>{$displayRemark}</a></td>";
+                                }
 
                                 echo "<td class='text-center'><div class='dropdown'>
                                                                                       <button class='btn   ' type='button' id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
@@ -740,10 +760,13 @@ foreach ($agingData as $row) {
                                                                                       </button>
                                                                                       <ul class='dropdown-menu' aria-labelledby='dropdownMenuButton1'>";
                             
-                                echo "<li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}'>Edit SN</a></li>";
-                            
+                                if (!$isViewer) {
+                                    echo "<li><a class='dropdown-item' href='./sn-monitoring/edit.php?no_sn={$record['no_sn']}'>Edit SN</a></li>";
+                                }
                                 echo "<li><a class='dropdown-item' href='./sn-monitoring/detail.php?no_sn={$record['no_sn']}'  >Detail</a></li>";
-                                echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
+                                if (!$isViewer) {
+                                    echo "<li><button type='button' class='dropdown-item' data-bs-toggle='modal' data-sn='{$record['no_sn']}' data-bs-target='#exampleModal'> Delete </button'></li>";
+                                }
                                 echo "</ul></div></td>";
                                 echo '</tr>';
                             }
@@ -1453,7 +1476,7 @@ var savedDateType = localStorage.getItem('selectedDateType');
             localStorage.setItem('selectedAgging', this.value);
         });
 
-    if(username=='admin'){
+    if(isAdminView){
         var saveBa = localStorage.getItem('selectedBA');
         if (saveBa) {
             selba.value = saveBa;
@@ -2029,7 +2052,7 @@ function showRecordsModal(ba, minDays, maxDays, records, totalSearched, expected
         function filterOHPending(type, ba) {
             var qrTable = $('#myTable').DataTable();
             var snTable = $('#snTable').DataTable();
-            var isAdmin = (username === 'admin');
+            var isAdmin = isAdminView;
 
             // Admin QR table has BA col at 0, shifting all others by 1
             var qrSambunganCol = isAdmin ? 3 : 2;
