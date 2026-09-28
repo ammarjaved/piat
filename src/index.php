@@ -17,6 +17,86 @@ $isAdminView = is_admin_view();
 // Fetch data for dashboard statistics
 $dashboardData = [];
 
+// Apply the top filter form (BA / date range / aging / permit / jenis sambungan)
+// to the dashboard summary and aging analysis queries so they match the tables
+$dashboardFilterSql = '';
+$dashboardParams = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_POST['submitButton'] == 'filter') {
+    $dashboardFilters = [];
+
+    // BA scope: non-admin users are always limited to their own BA
+    $filterBa = $isAdminView ? (isset($_POST['searchBA']) ? $_POST['searchBA'] : '') : $_SESSION['user_ba'];
+    $dashboardFilters[] = 'ba LIKE :ba';
+    $dashboardParams[':ba'] = '%' . $filterBa . '%';
+
+    // Date range (same logic as the SN/QR table filter)
+    $from = isset($_POST['from_date']) ? $_POST['from_date'] : '';
+    $to = isset($_POST['to_date']) ? $_POST['to_date'] : '';
+
+    if ($from == '' || $to == '') {
+        // if dates are empty then first get min and max date
+        $stmt = $pdo->prepare("SELECT MAX(tarikh_siap) AS max_date, MIN(tarikh_siap) AS min_date FROM public.ad_service_qr where tarikh_siap != ''");
+        $stmt->execute();
+        $comp_date = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $pdo->prepare('SELECT MAX(csp_paid_date) AS max_date, MIN(csp_paid_date) AS min_date FROM public.ad_service_qr');
+        $stmt->execute();
+        $csp_date = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    $dashboard_date_type = isset($_POST['date_type']) ? $_POST['date_type'] : '';
+    if ($dashboard_date_type == 'CSP') {
+        $from = $from == '' ? $csp_date['min_date'] : $from;
+        $to = $to == '' ? $csp_date['max_date'] : $to;
+        $dashboardFilters[] = 'csp_paid_date >= :from AND csp_paid_date <= :to';
+        $dashboardParams[':from'] = $from;
+        $dashboardParams[':to'] = $to;
+    } elseif ($dashboard_date_type == 'Completion') {
+        $from = $from == '' ? $comp_date['min_date'] : $from;
+        $to = $to == '' ? $comp_date['max_date'] : $to;
+        $dashboardFilters[] = 'tarikh_siap >= :from AND tarikh_siap <= :to';
+        $dashboardParams[':from'] = $from;
+        $dashboardParams[':to'] = $to;
+    } else {
+        $from_siap = $from == '' ? $comp_date['min_date'] : $from;
+        $to_siap = $to == '' ? $comp_date['max_date'] : $to;
+        $from_paid = $from == '' ? $csp_date['min_date'] : $from;
+        $to_paid = $to == '' ? $csp_date['max_date'] : $to;
+        $dashboardFilters[] = '((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap) OR (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid))';
+        $dashboardParams[':from_siap'] = $from_siap;
+        $dashboardParams[':to_siap'] = $to_siap;
+        $dashboardParams[':from_paid'] = $from_paid;
+        $dashboardParams[':to_paid'] = $to_paid;
+    }
+
+    // Aging bucket
+    if (isset($_POST['aging']) && $_POST['aging'] != '') {
+        if ($_POST['aging'] === '>60') {
+            $dashboardFilters[] = '(CURRENT_DATE - NULLIF(csp_paid_date, \'\')::date) > 60';
+        } else {
+            $range = explode(',', $_POST['aging']);
+            $dashboardFilters[] = '(CURRENT_DATE - NULLIF(csp_paid_date, \'\')::date) BETWEEN :aging_min AND :aging_max';
+            $dashboardParams[':aging_min'] = intval($range[0]);
+            $dashboardParams[':aging_max'] = intval($range[1]);
+        }
+    }
+
+    // Permit type
+    if (isset($_POST['permit_type']) && $_POST['permit_type'] != '') {
+        $dashboardFilters[] = 'permit_sn = :permit_type';
+        $dashboardParams[':permit_type'] = $_POST['permit_type'];
+    }
+
+    // Jenis sambungan
+    if (isset($_POST['jenis_sambungan_filter']) && $_POST['jenis_sambungan_filter'] != '') {
+        $dashboardFilters[] = 'jenis_sambungan = :jenis_sambungan';
+        $dashboardParams[':jenis_sambungan'] = $_POST['jenis_sambungan_filter'];
+    }
+
+    $dashboardFilterSql = ' AND ' . implode(' AND ', $dashboardFilters);
+}
+
 // Query for SN status counts by BA
 $statusQuery = "SELECT ba, 
                 COUNT(CASE WHEN status = 'Complete' THEN 1 END) as completed,
@@ -24,12 +104,12 @@ $statusQuery = "SELECT ba,
                 COUNT(CASE WHEN status = 'KIV' THEN 1 END) as kiv,
                 COUNT(*) as total
                 FROM public.ad_service_qr 
-                WHERE (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')
+                WHERE (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')" . $dashboardFilterSql . "
                 GROUP BY ba
                 ORDER BY ba";
                 
 $statusStmt = $pdo->prepare($statusQuery);
-$statusStmt->execute();
+$statusStmt->execute($dashboardParams);
 $statusData = $statusStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Query for aging analysis
@@ -49,13 +129,13 @@ $agingQuery = "SELECT ba,
                     END as age_days
                     FROM public.ad_service_qr 
                     WHERE status = 'Inprogress' 
-                    AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')
+                    AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')" . $dashboardFilterSql . "
                 ) as subquery
                 GROUP BY ba
                 ORDER BY ba";
                 
 $agingStmt = $pdo->prepare($agingQuery);
-$agingStmt->execute();
+$agingStmt->execute($dashboardParams);
 $agingData = $agingStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Prepare data for charts
@@ -542,15 +622,17 @@ foreach ($agingData as $row) {
                                 });
                             }
                             
-                            // Get ALL in-progress records for aging analysis
-                                if ($isAdminView) {
-                                    $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01') ORDER BY csp_paid_date DESC");
-                                    $agingStmt->execute();
-                                } else {
-                                    $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01') ORDER BY csp_paid_date DESC");
-                                    $agingStmt->bindValue(':ba', '%' . $_SESSION['user_ba'] . '%', PDO::PARAM_STR);
-                                    $agingStmt->execute();
+                            // Get ALL in-progress records for aging analysis (drill-down),
+                            // restricted by the same top filter as the dashboard tables
+                                $agingExtraSql = $dashboardFilterSql;
+                                $agingExtraParams = $dashboardParams;
+                                if (!$isAdminView && $agingExtraSql === '') {
+                                    // no filter submitted: still limit non-admin users to their own BA
+                                    $agingExtraSql = ' AND ba LIKE :ba';
+                                    $agingExtraParams[':ba'] = '%' . $_SESSION['user_ba'] . '%';
                                 }
+                                $agingStmt = $pdo->prepare("SELECT * FROM public.ad_service_qr WHERE status = 'Inprogress' AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')" . $agingExtraSql . " ORDER BY csp_paid_date DESC");
+                                $agingStmt->execute($agingExtraParams);
                                 $allAgingRecords = $agingStmt->fetchAll(PDO::FETCH_ASSOC);
                                 ?>
                                 <script>
@@ -1156,12 +1238,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const formattedDate = new Date(selectedDate).toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
             
             const currentText = textarea.value;
+            const trimmedText = currentText.trim();
             const dateText = `[${formattedDate}]`;
 
-            textarea.value = currentText.trim() ? dateText + ' \n' + currentText.trim() : dateText + ' ';
+            // New date goes in front of the existing remarks
+            textarea.value = trimmedText ? dateText + ' \n' + trimmedText : dateText + ' ';
 
-            // Focus on textarea
+            // Blink the caret right after the newly added date, on the same line
             textarea.focus();
+            const caretPos = dateText.length + 1;
+            textarea.setSelectionRange(caretPos, caretPos);
         }
     });
 });
@@ -1182,7 +1268,12 @@ document.addEventListener('DOMContentLoaded', function() {
 // ===== FIXED: Handle opening remark modal from static table =====
 $('#remarkModal').on('show.bs.modal', function(event) {
     var button = $(event.relatedTarget);
-    
+
+    // Opened programmatically (dynamic link already filled the fields)
+    if (!button || button.length === 0) {
+        return;
+    }
+
     var detail = button.data('remark') || '';
     var id = button.data('id') || button.data('data-id');
     var snNo = button.data('sn') || '—';
@@ -1195,6 +1286,15 @@ $('#remarkModal').on('show.bs.modal', function(event) {
     $('#view-sn-no').html(snNo);
     $('#view-address').html(address);
     $('#remark-date').val('');
+});
+
+// Put the caret at the end of the remark text whenever the modal opens
+$('#remarkModal').on('shown.bs.modal', function() {
+    var remarkBox = document.getElementById('remark-detail');
+    if (remarkBox) {
+        remarkBox.focus();
+        remarkBox.setSelectionRange(remarkBox.value.length, remarkBox.value.length);
+    }
 });
 
 // ===== FIXED: Handle opening remark modal from dynamic/filtered table =====
