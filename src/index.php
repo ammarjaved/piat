@@ -610,16 +610,16 @@ foreach ($agingData as $row) {
                             $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             
                            if (isset($_POST['permit_type']) && $_POST['permit_type'] != '') {
-                                $records = array_filter($records, function($record) {
+                                $records = array_values(array_filter($records, function($record) {
                                     return $record['permit_sn'] === $_POST['permit_type'];
-                                });
+                                }));
                             }
 
                             if (isset($_POST['jenis_sambungan_filter']) && $_POST['jenis_sambungan_filter'] != '') {
                                 $jsFilter = $_POST['jenis_sambungan_filter'];
-                                $records = array_filter($records, function($record) use ($jsFilter) {
+                                $records = array_values(array_filter($records, function($record) use ($jsFilter) {
                                     return $record['jenis_sambungan'] === $jsFilter;
-                                });
+                                }));
                             }
                             
                             // Get ALL in-progress records for aging analysis (drill-down),
@@ -720,12 +720,6 @@ foreach ($agingData as $row) {
             
                             
                             ?>
-                            <script>
-                            const allSNRecords = <?php echo json_encode($displayRecords); ?>;
-                            const allAgingRecords = <?php echo json_encode($allAgingRecords); ?>;
-                            console.log('Total SN records from PHP:', allSNRecords.length);
-                            console.log('Total aging records from PHP:', allAgingRecords.length);
-                            </script>
                         </tbody>
                     </table>
 

@@ -1,5 +1,17 @@
 <?php
 $ba = $_SESSION['user_ba'];
+
+// Jenis sambungan / permit type filters from the top filter form, shared by all
+// count subqueries below so the count boxes match the filtered tables
+$jenisClause = '';
+if (isset($_POST['jenis_sambungan_filter']) && $_POST['jenis_sambungan_filter'] != '') {
+    $jenisClause = 'AND jenis_sambungan = :js_filter';
+}
+$permitClause = '';
+if (isset($_POST['permit_type']) && $_POST['permit_type'] != '') {
+    $permitClause = 'AND permit_sn = :permit_filter';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_POST['submitButton'] == 'filter') {
     if (!isset($_POST['date_type'])) {
       
@@ -56,10 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
         }
     }
     $subqueries = [
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause}) AS count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid ) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and complete_date>='2026-01-01' {$agingClause}) AS complete_count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) {$agingClause}) AS inprocess_count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) {$agingClause}) AS kiv_piat"
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause} {$jenisClause} {$permitClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Complete'  AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid ) OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) and complete_date>='2026-01-01' {$agingClause} {$jenisClause} {$permitClause}) AS complete_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) {$agingClause} {$jenisClause} {$permitClause}) AS inprocess_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ((tarikh_siap >= :from_paid AND tarikh_siap <= :to_paid)  OR (csp_paid_date >= :from_siap AND csp_paid_date <= :to_siap)) {$agingClause} {$jenisClause} {$permitClause}) AS kiv_piat"
     ];
 
 
@@ -96,6 +108,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
      $stmt->bindParam(':to_siap',$to_paid);
      $stmt->bindValue(':ba', '%' . $ba . '%', PDO::PARAM_STR);
     // $stmt->execute();
+     if ($jenisClause !== '') {
+         $stmt->bindValue(':js_filter', $_POST['jenis_sambungan_filter'], PDO::PARAM_STR);
+     }
+     if ($permitClause !== '') {
+         $stmt->bindValue(':permit_filter', $_POST['permit_type'], PDO::PARAM_STR);
+     }
     if (isset($_POST['aging']) && $_POST['aging'] !== '' && $_POST['aging'] !== '>60') {
         $stmt->bindParam(':aging_min', $min, PDO::PARAM_INT);
         $stmt->bindParam(':aging_max', $max, PDO::PARAM_INT);
@@ -127,10 +145,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
          }
 
          $subqueries = [ 
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause}) AS count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND (status = 'Complete' OR status = '1') AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2026-01-01' {$agingClause}) AS complete_count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to {$agingClause}) AS inprocess_count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to {$agingClause}) AS kiv_piat"
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause} {$jenisClause} {$permitClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND (status = 'Complete' OR status = '1') AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2026-01-01' {$agingClause} {$jenisClause} {$permitClause}) AS complete_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to {$agingClause} {$jenisClause} {$permitClause}) AS inprocess_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba LIKE :ba AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to {$agingClause} {$jenisClause} {$permitClause}) AS kiv_piat"
          ];
          $query = $baseQuery . ' ' . implode(',', $subqueries);
 
@@ -139,6 +157,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
          $stmt->bindParam(':from', $from);
          $stmt->bindParam(':to', $to);
          $stmt->bindValue(':ba', '%' . $ba . '%', PDO::PARAM_STR);
+         if ($jenisClause !== '') {
+             $stmt->bindValue(':js_filter', $_POST['jenis_sambungan_filter'], PDO::PARAM_STR);
+         }
+         if ($permitClause !== '') {
+             $stmt->bindValue(':permit_filter', $_POST['permit_type'], PDO::PARAM_STR);
+         }
          if (isset($_POST['aging']) && $_POST['aging'] !== '' && $_POST['aging'] !== '>60') {
             $stmt->bindParam(':aging_min', $min, PDO::PARAM_INT);
             $stmt->bindParam(':aging_max', $max, PDO::PARAM_INT);
@@ -175,16 +199,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submitButton']) && $_
     }
 
     $subqueries = [ 
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause}) AS count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') and complete_date>='2026-01-01' {$agingClause}) AS complete_count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprogress' {$agingClause}) AS inprocess_count",
-        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV' {$agingClause}) AS kiv_piat"
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause} {$jenisClause} {$permitClause}) AS count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND (status = 'Complete' OR status = '1') and complete_date>='2026-01-01' {$agingClause} {$jenisClause} {$permitClause}) AS complete_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'Inprogress' {$agingClause} {$jenisClause} {$permitClause}) AS inprocess_count",
+        "(SELECT COUNT(*) FROM ad_service_qr WHERE ba = :ba AND status = 'KIV' {$agingClause} {$jenisClause} {$permitClause}) AS kiv_piat"
     ];
     $query = $baseQuery . ' ' . implode(',', $subqueries);
 
     // Prepare and execute with proper binding
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':ba', $_SESSION['user_ba']);
+    if ($jenisClause !== '') {
+        $stmt->bindValue(':js_filter', $_POST['jenis_sambungan_filter'], PDO::PARAM_STR);
+    }
+    if ($permitClause !== '') {
+        $stmt->bindValue(':permit_filter', $_POST['permit_type'], PDO::PARAM_STR);
+    }
     if (isset($_POST['aging']) && $_POST['aging'] !== '' && $_POST['aging'] !== '>60') {
         $stmt->bindParam(':aging_min', $min, PDO::PARAM_INT);
         $stmt->bindParam(':aging_max', $max, PDO::PARAM_INT);

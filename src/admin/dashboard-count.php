@@ -1,5 +1,16 @@
 <?php 
 
+// Jenis sambungan / permit type filters from the top filter form, shared by all
+// count subqueries below so the count boxes match the filtered tables
+$jenisClause = '';
+if (isset($_POST['jenis_sambungan_filter']) && $_POST['jenis_sambungan_filter'] != '') {
+    $jenisClause = 'AND jenis_sambungan = :js_filter';
+}
+$permitClause = '';
+if (isset($_POST['permit_type']) && $_POST['permit_type'] != '') {
+    $permitClause = 'AND permit_sn = :permit_filter';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter') {
     $dateString = "2025-01-01";
 // $date = new DateTime($dateString);
@@ -74,19 +85,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter')
             }
         }
     $subqueries = [
-    "(SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause})a",
-    "(SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause})b",
-    "(SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause})c",
-    "(SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause})d",
-    "(SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid))  and complete_date>='2026-01-01' {$agingClause})e",
-    "(SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2026-01-01' {$agingClause})f",
-    "(SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2026-01-01' {$agingClause})g",
-    "(SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2026-01-01' {$agingClause})h",
-    "(SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause})i",
-    "(SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause})j",
-    "(SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause})k",
-    "(SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause})l",
-    "(SELECT count(*) as count FROM ad_service_qr WHERE ba LIKE :ba  AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)  OR (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause})m"
+    "(SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause} {$jenisClause} {$permitClause})a",
+    "(SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause} {$jenisClause} {$permitClause})b",
+    "(SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause} {$jenisClause} {$permitClause})c",
+    "(SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause} {$jenisClause} {$permitClause})d",
+    "(SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid))  and complete_date>='2026-01-01' {$agingClause} {$jenisClause} {$permitClause})e",
+    "(SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2026-01-01' {$agingClause} {$jenisClause} {$permitClause})f",
+    "(SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2026-01-01' {$agingClause} {$jenisClause} {$permitClause})g",
+    "(SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and complete_date>='2026-01-01' {$agingClause} {$jenisClause} {$permitClause})h",
+    "(SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause} {$jenisClause} {$permitClause})i",
+    "(SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)   OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause} {$jenisClause} {$permitClause})j",
+    "(SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause} {$jenisClause} {$permitClause})k",
+    "(SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap )  OR  (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) {$agingClause} {$jenisClause} {$permitClause})l",
+    "(SELECT count(*) as count FROM ad_service_qr WHERE ba LIKE :ba  AND ((tarikh_siap >= :from_siap AND tarikh_siap <= :to_siap)  OR (csp_paid_date >= :from_paid AND csp_paid_date <= :to_paid)) and (status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01') {$agingClause} {$jenisClause} {$permitClause})m"
     ];
     
     
@@ -127,6 +138,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter')
         $stmt->bindParam(':aging_max', $max, PDO::PARAM_INT);
     }
 
+    if ($jenisClause !== '') {
+        $stmt->bindValue(':js_filter', $_POST['jenis_sambungan_filter'], PDO::PARAM_STR);
+    }
+    if ($permitClause !== '') {
+        $stmt->bindValue(':permit_filter', $_POST['permit_type'], PDO::PARAM_STR);
+    }
+
     try {
         // $stmt->execute();
         // $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -159,20 +177,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter')
     //               }
     //           }  
           
-    // $query = $baseQuery . "(SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . ")a,
-    // (SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . ")b,
-    // (SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' AND ".$col_name.">= :from AND ".$col_name." <= :to " . $agingClause . ")c,
-    // (SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . ")d,
-    // (SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' AND ".$col_name.">= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' " . $agingClause . ")e,
-    // (SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' " . $agingClause . ") f,
-    // (SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' " . $agingClause . ")g,
-    // (SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' " . $agingClause . ")h,
+    // $query = $baseQuery . "(SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . $jenisClause . $permitClause . ")a,
+    // (SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . $jenisClause . $permitClause . ")b,
+    // (SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' AND ".$col_name.">= :from AND ".$col_name." <= :to " . $agingClause . $jenisClause . $permitClause . ")c,
+    // (SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . $jenisClause . $permitClause . ")d,
+    // (SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' AND ".$col_name.">= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' " . $agingClause . $jenisClause . $permitClause . ")e,
+    // (SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' " . $agingClause . $jenisClause . $permitClause . ") f,
+    // (SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' " . $agingClause . $jenisClause . $permitClause . ")g,
+    // (SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' AND ".$col_name." >= :from AND ".$col_name." <= :to and complete_date>='2025-01-01' " . $agingClause . $jenisClause . $permitClause . ")h,
     
-    // (SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' AND ".$col_name.">= :from AND ".$col_name." <= :to " . $agingClause . ")i,
-    // (SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . ")j,
-    // (SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . ")k,
-    // (SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . ")l,
-    // (SELECT count(*) as count FROM ad_service_qr WHERE ba LIKE :ba  AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01' " . $agingClause . ")m";
+    // (SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' AND ".$col_name.">= :from AND ".$col_name." <= :to " . $agingClause . $jenisClause . $permitClause . ")i,
+    // (SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . $jenisClause . $permitClause . ")j,
+    // (SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . $jenisClause . $permitClause . ")k,
+    // (SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' AND ".$col_name." >= :from AND ".$col_name." <= :to " . $agingClause . $jenisClause . $permitClause . ")l,
+    // (SELECT count(*) as count FROM ad_service_qr WHERE ba LIKE :ba  AND ".$col_name." >= :from AND ".$col_name." <= :to and (status in ('Inprogress','KIV') or complete_date>='2025-01-01' " . $agingClause . $jenisClause . $permitClause . ")m";
     // $stmt = $pdo->prepare($query);
     // $stmt->bindParam(':from' ,$from);
     // $stmt->bindParam(':to',$to);
@@ -203,19 +221,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter')
 
     // Create subqueries with proper parameter references
     $subqueries = [
-        "(SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause})a",
-        "(SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause})b",
-        "(SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause})c",
-        "(SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause})d",
-        "(SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' AND {$col_name} >= :from AND {$col_name} <= :to AND complete_date >= '2026-01-01' {$agingClause})e",
-        "(SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' AND {$col_name} >= :from AND {$col_name} <= :to AND complete_date >= '2026-01-01' {$agingClause})f",
-        "(SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' AND {$col_name} >= :from AND {$col_name} <= :to AND complete_date >= '2026-01-01' {$agingClause})g",
-        "(SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' AND {$col_name} >= :from AND {$col_name} <= :to AND complete_date >= '2026-01-01' {$agingClause})h",
-        "(SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause})i",
-        "(SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause})j",
-        "(SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause})k",
-        "(SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause})l",
-        "(SELECT count(*) as count FROM ad_service_qr WHERE ba LIKE :ba AND {$col_name} >= :from AND {$col_name} <= :to AND (status in ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01') {$agingClause})m"
+        "(SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause} {$jenisClause} {$permitClause})a",
+        "(SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause} {$jenisClause} {$permitClause})b",
+        "(SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause} {$jenisClause} {$permitClause})c",
+        "(SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause} {$jenisClause} {$permitClause})d",
+        "(SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' AND {$col_name} >= :from AND {$col_name} <= :to AND complete_date >= '2026-01-01' {$agingClause} {$jenisClause} {$permitClause})e",
+        "(SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' AND {$col_name} >= :from AND {$col_name} <= :to AND complete_date >= '2026-01-01' {$agingClause} {$jenisClause} {$permitClause})f",
+        "(SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' AND {$col_name} >= :from AND {$col_name} <= :to AND complete_date >= '2026-01-01' {$agingClause} {$jenisClause} {$permitClause})g",
+        "(SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' AND {$col_name} >= :from AND {$col_name} <= :to AND complete_date >= '2026-01-01' {$agingClause} {$jenisClause} {$permitClause})h",
+        "(SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause} {$jenisClause} {$permitClause})i",
+        "(SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause} {$jenisClause} {$permitClause})j",
+        "(SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause} {$jenisClause} {$permitClause})k",
+        "(SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' AND {$col_name} >= :from AND {$col_name} <= :to {$agingClause} {$jenisClause} {$permitClause})l",
+        "(SELECT count(*) as count FROM ad_service_qr WHERE ba LIKE :ba AND {$col_name} >= :from AND {$col_name} <= :to AND (status in ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01') {$agingClause} {$jenisClause} {$permitClause})m"
     ];
 
     // Combine the query
@@ -233,6 +251,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['submitButton'] == 'filter')
     if (isset($_POST['aging']) && $_POST['aging'] !== '' && $_POST['aging'] !== '>60') {
         $stmt->bindParam(':aging_min', $min, PDO::PARAM_INT);
         $stmt->bindParam(':aging_max', $max, PDO::PARAM_INT);
+    }
+
+    if ($jenisClause !== '') {
+        $stmt->bindValue(':js_filter', $_POST['jenis_sambungan_filter'], PDO::PARAM_STR);
+    }
+    if ($permitClause !== '') {
+        $stmt->bindValue(':permit_filter', $_POST['permit_type'], PDO::PARAM_STR);
     }
 
     try {
@@ -267,20 +292,26 @@ if(isset($_POST['aging']) && $_POST['aging']!='') {
         $agingClause = "AND (CURRENT_DATE - csp_paid_date::date) BETWEEN $min AND $max";
     }
 }
-$query=$baseQuery."(SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' " . $agingClause . ")a,
-(SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' " . $agingClause . ")b,
-(SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' " . $agingClause . ")c,
-(SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' " . $agingClause . ")d,
-(SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' and complete_date>='2026-01-01' " . $agingClause . ")e,
-(SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' and complete_date>='2026-01-01' " . $agingClause . ")f,
-(SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' and complete_date>='2026-01-01' " . $agingClause . ")g,
-(SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' and complete_date>='2026-01-01' " . $agingClause . ")h,
+$query=$baseQuery."(SELECT count(*) as klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Inprogress' " . $agingClause . $jenisClause . $permitClause . ")a,
+(SELECT count(*) as klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Inprogress' " . $agingClause . $jenisClause . $permitClause . ")b,
+(SELECT count(*) as klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Inprogress' " . $agingClause . $jenisClause . $permitClause . ")c,
+(SELECT count(*) as kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Inprogress' " . $agingClause . $jenisClause . $permitClause . ")d,
+(SELECT count(*) as total_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'Complete' and complete_date>='2026-01-01' " . $agingClause . $jenisClause . $permitClause . ")e,
+(SELECT count(*) as total_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'Complete' and complete_date>='2026-01-01' " . $agingClause . $jenisClause . $permitClause . ")f,
+(SELECT count(*) as total_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'Complete' and complete_date>='2026-01-01' " . $agingClause . $jenisClause . $permitClause . ")g,
+(SELECT count(*) as total_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'Complete' and complete_date>='2026-01-01' " . $agingClause . $jenisClause . $permitClause . ")h,
 (SELECT count(*) as kiv_klb_count FROM ad_service_qr WHERE ba = 'KLB - 6121' AND status = 'KIV' " . $agingClause . " )i,
-    (SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' " . $agingClause . ")j,
-    (SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' " . $agingClause . ")k,
-    (SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' " . $agingClause . ")l,
-    (SELECT count(*) as count FROM ad_service_qr  where status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01' " . $agingClause . ")m";
+    (SELECT count(*) as kiv_klt_count FROM ad_service_qr WHERE ba = 'KLT - 6122' AND status = 'KIV' " . $agingClause . $jenisClause . $permitClause . ")j,
+    (SELECT count(*) as kiv_klp_count FROM ad_service_qr WHERE ba = 'KLP - 6123' AND status = 'KIV' " . $agingClause . $jenisClause . $permitClause . ")k,
+    (SELECT count(*) as kiv_kls_count FROM ad_service_qr WHERE ba = 'KLS - 6124' AND status = 'KIV' " . $agingClause . $jenisClause . $permitClause . ")l,
+    (SELECT count(*) as count FROM ad_service_qr  where status in ('Inprogress','KIV') or complete_date>='2026-01-01' or tarikh_siap>='2026-01-01' " . $agingClause . $jenisClause . $permitClause . ")m";
     $stmt = $pdo->prepare($query);    
+    if ($jenisClause !== '') {
+        $stmt->bindValue(':js_filter', $_POST['jenis_sambungan_filter'], PDO::PARAM_STR);
+    }
+    if ($permitClause !== '') {
+        $stmt->bindValue(':permit_filter', $_POST['permit_type'], PDO::PARAM_STR);
+    }
 }
 $status = "Inprocess";
 // $stmt->bindParam(':status',$status);
