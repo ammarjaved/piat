@@ -169,6 +169,72 @@ foreach ($agingData as $row) {
     $age31_60Data[] = (int)$row['age_31_60'];
     $ageGt60Data[] = (int)$row['age_gt_60'];
 }
+
+// Query for daily completed SN counts based on completion date (tarikh_siap)
+$dailyFilters = [];
+$dailyParams = [];
+
+$dailyBa = $isAdminView ? (isset($_POST['searchBA']) ? $_POST['searchBA'] : '') : $_SESSION['user_ba'];
+$dailyFilters[] = 'ba LIKE :daily_ba';
+$dailyParams[':daily_ba'] = '%' . $dailyBa . '%';
+
+$dailyFrom = isset($_POST['from_date']) ? $_POST['from_date'] : '';
+$dailyTo = isset($_POST['to_date']) ? $_POST['to_date'] : '';
+
+if ($dailyFrom == '' && $dailyTo == '') {
+    $dailyFrom = date('Y-m-d', strtotime('-6 days'));
+    $dailyTo = date('Y-m-d');
+} elseif ($dailyFrom == '') {
+    $dailyFrom = date('Y-m-d', strtotime($dailyTo . ' -6 days'));
+} elseif ($dailyTo == '') {
+    $dailyTo = max($dailyFrom, date('Y-m-d'));
+}
+
+$dailyFilters[] = 'tarikh_siap >= :daily_from AND tarikh_siap <= :daily_to';
+$dailyParams[':daily_from'] = $dailyFrom;
+$dailyParams[':daily_to'] = $dailyTo;
+
+if (isset($_POST['permit_type']) && $_POST['permit_type'] != '') {
+    $dailyFilters[] = 'permit_sn = :daily_permit';
+    $dailyParams[':daily_permit'] = $_POST['permit_type'];
+}
+
+if (isset($_POST['jenis_sambungan_filter']) && $_POST['jenis_sambungan_filter'] != '') {
+    $dailyFilters[] = 'jenis_sambungan = :daily_jenis';
+    $dailyParams[':daily_jenis'] = $_POST['jenis_sambungan_filter'];
+}
+
+$dailyQuery = "SELECT tarikh_siap::date AS day, COUNT(*) AS total
+                FROM public.ad_service_qr
+                WHERE status = 'Complete' AND tarikh_siap IS NOT NULL AND tarikh_siap != ''
+                AND (status IN ('Inprogress','KIV') OR complete_date >= '2026-01-01' OR tarikh_siap >= '2026-01-01')
+                AND " . implode(' AND ', $dailyFilters) . "
+                GROUP BY tarikh_siap::date
+                ORDER BY day";
+
+$dailyStmt = $pdo->prepare($dailyQuery);
+$dailyStmt->execute($dailyParams);
+$dailyData = $dailyStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$dailyMap = [];
+foreach ($dailyData as $row) {
+    $dailyMap[$row['day']] = (int)$row['total'];
+}
+
+$dailyChartLabels = [];
+$dailyChartCounts = [];
+if ($dailyFrom != '' && $dailyTo != '' && strtotime($dailyFrom) !== false && strtotime($dailyTo) !== false) {
+    $dailyStart = strtotime($dailyFrom);
+    $dailyEnd = strtotime($dailyTo);
+    if ($dailyEnd - $dailyStart > 366 * 86400) {
+        $dailyStart = $dailyEnd - 366 * 86400;
+    }
+    for ($ts = $dailyStart; $ts <= $dailyEnd; $ts += 86400) {
+        $day = date('Y-m-d', $ts);
+        $dailyChartLabels[] = $day;
+        $dailyChartCounts[] = isset($dailyMap[$day]) ? $dailyMap[$day] : 0;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -931,6 +997,20 @@ foreach ($agingData as $row) {
                 </div>
             </div>
         </div>
+
+        <!-- Daily Completion Chart -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="dashboard-card">
+                    <h5 class="mb-3">SN Completed per Day (Completion Date)
+                        <small class="text-muted fw-normal"><?php echo $dailyFrom . ' to ' . $dailyTo; ?></small>
+                    </h5>
+                    <div class="chart-container">
+                        <canvas id="dailyCompleteChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Tables Row -->
         <div class="row">
@@ -1610,6 +1690,7 @@ var savedDateType = localStorage.getItem('selectedDateType');
     // Chart instances
     let statusChart = null;
     let agingChart = null;
+    let dailyCompleteChart = null;
     
     // Function to initialize charts
     function initializeCharts() {
@@ -1619,6 +1700,9 @@ var savedDateType = localStorage.getItem('selectedDateType');
         }
         if (agingChart) {
             agingChart.destroy();
+        }
+        if (dailyCompleteChart) {
+            dailyCompleteChart.destroy();
         }
         
         // Status Distribution Chart
@@ -1785,6 +1869,58 @@ var savedDateType = localStorage.getItem('selectedDateType');
                                     return label;
                                 }
                             }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Daily Completion Chart
+        const dailyCtx = document.getElementById('dailyCompleteChart');
+        if (dailyCtx) {
+            dailyCompleteChart = new Chart(dailyCtx, {
+                type: 'bar',
+                data: {
+                    labels: <?php echo json_encode($dailyChartLabels); ?>,
+                    datasets: [
+                        {
+                            label: 'Completed SN',
+                            data: <?php echo json_encode($dailyChartCounts); ?>,
+                            backgroundColor: '#4CAF50',
+                            borderColor: '#388E3C',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of SN Completed'
+                            },
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Completion Date'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
                         }
                     }
                 }
