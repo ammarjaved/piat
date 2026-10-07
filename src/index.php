@@ -231,7 +231,7 @@ if ($dailyFrom != '' && $dailyTo != '' && strtotime($dailyFrom) !== false && str
     }
     for ($ts = $dailyStart; $ts <= $dailyEnd; $ts += 86400) {
         $day = date('Y-m-d', $ts);
-        $dailyChartLabels[] = $day;
+        $dailyChartLabels[] = date('D d M', $ts);
         $dailyChartCounts[] = isset($dailyMap[$day]) ? $dailyMap[$day] : 0;
     }
 }
@@ -1878,8 +1878,28 @@ var savedDateType = localStorage.getItem('selectedDateType');
         // Daily Completion Chart
         const dailyCtx = document.getElementById('dailyCompleteChart');
         if (dailyCtx) {
+            const dailyCountLabelsPlugin = {
+                id: 'dailyCountLabels',
+                afterDatasetsDraw(chart) {
+                    const { ctx } = chart;
+                    ctx.save();
+                    ctx.font = 'bold 11px Arial';
+                    ctx.fillStyle = '#333';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    chart.getDatasetMeta(0).data.forEach((bar, i) => {
+                        const value = chart.data.datasets[0].data[i];
+                        if (value > 0 && !bar.skip) {
+                            ctx.fillText(value, bar.x, bar.y - 3);
+                        }
+                    });
+                    ctx.restore();
+                }
+            };
+
             dailyCompleteChart = new Chart(dailyCtx, {
                 type: 'bar',
+                plugins: [dailyCountLabelsPlugin],
                 data: {
                     labels: <?php echo json_encode($dailyChartLabels); ?>,
                     datasets: [
@@ -1898,6 +1918,7 @@ var savedDateType = localStorage.getItem('selectedDateType');
                     scales: {
                         y: {
                             beginAtZero: true,
+                            grace: '10%',
                             title: {
                                 display: true,
                                 text: 'Number of SN Completed'
@@ -1908,6 +1929,11 @@ var savedDateType = localStorage.getItem('selectedDateType');
                             }
                         },
                         x: {
+                            ticks: {
+                                autoSkip: true,
+                                maxRotation: 60,
+                                minRotation: 0
+                            },
                             title: {
                                 display: true,
                                 text: 'Completion Date'
